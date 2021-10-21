@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dithereum</title>
+	<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="icon" type="image/png" href="assets/img/favicon.ico"/>
+</head>
+<body>
+	<div class="main">
+		<div class="header">
+			<header>
+				<nav class="navbar navbar-expand-lg navbar-light bg-light">
+					<a class="navbar-brand" href="#">
+						<img src="assets/img/chain-logo.png" alt="" srcset="">
+					</a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					  <span class="navbar-toggler-icon"></span>
+					</button>
+				  
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					  <ul class="navbar-nav mr-auto">
+						<li class="nav-item active">
+						  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+						</li>
+					  </ul>
+					  <form class="form-inline my-2 my-lg-0">
+						<button class="btn btn-default connect-btn my-2 my-sm-0" id="connectWallet">Connect Wallet</button>
+					  </form>
+					</div>
+				  </nav>
+			</header>
+		</div>
+		<div class="container">
+			<div id="wrapper" class="row">
+				<div id="firstDiv" class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+					<div class="box-left">
+						<div class="header-title">
+							Binance Bridge
+						</div>
+						<div class="p-text">
+							The safe, fast and most secure way to bring cross-chain assets to Binance chains.
+						</div>
+						<div class="btn-video">
+							<a href="#" class="btn btn-outline-warning" role="button" aria-pressed="true"><i class="fa fa-video-camera mr-2" aria-hidden="true"></i>Introduction video</a>
+						</div>
+						<div class="links mt-3">
+							<a href="https://www.binance.org/en/assets-proof" target="_blank">View Proof of Assets</a>
+						</div>
+						<div class="links mt-3">
+							<a href="http://" target="_blank">User Guide</a>
+						</div>
+						<div class="brand-img">
+							<img src="assets/img/hexagons-light.svg" class="styled__HexagonImg-sc-62hwj-3 leCSOp">
+						</div>
+					</div>
+				</div>
+				<div id="secondDiv" class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+					<div class="box-right">
+						<div class="main-text text-center">
+							Daily quota ? per address (? / ?)
+							<div class="under-line"></div>
+						</div>
+						<div class="assets">
+							<label for="inputEmail4">Assets</label>
+							<div class="dropdown dropdown-custom">
+								<button class="btn btn-secondary dropdown-toggle" type="button" id="netwrokFromUL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<img class="icons" src="assets/img/eth-icon.svg"> ETH
+								</button>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<div class="input-group mb-3">
+										<div class="input-group-prepend">
+										  <span class="input-group-text"><i class="fa fa-search" aria-hidden="true"></i></span>
+										</div>
+										<input type="text" class="form-control search-box" aria-label="Amount (to the nearest dollar)">
+										<div class="input-group-append">
+										  <span class="input-group-text"><i class="fa fa-times" aria-hidden="true"></i></span>
+										</div>
+									  </div>
+
+									<ul class="list-group" id="tokenList">
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="eth">
+											<img src="assets/img/eth-icon.svg" class="mr-3" alt="ETH">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">ETH</h5>
+											  <span>Ethereum</span>
+											</div>
+										  <span class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="bnb">
+											<img src="assets/img/bnb-logo.png" class="mr-3" alt="BNB" style="    width: 24px;">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">BNB</h5>
+											  <span>Binance</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="trx">
+											<img src="assets/img/tron-logo.png" class="mr-3" alt="TRX">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">TRX</h5>
+											  <span>TRON</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="matic">
+											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="MATIC">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">MATIC</h5>
+											  <span>Polygon</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="ht">
+											<img src="assets/img/heco-logo.png" class="mr-3" alt="HT">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">HT</h5>
+											  <span>Hecochain</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="usdt">
+											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="USDT">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">USDT</h5>
+											  <span>TetherUs</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="usdc">
+											<img src="assets/img/usdc-logo.png" class="mr-3" alt="USDC">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">USDC</h5>
+											  <span>USD Coin</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="busd">
+											<img src="assets/img/busd-logo.png" class="mr-3" alt="BUSD">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">BUSD</h5>
+											  <span>BUSD</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="dai">
+											<img src="assets/img/dai-logo.png" class="mr-3" alt="DAI">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">DAI</h5>
+											  <span>Dai</span>
+											</div>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="pax">
+											<img src="assets/img/pax-logo.png" class="mr-3" alt="PAX">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">PAX</h5>
+											  <span>Pax</span>
+											</div>
+										</li>
+									  </ul>
+								</div>
+							</div>
+						</div>
+						<div class="fromto mt-3">
+							<form>
+								<div class="form-row">
+									<div class="form-group col-md-5">
+									  <label for="inputEmail4">From</label>
+									  <div class="dropdown">
+										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="netwrokFrom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											Ethereum Network
+										</button>
+										<div class="dropdown-menu dDHYFV" aria-labelledby="netwrokFrom" style="padding: 0;">
+										  <ul class="list-group" id="netwrokFromUL">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="ethNetwork">
+												Ethereum Network
+												 <span id="ethCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="trxNetwork">
+											   TRX Network
+											    <span style="display: none;" id="trxCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="solNetwork">
+											   SOL Network
+											   <span style="display: none;" id="solCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="bnbNetwork">
+											   Binance Smart Chain Network
+											   <span style="display: none;" id="bnbCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="maticNetwork">
+											   Polygon Network
+											   <span style="display: none;" id="maticCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="hecoNetwork">
+												Heco Network
+												<span style="display: none;" id="hecoCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											   </li>
+											</ul>
+										</div>
+									  </div>
+									</div>
+									<div class="form-group col-md-2 text-center swap-btn">
+										<button class="btn btn-secondary"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+									</div>
+									<div class="form-group col-md-5">
+									  <label for="inputPassword4">To</label>
+									  <div class="dropdown">
+										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="netwrokTo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											Dithereum Network
+										</button>
+										<div class="dropdown-menu dDHYFV" aria-labelledby="netwrokToUL" style="padding: 0;">
+										  <ul class="list-group" id="netwrokToUL">
+											  
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="dithNetworkTo">
+												Dithereum Network
+												<span id="dithCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li> 
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="ethNetworkTo">
+												Ethereum Network
+												 <span style="display: none;" id="ethCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="trxNetworkTo">
+											   TRX Network
+											    <span style="display: none;" id="trxCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="solNetworkTo">
+											   SOL Network
+											   <span style="display: none;" id="solCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="bnbNetworkTo">
+											   Binance Smart Chain Network
+											   <span style="display: none;" id="bnbCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="maticNetworkTo">
+												Polygon Network
+												<span style="display: none;" id="maticCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="hecoNetworkTo">
+												Heco Network
+												<span style="display: none;" id="hecoCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
+											  </li>
+											</ul>
+										</div>
+									  </div>
+									</div>
+								  </div>
+							  </form>
+						</div>
+
+						<div class="amount">
+							<label for="inputAmount">Amount</label>
+							<input class="form-control amount-textbox" type="number" value="0">
+						</div>
+						<div class="jzBSFA">
+							<span>You will receive</span>
+							<span class="hnyPJs">≈</span>
+							<img class="icons" src="assets/img/tether-usdt-logo.png" style="width: 16px;">&nbsp;0&nbsp;USDT&nbsp;
+							<span class="styled__BadgeWrapper-xwou8c-34 tcVGd">
+								<span class="badge badge-warning">BEP20</span>
+							</span>
+						</div>
+						<div class="connect-wallet mt-5">
+							<button type="button" id="connectWallet" class="btn btn-warning btn-block connect-btn">Connect Wallet</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer class="footer">
+			<div class="footer-inner">
+			<div class="row">
+				<div class="col-md-6 col-sm-6">
+					<a href="">Terms of Use</a>
+					<p class="m-0">© 2021 - 2021 Dithereum. All rights reserved.</p>
+				</div> 
+				<div class="col-md-6 col-sm-6">
+					<ul class="nav justify-content-end">
+					  <li class="nav-item">
+					    <a class="nav-link" href="#"><i class="fa fa-telegram" aria-hidden="true"></i></a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+					  </li>
+					  <li class="nav-item dropdown">
+				        <a class="nav-link dropdown-toggle bTTabq" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				          <i class="fa fa-globe" aria-hidden="true"></i> <span>English</span>
+				        </a>
+				        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				          <a class="dropdown-item" href="#">English</a>
+				          <a class="dropdown-item" href="#">Indonesian</a>
+				        </div>
+				      </li>
+					</ul>
+				</div>
+			</div>
+			</div>
+		</footer>
+	</div>
+	<script src="assets/js/jquery-3.5.1.slim.min.js"></script>
+	<script src="assets/js/popper.min.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.js"></script>
+	<script src="assets/js/script.js"></script>
+</body>
+</html>
