@@ -19,10 +19,7 @@ require('dotenv').config();
 const Web3 = require("web3");
 
 var myevents = () =>{     
-    console.log("WEB3....",web3);
-    if(web3){}else{
-       let web3 = new Web3(getwsprovider());
-    }
+    //console.log("WEB3....",web3);        
     
     const myinstance = new web3.eth.Contract(JSON.parse(process.env.COMPANY_CONTRACT_ABI), process.env.COMPANY_CONTRACT_ADDR);
 
@@ -32,30 +29,41 @@ var myevents = () =>{
     }).on('error', console.error);
 }
 
+const options = {
+    timeout: 30000,
+    reconnect: {
+      auto: true,
+      delay: 5000,
+      maxAttempts: 10,
+      onTimeout: false,
+    },
+    clientConfig: {
+      keepalive: true,
+      keepaliveInterval: 60000,
+      maxReceivedFrameSize: 100000000,
+      maxReceivedMessageSize: 100000000,
+    },
+};
+
 var getwsprovider = () =>{
-    const wsprovider = new Web3.providers.WebsocketProvider(process.env.COMPANY_CONTRACT_URL, 30000);
+    const wsprovider = new Web3.providers.WebsocketProvider(process.env.COMPANY_CONTRACT_URL, options);
     wsprovider.on("connect", ()=>{
         console.log(" websocket connected..")        
     })
     wsprovider.on("error", (e)=>{
-        console.log(" websocket error..")
-        myevents()      
+        console.log(" websocket error..")    
     })
     wsprovider.on("end", (e)=>{
-        console.log(" websocket end..")
-        myevents()        
+        console.log(" websocket end..")        
     })
     wsprovider.on("close", (e)=>{
-        console.log(" websocket close..")
-        myevents()        
+        console.log(" websocket close..")        
     })
     wsprovider.on("timeout", (e)=>{
-        console.log(" websocket timeout..")
-        myevents()        
+        console.log(" websocket timeout..")        
     })
     wsprovider.on("exit", (e)=>{
-        console.log(" websocket exit..")
-        myevents()        
+        console.log(" websocket exit..")        
     })
     wsprovider.on("ready", (e)=>{
         console.log(" websocket ready..")
