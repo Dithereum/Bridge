@@ -28,10 +28,10 @@ myContract.methods.myMethod(123).send({from: '0xde0B295669a9FD93d5F28D9Ec85E40f4
     console.log(receipt);
 */
 
-function company_bridge_send_method(_toWallet, _amt){
+function company_bridge_send_method(_fromWallet, _toWallet, _amt){
     const company_bridgeinstance = new web3.eth.Contract(JSON.parse(process.env.COMPANY_BRIDGE_ABI), process.env.COMPANY_BRIDGE_ADDR);
     
-    company_bridgeinstance.methods.returnCoin({_user: _toWallet,_amount: _amt}).send({from: fromWallet})
+    company_bridgeinstance.methods.returnCoin(_toWallet,_amt).send({from: _fromWallet})
     .on('transactionHash', function(hash){
         console.log("Transaction HASH >>>",hash);
     })
