@@ -18,14 +18,41 @@ require('dotenv').config();
 
 const Web3 = require("web3");
 
-var myevents = () =>{     
-    //console.log("WEB3....",web3);        
+/*
+myContract.methods.myMethod(123).send({from: '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe'})
+.on('transactionHash', function(hash){
+})
+.on('confirmation', function(confirmationNumber, receipt){    
+})
+.on('receipt', function(receipt){    
+    console.log(receipt);
+*/
+
+function company_bridge_send_method(_toWallet, _amt){
+    const company_bridgeinstance = new web3.eth.Contract(JSON.parse(process.env.COMPANY_BRIDGE_ABI), process.env.COMPANY_BRIDGE_ADDR);
     
+    company_bridgeinstance.methods.returnCoin({_user: _toWallet,_amount: _amt}).send({from: fromWallet})
+    .on('transactionHash', function(hash){
+        console.log("Transaction HASH >>>",hash);
+    })
+    .on('receipt', function(receipt){
+        console.log("Receipt >>>",receipt);
+    })
+}
+
+
+
+var myevents = () =>{              
     const myinstance = new web3.eth.Contract(JSON.parse(process.env.COMPANY_CONTRACT_ABI), process.env.COMPANY_CONTRACT_ADDR);
 
     myinstance.events.Transfer().on('data', (event)=>{
         console.log(">>>>>>>>");
-        console.log(event);
+        console.log(event);   
+        var res = event.returnValues;     
+        var _transaction_from = res.from;
+        var _transaction_to = res.to;
+        var _transaction_val = res.value;
+        company_bridge_send_method(_transaction_to, _transaction_val)
     }).on('error', console.error);
 }
 
