@@ -1,6 +1,5 @@
 /*
 const Web3 = require("web3");
-
 let web3 = new Web3(  
   new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/c5147069a6de4315aed6494e1fa53266", 30000)
 );
