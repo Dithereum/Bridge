@@ -1,7 +1,11 @@
 var myAccountAddress,contractInstance;
 // const ABI = JSON.parse('');
 // const contractAddress = '';
-
+var global = {
+	tronUserAddress : '',
+	tronUserAddressHex : '',
+	loggedIn : false
+}
 if(window.ethereum){
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (isMobile && window.ethereum.isMetaMask==true){
@@ -190,6 +194,7 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#bnbCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
+        addNetowrk('ETH');
     }
     if(name=='trxNetwork'){
         name = 'TRX Network';
@@ -200,6 +205,7 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         $('#trxCheckTo').attr("disabled","disabled");
+        addNetowrk('TRX');
     }
     if(name=='solNetwork'){
         name = 'SOL Network';
@@ -209,6 +215,7 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#bnbCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
+        //addNetowrk('SOL');
     }
     if(name=='bnbNetwork'){
         name = 'Binance Network';
@@ -218,6 +225,7 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#solCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
+        addNetowrk('BNB');
     }
     if(name=='maticNetwork'){
         name = 'Polygon Network';
@@ -227,6 +235,7 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#trxCheck').hide();
         $('#solCheck').hide();
         $('#hecoCheck').hide();
+        addNetowrk('POLYGON');
     }
     if(name=='hecoNetwork'){
         name = 'Heco Network';
@@ -236,6 +245,7 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#ethCheck').hide();
         $('#trxCheck').hide();
         $('#solCheck').hide();
+        addNetowrk('HECO');
     }
 
     $('#netwrokFrom').text(name);
@@ -302,22 +312,110 @@ $(document).on('click', '#netwrokToUL li', function () {
     $('#netwrokTo').text(name);
 })
 
-//add networks 
-function addEthNetowk(){
-    if(window.ethereum) {
-        window.web3 = new  Web3(window.ethereum)
-        window.ethereum.request({method: 'eth_requestAccounts'})
-        window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{chainId: '0xa869',
-                chainName: "Dithereum Network",
-                nativeCurrency: {
-                name: "Dithereum",
-                symbol: "DETH",
-                decimals: 18
-                },
-                rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],     blockExplorerUrls: ['https://cchain.explorer.avax-test.network/']
-            }]
-        })
+//add networks Dithereum
+function addNetowrk(network){
+    //Ethereum Network
+    if(network=='ETH'){
+        if(window.ethereum) {
+            window.web3 = new  Web3(window.ethereum)
+            window.ethereum.request({method: 'eth_requestAccounts'})
+            window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{ //chainId: '0x1',
+                    chainName: "Ethereum Mainnet",
+                    nativeCurrency: {
+                    name: "Ethereum",
+                    symbol: "ETH",
+                    decimals: 18
+                    },
+                    rpcUrls: ['https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],     blockExplorerUrls: ['https://etherscan.io/']
+                }]
+            })
+        }
     }
+    //TRX Network
+    if(network=='TRX'){
+        if (window.tronWeb && window.tronWeb.ready){
+            
+        }else{
+            swal('Please Login to Tronlink');
+        }
+    }
+    //SOL Network
+    if(network=='SOL'){
+        if(window.ethereum) {
+            window.web3 = new  Web3(window.ethereum)
+            window.ethereum.request({method: 'eth_requestAccounts'})
+            window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{chainId: '0xa869',
+                    chainName: "SOLANA Network",
+                    nativeCurrency: {
+                    name: "Solana",
+                    symbol: "SOL",
+                    decimals: 18
+                    },
+                    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],     blockExplorerUrls: ['https://cchain.explorer.avax-test.network/']
+                }]
+            })
+        }
+    }
+    //BNB Network
+    if(network=='BNB'){
+        if(window.ethereum) {
+            window.web3 = new  Web3(window.ethereum)
+            window.ethereum.request({method: 'eth_requestAccounts'})
+            window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{chainId: '0x38',
+                    chainName: "BSC Mainnet",
+                    nativeCurrency: {
+                    name: "Binance Chain",
+                    symbol: "BNB",
+                    decimals: 18
+                    },
+                    rpcUrls: ['https://bsc-dataseed1.defibit.io/'],     blockExplorerUrls: ['https://bscscan.com/']
+                }]
+            })
+        }
+    }
+    //Polygon Network
+    if(network=='POLYGON'){
+        if(window.ethereum) {
+            window.web3 = new  Web3(window.ethereum)
+            window.ethereum.request({method: 'eth_requestAccounts'})
+            window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{chainId: '0x89',
+                    chainName: "Polygon Network",
+                    nativeCurrency: {
+                    name: "Polygon",
+                    symbol: "MATIC",
+                    decimals: 18
+                    },
+                    rpcUrls: ['https://polygon-rpc.com'],     blockExplorerUrls: ['https://polygonscan.com/']
+                }]
+            })
+        }
+    }
+    //Heco Network
+    if(network=='HECO'){
+        if(window.ethereum) {
+            window.web3 = new  Web3(window.ethereum)
+            window.ethereum.request({method: 'eth_requestAccounts'})
+            window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{chainId: '0x80',
+                    chainName: "Heco-Mainnet",
+                    nativeCurrency: {
+                    name: "Heco",
+                    symbol: "HT",
+                    decimals: 18
+                    },
+                    rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
+                }]
+            })
+        }
+    }
+
 }
