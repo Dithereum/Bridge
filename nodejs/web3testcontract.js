@@ -7,46 +7,56 @@ async function getGasAmount(_fromWallet, _toWallet, _amt, company_bridgeinstance
     return z;
 }
 
-async function company_bridge_send_method(_fromWallet, _toWallet, _amt){
+async function company_bridge_send_method(_toWallet, _amt){
     let bridgeweb3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/c5147069a6de4315aed6494e1fa53266"));
     const company_bridgeinstance = new bridgeweb3.eth.Contract(JSON.parse(process.env.COMPANY_BRIDGE_ABI), process.env.COMPANY_BRIDGE_ADDR);    
     var mydata = company_bridgeinstance.methods.returnCoin(_toWallet,_amt).encodeABI();    
-    var requiredGas = await company_bridgeinstance.methods.returnCoin(_toWallet,_amt).estimateGas({from: _fromWallet});    
+    var requiredGas = await company_bridgeinstance.methods.returnCoin(_toWallet,_amt).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET});    
     //console.log("MYDATA >>>>",mydata);       
     //console.log(">>>>> REQUIRED GAS <<<<<",requiredGas);
     try{        
-        bridgeweb3.eth.getTransactionCount(_fromWallet,"pending").then((mynonce)=>{    
-            (async function(){                
-                bridgeweb3.eth.getGasPrice().then(gasPrice=>{                                         
-                    const myrawTx = {   
-                        nonce: web3.utils.toHex(mynonce),                    
-                        gasPrice: web3.utils.toHex(gasPrice),
-                        gasLimit: requiredGas,
-                        to: _toWallet,
-                        from: _fromWallet,
-                        value: 0x0, 
-                        data: mydata                  
-                    };  
-                    //console.log("MY RAW TX >>>>>>",myrawTx);                                            
-                    try{      
-                        var tx = new Tx(myrawTx);
-                        var privateKey = Buffer.from(process.env.BRIDGE_CONTRACT_OWNER_PK.toString(), 'hex');
-                        tx.sign(privateKey);                        
-                        var serializedTx = tx.serialize();
-                        bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex'))
-                        .on('transactionHash',function(mytxhash){
-                            console.log("Bridge tx hash >>>",mytxhash);
-                        })                        
-                        .on('error', myerror =>{
-                            console.log("bridge web3 error >>>", myerror);
-                        })
-                        .on('receipt', receipt =>{
-                            console.log("Receipt  >>>",receipt);
-                        })                        
-                    }catch(e){
-                        console.log({"ERROR":e})                                            
-                    }               
-                });                 
+        bridgeweb3.eth.getTransactionCount(process.env.BRIDGE_ADMIN_WALLET,"pending").then((mynonce)=>{    
+            (async function(){ 
+                try{               
+                    bridgeweb3.eth.getGasPrice().then(gasPrice=>{                                                                 
+                            const myrawTx = {   
+                                nonce: web3.utils.toHex(mynonce),                    
+                                gasPrice: web3.utils.toHex(gasPrice),
+                                gasLimit: requiredGas,
+                                to: _toWallet,                        
+                                value: 0x0, 
+                                data: mydata                  
+                            };  
+                            try{
+                                //console.log("MY RAW TX >>>>>>",myrawTx);                                            
+                                var tx = new Tx(myrawTx, {'chain':'ropsten'});
+                                var privateKey = Buffer.from(process.env.BRIDGE_CONTRACT_OWNER_PK.toString(), 'hex');
+                                tx.sign(privateKey);                        
+                                var serializedTx = tx.serialize();                                              
+                                bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex'))
+                                .then((receipt)=>{
+                                    console.log("Receipt >>>",receipt);
+                                })
+                                .catch((error)=>{
+                                    console.log("Error>>>",error);
+                                })                        
+                                /*                        
+                                .on('transactionHash',function(mytxhash){
+                                    console.log("Bridge tx hash >>>",mytxhash);
+                                })                        
+                                .on('error', myerror =>{
+                                    console.log("bridge web3 error >>>", myerror);
+                                })
+                                */                                               
+                            }catch(e){
+                                console.log({"ERROR":e})                                            
+                            }               
+                    }).catch((e)=>{
+                        console.log(e);
+                    })  
+                }catch(e){
+                    console.log(e)
+                }               
             })();    
         });        
     }catch(e){
