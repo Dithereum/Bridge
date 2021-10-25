@@ -1,4 +1,7 @@
 var myAccountAddress,contractInstance;
+var network_From = 'eth';
+var network_To = 'dith';
+var asset_Name = 'usdt';
 // const ABI = JSON.parse('');
 // const contractAddress = '';
 var global = {
@@ -43,7 +46,8 @@ async function checkAccount() {
                 const shortAddress = getUserAddress(myAccountAddress);
                 $('#connectWallet,#connectWallet1').html(shortAddress);
                 $('#connectWallet,#connectWallet1').attr("href", "https://etherscan.io/address/"+myAccountAddress).attr('target','_blank');
-              
+                $('#connectWallet1').hide();
+                $('#btnNext').show();
             }
         });
         
@@ -59,7 +63,9 @@ async function checkAccount() {
                         const shortAddress = getUserAddress(myAccountAddress);
                         $('#connectWallet,#connectWallet1').html(shortAddress);
                         $('#connectWallet,#connectWallet1').attr("href", "https://etherscan.io/address/"+myAccountAddress).attr('target','_blank');
-                }
+                        $('#connectWallet1').hide();
+                        $('#btnNext').show();
+                    }
             
         }
         
@@ -113,7 +119,7 @@ $("#connectWallet,#connectWallet1").click(async function(e){
 $('#tokenList li').click(function(){
     var name = $(this).data('name');
     var dName = "Ethereum Network";
-    console.log(name);
+    
     if(name=="eth"){
         $('#ethCheck').show();
         $('#trxCheck').hide();
@@ -122,9 +128,12 @@ $('#tokenList li').click(function(){
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         dName = "Ethereum Network";
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/eth-icon.svg"> ETH');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/eth-icon.svg"> ETH');
+        $('#netwrokFromUL li').addClass("disabled");
+        $('#ethNetwork').removeClass("disabled");
     }
     if(name=="bnb"){
+        console.log('bkb');
         $('#bnbCheck').show();
         $('#ethCheck').hide();
         $('#trxCheck').hide();
@@ -132,7 +141,9 @@ $('#tokenList li').click(function(){
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         dName = "Binance Network";
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/bnb-logo.png"> BNB');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/bnb-logo.png"> BNB');
+        $('#netwrokFromUL li').addClass("disabled");
+        $('#bnbNetwork').removeClass("disabled");
     }
     if(name=="trx"){
         $('#trxCheck').show();
@@ -142,7 +153,9 @@ $('#tokenList li').click(function(){
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         dName = "TRX Network";
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX');
+        $('#netwrokFromUL li').addClass("disabled");
+        $('#trxNetwork').removeClass("disabled");
     }
     if(name=="matic"){
         $('#maticCheck').show();
@@ -152,7 +165,9 @@ $('#tokenList li').click(function(){
         $('#solCheck').hide();
         $('#hecoCheck').hide();
         dName = "Polygon Network";
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> MATIC');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> MATIC');
+        $('#netwrokFromUL li').addClass("disabled");
+        $('#maticNetwork').removeClass("disabled");
     }
     if(name=="ht"){
         $('#hecoCheck').show();
@@ -162,29 +177,41 @@ $('#tokenList li').click(function(){
         $('#trxCheck').hide();
         $('#solCheck').hide();
         dName = "Heco Network";
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/heco-logo.png"> HT');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/heco-logo.png"> HT');
+        $('#netwrokFromUL li').addClass("disabled");
+        $('#hecoNetwork').removeClass("disabled");
     }
     if(name=="usdt"){
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> USDT');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> USDT');
+        $('#netwrokFromUL li').removeClass("disabled");
+        asset_Name = 'usdt';
     }
     if(name=="usdc"){
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/usdc-logo.png"> USDC');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/usdc-logo.png"> USDC');
+        $('#netwrokFromUL li').removeClass("disabled");
+        asset_Name = 'usdc';
     }
     if(name=="busd"){
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/busd-logo.png"> BUSD');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/busd-logo.png"> BUSD');
+        $('#netwrokFromUL li').removeClass("disabled");
+        asset_Name = 'busd';
     }
     if(name=="dai"){
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/dai-logo.png"> DAI');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/dai-logo.png"> DAI');
+        $('#netwrokFromUL li').removeClass("disabled");
+        asset_Name = 'dai';
     }
     if(name=="pax"){
-        $('#netwrokFromUL').html('<img class="icons" src="assets/img/pax-logo.png"> PAX');
+        $('#networkFromUL').html('<img class="icons" src="assets/img/pax-logo.png"> PAX');
+        $('#netwrokFromUL li').removeClass("disabled");
+        asset_Name = 'pax';
     }
 
     $('#netwrokFrom').text(dName);
 });
 
 //network From select
-$(document).on('click', '#netwrokFromUL li', function () {
+$(document).on('click', '#networkFromUL li', function () {
     var name = $(this).data('name');
     if(name=='ethNetwork'){
         name = 'Ethereum Network';
@@ -195,6 +222,9 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         addNetowrk('ETH');
+        network_From = 'eth';
+        $('#networkToUL li').removeClass("disabled");
+        $('#ethNetworkTo').addClass("disabled");
     }
     if(name=='trxNetwork'){
         name = 'TRX Network';
@@ -206,6 +236,9 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#hecoCheck').hide();
         $('#trxCheckTo').attr("disabled","disabled");
         addNetowrk('TRX');
+        network_From = 'trx';
+        $('#networkToUL li').removeClass("disabled");
+        $('#trxNetworkTo').addClass("disabled");
     }
     if(name=='solNetwork'){
         name = 'SOL Network';
@@ -216,6 +249,9 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         //addNetowrk('SOL');
+        network_From = 'sol';
+        $('#networkToUL li').removeClass("disabled");
+        $('#solNetworkTo').addClass("disabled");
     }
     if(name=='bnbNetwork'){
         name = 'Binance Network';
@@ -226,6 +262,9 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         addNetowrk('BNB');
+        network_From = 'bnb';
+        $('#networkToUL li').removeClass("disabled");
+        $('#bnbNetworkTo').addClass("disabled");
     }
     if(name=='maticNetwork'){
         name = 'Polygon Network';
@@ -236,6 +275,9 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#solCheck').hide();
         $('#hecoCheck').hide();
         addNetowrk('POLYGON');
+        network_From = 'polygon';
+        $('#networkToUL li').removeClass("disabled");
+        $('#maticNetworkTo').addClass("disabled");
     }
     if(name=='hecoNetwork'){
         name = 'Heco Network';
@@ -246,13 +288,16 @@ $(document).on('click', '#netwrokFromUL li', function () {
         $('#trxCheck').hide();
         $('#solCheck').hide();
         addNetowrk('HECO');
+        network_From = 'heco';
+        $('#networkToUL li').removeClass("disabled");
+        $('#hecoNetworkTo').addClass("disabled");
     }
 
-    $('#netwrokFrom').text(name);
+    $('#networkFrom').text(name);
 })
 
 //network To select
-$(document).on('click', '#netwrokToUL li', function () {
+$(document).on('click', '#networkToUL li', function () {
     var name = $(this).data('name');
     if(name=='ethNetworkTo'){
         name = 'Ethereum Network';
@@ -262,6 +307,9 @@ $(document).on('click', '#netwrokToUL li', function () {
         $('#solCheckTo').hide();
         $('#bnbCheckTo').hide();
         $('#maticCheckTo').hide();
+        network_To = 'eth';
+        //$('#networkToUL li').addClass("disabled");
+        $('#ethNetworkTo').removeClass("disabled");
     }
     if(name=='dithNetworkTo'){
         name = 'Dithereum Network';
@@ -271,6 +319,9 @@ $(document).on('click', '#netwrokToUL li', function () {
         $('#bnbCheckTo').hide();
         $('#ethCheckTo').hide();
         $('#maticCheckTo').hide();
+        network_To = 'dith';
+        //$('#networkToUL li').addClass("disabled");
+        $('#dithNetworkTo').removeClass("disabled");
     }
     if(name=='trxNetworkTo'){
         name = 'TRX Network';
@@ -280,6 +331,9 @@ $(document).on('click', '#netwrokToUL li', function () {
         $('#bnbCheckTo').hide();
         $('#ethCheckTo').hide();
         $('#maticCheckTo').hide();
+        network_To = 'trx';
+        //$('#networkToUL li').addClass("disabled");
+        $('#trxNetworkTo').removeClass("disabled");
     }
     if(name=='solNetworkTo'){
         name = 'SOL Network';
@@ -289,6 +343,9 @@ $(document).on('click', '#netwrokToUL li', function () {
         $('#bnbCheckTo').hide();
         $('#ethCheckTo').hide();
         $('#maticCheckTo').hide();
+        network_To = 'sol';
+        //$('#networkToUL li').addClass("disabled");
+        $('#solNetworkTo').removeClass("disabled");
     }
     if(name=='bnbNetworkTo'){
         name = 'Binance Network';
@@ -298,6 +355,9 @@ $(document).on('click', '#netwrokToUL li', function () {
         $('#solCheckTo').hide();
         $('#ethCheckTo').hide();
         $('#maticCheckTo').hide();
+        network_To = 'bnb';
+        //$('#networkToUL li').addClass("disabled");
+        $('#bnbNetworkTo').removeClass("disabled");
     }
     if(name=='maticNetworkTo'){
         name = 'Polygon Network';
@@ -307,36 +367,102 @@ $(document).on('click', '#netwrokToUL li', function () {
         $('#trxCheckTo').hide();
         $('#solCheckTo').hide();
         $('#ethCheckTo').hide();
+        network_To = 'polygon';
+        //$('#networkToUL li').addClass("disabled");
+        $('#maticNetworkTo').removeClass("disabled");
     }
 
-    $('#netwrokTo').text(name);
+    $('#networkTo').text(name);
 })
 
+//switch network button
+$('#btnSwitchNetwork').click(function(e){
+    e.preventDefault();
+    console.log(network_From);
+    if(network_From=='eth'){
+        $('#networkTo').text('Ethereum Network');
+        if(network_To=='trx'){
+            network_From = 'trx';
+            $('#networFrom').text('TRX Network');
+        }
+        
+        
+        return true;
+        
+        
+    }
+    if(network_From=='trx'){
+        $('#networkTo').text('TRX Network');
+        network_To = 'trx';
+        
+    }
+    if(network_From=='sol'){
+        $('#networkTo').text('SOL Network');
+        network_To = 'sol';
+        
+    }
+    if(network_From=='bnb'){
+        $('#networkTo').text('Binance Network');
+        network_To = 'bnb';
+        
+    }
+    if(network_From=='polygon'){
+        $('#networkTo').text('Polygon Network');
+        network_To = 'polygon';
+        
+    }
+    if(network_From=='heco'){
+        $('#networkTo').text('Heco Network');
+        network_To = 'heco';
+        
+    }
+
+    if(network_To=='eth'){
+        $('#networkFrom').text('Ethereum Network');
+        network_From = 'eth';
+        
+    }
+    if(network_To=='trx'){
+        $('#networkFrom').text('TRX Network');
+        network_From = 'trx';
+        
+    }
+    if(network_To=='sol'){
+        $('#networkFrom').text('SOL Network');
+        network_From = 'sol';
+        
+    }
+    if(network_To=='bnb'){
+        $('#networkFrom').text('Binance Network');
+        network_From = 'bnb';
+        
+    }
+    if(network_To=='polygon'){
+        $('#networkFrom').text('Polygon Network');
+        network_From = 'polygon';
+        
+    }
+    if(network_To=='heco'){
+        $('#networkFrom').text('Heco Network');
+        network_From = 'heco';
+        
+    }
+});
 //add networks Dithereum
-function addNetowrk(network){
+async function addNetowrk(network){
     //Ethereum Network
     if(network=='ETH'){
         if(window.ethereum) {
-            window.web3 = new  Web3(window.ethereum)
-            window.ethereum.request({method: 'eth_requestAccounts'})
-            window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{ //chainId: '0x1',
-                    chainName: "Ethereum Mainnet",
-                    nativeCurrency: {
-                    name: "Ethereum",
-                    symbol: "ETH",
-                    decimals: 18
-                    },
-                    rpcUrls: ['https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],     blockExplorerUrls: ['https://etherscan.io/']
-                }]
-            })
+            checkAccount();
         }
     }
     //TRX Network
     if(network=='TRX'){
         if (window.tronWeb && window.tronWeb.ready){
-            
+                global.tronUserAddress = await window.tronWeb.defaultAddress.base58;
+                global.tronUserAddressHex = await window.tronWeb.defaultAddress.hex;
+                global.loggedIn = true;
+                showAccountInfo();
         }else{
             swal('Please Login to Tronlink');
         }
@@ -377,6 +503,7 @@ function addNetowrk(network){
                     rpcUrls: ['https://bsc-dataseed1.defibit.io/'],     blockExplorerUrls: ['https://bscscan.com/']
                 }]
             })
+            checkAccount();
         }
     }
     //Polygon Network
@@ -396,6 +523,7 @@ function addNetowrk(network){
                     rpcUrls: ['https://polygon-rpc.com'],     blockExplorerUrls: ['https://polygonscan.com/']
                 }]
             })
+            checkAccount();
         }
     }
     //Heco Network
@@ -415,7 +543,327 @@ function addNetowrk(network){
                     rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
                 }]
             })
+            checkAccount();
         }
     }
 
+}
+
+//coinIn code 
+
+$('#btnNext').click(async function(){
+    //eth network
+    if(network_From=='eth'){
+        ethContractInstance = new myweb3.eth.Contract(ethereumABI, ethereumContract, {
+            from: myAccountAddress, // default from address
+        });
+        var tokenAmount = $('#tokenAmount').val();
+        if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
+            swal("Warning !", "Please enter Amount.", "warning");
+            return false;
+        }
+        if(asset_Name=='eth'){
+            tokenAmount = tokenAmount*1e18;
+            var gasLimit = 200000;
+            const web3GasPrice = await myweb3.eth.getGasPrice();
+                var result = await ethContractInstance.methods.coinIn().send({
+                    from: myAccountAddress,
+                    to: ethereumContract,
+                    gasPrice: web3GasPrice,
+                    gasLimit: gasLimit,
+                    value : tokenAmount,       
+                });
+                if(result){
+                    swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                
+                }else{
+                    swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                }
+        }
+        if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){
+            tokenAmount = tokenAmount*1e18;
+            var gasLimit = 200000;
+            const web3GasPrice = await myweb3.eth.getGasPrice();
+            var assetContract = '';
+            console.log(asset_Name);
+            if(asset_Name=='usdt'){
+                assetContract = usdcAddress;
+                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+                    from: myAccountAddress, // default from address
+                });
+                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                if(allowance<1){
+                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: usdcAddress,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                            from: myAccountAddress,
+                            to: ethereumContract,
+                            gasPrice: web3GasPrice,
+                            gasLimit: gasLimit,
+                            value : 0,       
+                        });
+                        if(result){
+                            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                        
+                        }else{
+                            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                        }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }
+            }
+            if(asset_Name=='usdc'){
+                assetContract = usdcAddress;
+                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+                    from: myAccountAddress, // default from address
+                });
+                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                if(allowance<1){
+                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: usdcAddress,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                            from: myAccountAddress,
+                            to: ethereumContract,
+                            gasPrice: web3GasPrice,
+                            gasLimit: gasLimit,
+                            value : 0,       
+                        });
+                        if(result){
+                            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                        
+                        }else{
+                            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                        }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }
+            }
+            if(asset_Name=='dai'){
+                assetContract = usdcAddress;
+                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+                    from: myAccountAddress, // default from address
+                });
+                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                if(allowance<1){
+                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: usdcAddress,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                            from: myAccountAddress,
+                            to: ethereumContract,
+                            gasPrice: web3GasPrice,
+                            gasLimit: gasLimit,
+                            value : 0,       
+                        });
+                        if(result){
+                            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                        
+                        }else{
+                            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                        }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }
+            }
+            if(asset_Name=='pax'){
+                assetContract = usdcAddress;
+                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+                    from: myAccountAddress, // default from address
+                });
+                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                if(allowance<1){
+                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: usdcAddress,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                            from: myAccountAddress,
+                            to: ethereumContract,
+                            gasPrice: web3GasPrice,
+                            gasLimit: gasLimit,
+                            value : 0,       
+                        });
+                        if(result){
+                            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                        
+                        }else{
+                            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                        }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }
+            }
+
+                
+
+                var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                    from: myAccountAddress,
+                    to: ethereumContract,
+                    gasPrice: web3GasPrice,
+                    gasLimit: gasLimit,
+                    value : 0,       
+                });
+                if(result){
+                    swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                
+                }else{
+                    swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                }
+        }
+    }
+    //bsc network
+    if(network_From=='bnb'){
+        bscContractInstance = new myweb3.eth.Contract(bscABI, bscContract, {
+            from: myAccountAddress, // default from address
+        });
+        var tokenAmount = $('#tokenAmount').val();
+        if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
+            swal("Warning !", "Please enter Amount.", "warning");
+            return false;
+        }
+        tokenAmount = tokenAmount*1e18;
+        var gasLimit = 200000;
+        const web3GasPrice = await myweb3.eth.getGasPrice();
+            var result = await bscContractInstance.methods.coinIn().send({
+                from: myAccountAddress,
+                to: bscContract,
+                gasPrice: web3GasPrice,
+                gasLimit: gasLimit,
+                value : tokenAmount,       
+            });
+            if(result){
+                swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+             
+            }else{
+                swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+            }
+    }
+    //polygon network
+    if(network_From=='polygon'){
+        polygonContractInstance = new myweb3.eth.Contract(polygonABI, polygonContract, {
+            from: myAccountAddress, // default from address
+        });
+        var tokenAmount = $('#tokenAmount').val();
+        if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
+            swal("Warning !", "Please enter Amount.", "warning");
+            return false;
+        }
+        tokenAmount = tokenAmount*1e18;
+        var gasLimit = 200000;
+        const web3GasPrice = await myweb3.eth.getGasPrice();
+            var result = await polygonContractInstance.methods.coinIn().send({
+                from: myAccountAddress,
+                to: polygonContract,
+                gasPrice: web3GasPrice,
+                gasLimit: gasLimit,
+                value : tokenAmount,       
+            });
+            if(result){
+                swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+             
+            }else{
+                swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+            }
+    }
+    //heco network
+    if(network_From=='heco'){
+        hecoContractInstance = new myweb3.eth.Contract(hecoABI, hecoContract, {
+            from: myAccountAddress, // default from address
+        });
+        var tokenAmount = $('#tokenAmount').val();
+        if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
+            swal("Warning !", "Please enter Amount.", "warning");
+            return false;
+        }
+        tokenAmount = tokenAmount*1e18;
+        var gasLimit = 200000;
+        const web3GasPrice = await myweb3.eth.getGasPrice();
+            var result = await hecoContractInstance.methods.coinIn().send({
+                from: myAccountAddress,
+                to: hecoContract,
+                gasPrice: web3GasPrice,
+                gasLimit: gasLimit,
+                value : tokenAmount,       
+            });
+            if(result){
+                swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+             
+            }else{
+                swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+            }
+    }
+    //trx network
+    if(network_From=='trx'){
+        var contractInfo = await tronWeb.trx.getContract(tronContract);
+        tronContractInstance = await tronWeb.contract(contractInfo.abi.entrys,tronContract);
+        var tokenAmount = $('#tokenAmount').val();
+        if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
+            swal("Warning !", "Please enter Amount.", "warning");
+            return false;
+        }
+        tokenAmount = tokenAmount*1000000;
+        let result = await tronContractInstance.coinIn().send({
+            feeLimit: 5000000,
+            callValue: tokenAmount,
+            from: global.userAddress
+        });
+        if(result){
+            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+         
+        }else{
+            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+        }
+    }
+})
+
+
+// TRON CODE
+let intervalID = setInterval(async function() {
+    if (typeof window.tronWeb == "object") {
+    	window.tronWeb.on("addressChanged", showAccountInfo);
+        var userAddress = await window.tronWeb.defaultAddress.base58;
+        var userAddressHex = await window.tronWeb.defaultAddress.hex;    
+        
+        if(global.tronUserAddress=='' && userAddress!=''){
+            global.tronUserAddress =  userAddress;
+            global.tronUserAddressHex =  userAddressHex;               	
+        }
+        if(global.tronUserAddress!='' && global.tronUserAddress!=userAddress){
+            global.tronUserAddress =  userAddress;
+            global.tronUserAddressHex =  userAddressHex;    
+            location.reload();
+        }
+    }
+    	
+}, 1000);
+
+function showAccountInfo(){    
+        const shortAddress = getUserAddress(global.tronUserAddress);
+        $('#connectWallet,#connectWallet1').html(shortAddress);
+        $('#connectWallet,#connectWallet1').attr("href", "https://tronscan.org/#/address/"+global.tronUserAddress).attr('target','_blank');
 }

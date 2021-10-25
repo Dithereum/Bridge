@@ -69,9 +69,10 @@
 						<div class="assets">
 							<label for="inputEmail4">Assets</label>
 							<div class="dropdown dropdown-custom">
-								<button class="btn btn-secondary dropdown-toggle" type="button" id="netwrokFromUL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<button class="btn btn-secondary dropdown-toggle" type="button" id="networkFromUL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									<img class="icons" src="assets/img/eth-icon.svg"> ETH
 								</button>
+								
 								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 									<div class="input-group mb-3">
 										<div class="input-group-prepend">
@@ -165,32 +166,32 @@
 									<div class="form-group col-md-5">
 									  <label for="inputEmail4">From</label>
 									  <div class="dropdown">
-										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="netwrokFrom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="networkFrom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 											Ethereum Network
 										</button>
-										<div class="dropdown-menu dDHYFV" aria-labelledby="netwrokFrom" style="padding: 0;">
-										  <ul class="list-group" id="netwrokFromUL">
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="ethNetwork">
+										<div class="dropdown-menu dDHYFV" aria-labelledby="networkFrom" style="padding: 0;">
+										  <ul class="list-group" id="networkFromUL">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="ethNetwork" data-name="ethNetwork">
 												Ethereum Network
 												 <span id="ethCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="trxNetwork">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="trxNetwork" data-name="trxNetwork">
 											   TRX Network
 											    <span style="display: none;" id="trxCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="solNetwork">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="solNetwork" data-name="solNetwork">
 											   SOL Network
 											   <span style="display: none;" id="solCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="bnbNetwork">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="bnbNetwork" data-name="bnbNetwork">
 											   Binance Smart Chain Network
 											   <span style="display: none;" id="bnbCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="maticNetwork">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="maticNetwork" data-name="maticNetwork">
 											   Polygon Network
 											   <span style="display: none;" id="maticCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="hecoNetwork">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="hecoNetwork" data-name="hecoNetwork">
 												Heco Network
 												<span style="display: none;" id="hecoCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											   </li>
@@ -199,42 +200,42 @@
 									  </div>
 									</div>
 									<div class="form-group col-md-2 text-center swap-btn">
-										<button class="btn btn-secondary"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+										<button class="btn btn-secondary" id="btnSwitchNetwork"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
 									</div>
 									<div class="form-group col-md-5">
 									  <label for="inputPassword4">To</label>
 									  <div class="dropdown">
-										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="netwrokTo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="networkTo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 											Dithereum Network
 										</button>
-										<div class="dropdown-menu dDHYFV" aria-labelledby="netwrokToUL" style="padding: 0;">
-										  <ul class="list-group" id="netwrokToUL">
+										<div class="dropdown-menu dDHYFV" aria-labelledby="networkToUL" style="padding: 0;">
+										  <ul class="list-group" id="networkToUL">
 											  
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="dithNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="dithNetworkTo" data-name="dithNetworkTo">
 												Dithereum Network
 												<span id="dithCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li> 
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="ethNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="ethNetworkTo" data-name="ethNetworkTo">
 												Ethereum Network
 												 <span style="display: none;" id="ethCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="trxNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="trxNetworkTo" data-name="trxNetworkTo">
 											   TRX Network
 											    <span style="display: none;" id="trxCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="solNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="solNetworkTo" data-name="solNetworkTo">
 											   SOL Network
 											   <span style="display: none;" id="solCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="bnbNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="bnbNetworkTo" data-name="bnbNetworkTo">
 											   Binance Smart Chain Network
 											   <span style="display: none;" id="bnbCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="maticNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="maticNetworkTo" data-name="maticNetworkTo">
 												Polygon Network
 												<span style="display: none;" id="maticCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center" data-name="hecoNetworkTo">
+											  <li class="list-group-item d-flex justify-content-between align-items-center" id="hecoNetworkTo" data-name="hecoNetworkTo">
 												Heco Network
 												<span style="display: none;" id="hecoCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
 											  </li>
@@ -248,7 +249,7 @@
 
 						<div class="amount">
 							<label for="inputAmount">Amount</label>
-							<input class="form-control amount-textbox" type="number" value="0">
+							<input class="form-control amount-textbox" type="number" id="tokenAmount" value="0">
 						</div>
 						<div class="jzBSFA">
 							<span>You will receive</span>
@@ -259,7 +260,8 @@
 							</span>
 						</div>
 						<div class="connect-wallet mt-5">
-							<button type="button" id="connectWallet" class="btn btn-warning btn-block connect-btn">Connect Wallet</button>
+							<button type="button" id="connectWallet1" class="btn btn-warning btn-block connect-btn">Connect Wallet</button>
+							<button type="button" id="btnNext" class="btn btn-warning btn-block connect-btn" style="display: none;">Next</button>
 						</div>
 					</div>
 				</div>
@@ -300,6 +302,7 @@
 	<script src="assets/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.js"></script>
 	<script src="assets/js/sweetalert.min.js"></script>
+	<script src="assets/js/general.js"></script>
 	<script src="assets/js/script.js"></script>
 </body>
 </html>
