@@ -1,3 +1,13 @@
+//////////////////////////
+//////////////////////////
+//////////////////////////
+//////////////////////////
+//////////////////////////  TESTING REMAIN //////
+//////////////////////////
+//////////////////////////
+//////////////////////////
+//////////////////////////
+
 require('dotenv').config();
 const Web3 = require("web3");
 var Tx = require('ethereumjs-tx').Transaction;
@@ -51,9 +61,10 @@ async function company_bridge_send_method(_toWallet, _amt){
 }
 
 
-var myevents = () =>{              
+var myevents = () =>{       
+    web3.eth.defaultCommon = {customChain: {name: 'Matic Mumbai Testnet', chainId: 80001}, baseChain: 'mumbai'};       
     const myinstance = new web3.eth.Contract(JSON.parse(process.env.COMPANY_CONTRACT_ABI), process.env.COMPANY_CONTRACT_ADDR);
-    console.log(myinstance);
+    //console.log(myinstance);
     myinstance.events.Transfer().on('data', (event)=>{
         console.log(">>>>>>>>");
         console.log(event);   
