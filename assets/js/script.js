@@ -144,6 +144,7 @@ $('#tokenList li').click(function(){
         $('#networkFromUL').html('<img class="icons" src="assets/img/bnb-logo.png"> BNB');
         $('#netwrokFromUL li').addClass("disabled");
         $('#bnbNetwork').removeClass("disabled");
+        network_From = 'bsc';
     }
     if(name=="trx"){
         $('#trxCheck').show();
@@ -156,6 +157,7 @@ $('#tokenList li').click(function(){
         $('#networkFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX');
         $('#netwrokFromUL li').addClass("disabled");
         $('#trxNetwork').removeClass("disabled");
+        network_From = 'trx';
     }
     if(name=="matic"){
         $('#maticCheck').show();
@@ -207,7 +209,7 @@ $('#tokenList li').click(function(){
         asset_Name = 'pax';
     }
 
-    $('#netwrokFrom').text(dName);
+    $('#networkFrom').text(dName);
 });
 
 //network From select
@@ -262,7 +264,7 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         addNetowrk('BNB');
-        network_From = 'bnb';
+        network_From = 'bsc';
         $('#networkToUL li').removeClass("disabled");
         $('#bnbNetworkTo').addClass("disabled");
     }
@@ -355,7 +357,7 @@ $(document).on('click', '#networkToUL li', function () {
         $('#solCheckTo').hide();
         $('#ethCheckTo').hide();
         $('#maticCheckTo').hide();
-        network_To = 'bnb';
+        network_To = 'bsc';
         //$('#networkToUL li').addClass("disabled");
         $('#bnbNetworkTo').removeClass("disabled");
     }
@@ -401,9 +403,9 @@ $('#btnSwitchNetwork').click(function(e){
         network_To = 'sol';
         
     }
-    if(network_From=='bnb'){
+    if(network_From=='bsc'){
         $('#networkTo').text('Binance Network');
-        network_To = 'bnb';
+        network_To = 'bsc';
         
     }
     if(network_From=='polygon'){
@@ -432,9 +434,9 @@ $('#btnSwitchNetwork').click(function(e){
         network_From = 'sol';
         
     }
-    if(network_To=='bnb'){
+    if(network_To=='bsc'){
         $('#networkFrom').text('Binance Network');
-        network_From = 'bnb';
+        network_From = 'bsc';
         
     }
     if(network_To=='polygon'){
@@ -562,10 +564,11 @@ $('#btnNext').click(async function(){
             swal("Warning !", "Please enter Amount.", "warning");
             return false;
         }
+        tokenAmount = tokenAmount*1e18;
+        var gasLimit = 200000;
+        const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
-            tokenAmount = tokenAmount*1e18;
-            var gasLimit = 200000;
-            const web3GasPrice = await myweb3.eth.getGasPrice();
+            
                 var result = await ethContractInstance.methods.coinIn().send({
                     from: myAccountAddress,
                     to: ethereumContract,
@@ -580,28 +583,23 @@ $('#btnNext').click(async function(){
                     swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                 }
         }
-        if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){
-            tokenAmount = tokenAmount*1e18;
-            var gasLimit = 200000;
-            const web3GasPrice = await myweb3.eth.getGasPrice();
-            var assetContract = '';
-            console.log(asset_Name);
-            if(asset_Name=='usdt'){
-                assetContract = usdcAddress;
-                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+        if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){          
+            
+            if(asset_Name=='usdt'){    
+                usdtContractInstance =  new myweb3.eth.Contract(usdtABI, usdtAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
                 if(allowance<1){
-                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                    var result = await usdtContractInstance.methods.approve(ethereumContract,tokenAmount).send({
                         from: myAccountAddress,
-                        to: usdcAddress,
+                        to: usdtAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
                     if(result){
-                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                        var result = await ethContractInstance.methods.tokenIn(usdtAddress,tokenAmount).send({
                             from: myAccountAddress,
                             to: ethereumContract,
                             gasPrice: web3GasPrice,
@@ -614,6 +612,20 @@ $('#btnNext').click(async function(){
                         }else{
                             swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                         }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }else{
+                    var result = await ethContractInstance.methods.tokenIn(usdtAddress,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: ethereumContract,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
                     }else{
                         swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                     }
@@ -634,7 +646,7 @@ $('#btnNext').click(async function(){
                         value : 0,       
                     });
                     if(result){
-                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                        var result = await ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).send({
                             from: myAccountAddress,
                             to: ethereumContract,
                             gasPrice: web3GasPrice,
@@ -647,27 +659,41 @@ $('#btnNext').click(async function(){
                         }else{
                             swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                         }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }else{
+                    var result = await ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: ethereumContract,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
                     }else{
                         swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                     }
                 }
             }
             if(asset_Name=='dai'){
-                assetContract = usdcAddress;
-                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+                assetContract = daiAddress;
+                daiContractInstance =  new myweb3.eth.Contract(daiABI, daiAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                const allowance = await daiContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
                 if(allowance<1){
-                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                    var result = await daiContractInstance.methods.approve(ethereumContract,tokenAmount).send({
                         from: myAccountAddress,
-                        to: usdcAddress,
+                        to: daiAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
                     if(result){
-                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                        var result = await ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).send({
                             from: myAccountAddress,
                             to: ethereumContract,
                             gasPrice: web3GasPrice,
@@ -680,27 +706,41 @@ $('#btnNext').click(async function(){
                         }else{
                             swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                         }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }else{
+                    var result = await ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: ethereumContract,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
                     }else{
                         swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                     }
                 }
             }
             if(asset_Name=='pax'){
-                assetContract = usdcAddress;
-                usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
+                assetContract = paxAddress;
+                paxContractInstance =  new myweb3.eth.Contract(usdcABI, paxAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                const allowance = await paxContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
                 if(allowance<1){
-                    var result = await usdcContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                    var result = await paxContractInstance.methods.approve(ethereumContract,tokenAmount).send({
                         from: myAccountAddress,
-                        to: usdcAddress,
+                        to: paxAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
                     if(result){
-                        var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
+                        var result = await ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).send({
                             from: myAccountAddress,
                             to: ethereumContract,
                             gasPrice: web3GasPrice,
@@ -716,28 +756,30 @@ $('#btnNext').click(async function(){
                     }else{
                         swal("Warning !", "Transaction Fail, Please Try again.", "warning");
                     }
+                }else{
+                    var result = await ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: ethereumContract,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
                 }
             }
 
                 
 
-                var result = await ethContractInstance.methods.tokenIn(assetContract,tokenAmount).send({
-                    from: myAccountAddress,
-                    to: ethereumContract,
-                    gasPrice: web3GasPrice,
-                    gasLimit: gasLimit,
-                    value : 0,       
-                });
-                if(result){
-                    swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
-                
-                }else{
-                    swal("Warning !", "Transaction Fail, Please Try again.", "warning");
-                }
+               
         }
     }
     //bsc network
-    if(network_From=='bnb'){
+    if(network_From=='bsc'){
         bscContractInstance = new myweb3.eth.Contract(bscABI, bscContract, {
             from: myAccountAddress, // default from address
         });
@@ -749,6 +791,8 @@ $('#btnNext').click(async function(){
         tokenAmount = tokenAmount*1e18;
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
+
+        if(asset_Name=='bnb'){
             var result = await bscContractInstance.methods.coinIn().send({
                 from: myAccountAddress,
                 to: bscContract,
@@ -762,6 +806,56 @@ $('#btnNext').click(async function(){
             }else{
                 swal("Warning !", "Transaction Fail, Please Try again.", "warning");
             }
+        }
+
+        if(asset_Name=='usdt'){
+                usdtContractInstance =  new myweb3.eth.Contract(usdtBscABI, usdtBscAddress, {
+                    from: myAccountAddress, // default from address
+                });
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,bscContract).call();
+                if(allowance<1){
+                    var result = await usdtContractInstance.methods.approve(bscContract,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: usdtBscAddress,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        var result = await bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).send({
+                            from: myAccountAddress,
+                            to: bscContract,
+                            gasPrice: web3GasPrice,
+                            gasLimit: gasLimit,
+                            value : 0,       
+                        });
+                        if(result){
+                            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                        
+                        }else{
+                            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                        }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }else{
+                    var result = await bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: bscContract,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }
+            
+               
+        }
     }
     //polygon network
     if(network_From=='polygon'){
@@ -819,28 +913,73 @@ $('#btnNext').click(async function(){
     }
     //trx network
     if(network_From=='trx'){
-        var contractInfo = await tronWeb.trx.getContract(tronContract);
+        console.log(tronContract);
+        console.log(tronWeb);
+        var contractInfo = await tronWeb.trx.getContract('0xb90aebe21b54391429204e0d9d8d8df6884d8580');
         tronContractInstance = await tronWeb.contract(contractInfo.abi.entrys,tronContract);
+        //tronContractInstance = await tronWeb.contract(JSON.parse('{"entrys":[{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinIn","type":"Event"},{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinOut","type":"Event"},{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"Event"},{"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenIn","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenOut","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenOutFailed","type":"Event"},{"name":"acceptOwnership","stateMutability":"Nonpayable","type":"Function"},{"inputs":[{"name":"_signer","type":"address"}],"name":"changeSigner","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"bool"}],"name":"coinIn","stateMutability":"Payable","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"user","type":"address"},{"name":"amount","type":"uint256"}],"name":"coinOut","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"address"}],"name":"signer","stateMutability":"View","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"tokenAddress","type":"address"},{"name":"tokenAmount","type":"uint256"}],"name":"tokenIn","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"tokenAddress","type":"address"},{"name":"user","type":"address"},{"name":"tokenAmount","type":"uint256"}],"name":"tokenOut","stateMutability":"Nonpayable","type":"Function"},{"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","stateMutability":"Nonpayable","type":"Function"},{"stateMutability":"Payable","type":"Receive"}]}',tronContract));
         var tokenAmount = $('#tokenAmount').val();
         if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
             swal("Warning !", "Please enter Amount.", "warning");
             return false;
         }
         tokenAmount = tokenAmount*1000000;
-        let result = await tronContractInstance.coinIn().send({
-            feeLimit: 5000000,
-            callValue: tokenAmount,
-            from: global.userAddress
-        });
-        if(result){
-            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
-         
-        }else{
-            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+        if(asset_Name=='trx'){
+            let result = await tronContractInstance.coinIn().send({
+                feeLimit: 5000000,
+                callValue: tokenAmount,
+                from: global.userAddress
+            });
+            if(result){
+                swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+            
+            }else{
+                swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+            }
+        }
+        if(asset_Name=='usdt'){
+                var contractInfo = await tronWeb.trx.getContract(usdtTronAddress);
+                usdtContractInstance = await tronWeb.contract(contractInfo.abi.entrys,usdtTronAddress);
+
+                const allowance = await usdtContractInstance.allowance(myAccountAddress,tronContract).call();
+        
+                if(allowance<1){
+                    var result = await usdtContractInstance.approve(tronContract,tokenAmount).send({
+                        feeLimit: 5000000,
+                        callValue: 0,
+                        from: global.userAddress     
+                    });
+                    if(result){
+                        let result = await tronContractInstance.tokenIn(usdtTronAddress,tokenAmount).send({
+                            feeLimit: 5000000,
+                            callValue: 0,
+                            from: global.userAddress
+                        });
+                        if(result){
+                            swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                        
+                        }else{
+                            swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                        }
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }else{
+                    let result = await tronContractInstance.tokenIn(usdtTronAddress,tokenAmount).send({
+                        feeLimit: 5000000,
+                        callValue: 0,
+                        from: global.userAddress
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }
         }
     }
 })
-
 
 // TRON CODE
 let intervalID = setInterval(async function() {
@@ -866,4 +1005,6 @@ function showAccountInfo(){
         const shortAddress = getUserAddress(global.tronUserAddress);
         $('#connectWallet,#connectWallet1').html(shortAddress);
         $('#connectWallet,#connectWallet1').attr("href", "https://tronscan.org/#/address/"+global.tronUserAddress).attr('target','_blank');
+        $('#connectWallet1').hide();
+        $('#btnNext').show();
 }
