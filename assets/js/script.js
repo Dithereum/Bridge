@@ -129,8 +129,11 @@ $('#tokenList li').click(function(){
         $('#hecoCheck').hide();
         dName = "Ethereum Network";
         $('#networkFromUL').html('<img class="icons" src="assets/img/eth-icon.svg"> ETH');
-        $('#netwrokFromUL li').addClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
         $('#ethNetwork').removeClass("disabled");
+        $('.tokenCheck').hide();
+        $('#ethTokencheck').show();
+        network_From = 'eth';
     }
     if(name=="bnb"){
         console.log('bkb');
@@ -142,9 +145,13 @@ $('#tokenList li').click(function(){
         $('#hecoCheck').hide();
         dName = "Binance Network";
         $('#networkFromUL').html('<img class="icons" src="assets/img/bnb-logo.png"> BNB');
-        $('#netwrokFromUL li').addClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
         $('#bnbNetwork').removeClass("disabled");
         network_From = 'bsc';
+        $('.tokenCheck').hide();
+        $('#bscTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/bnb-logo.png');
+        $('#reciveName').html('BNB');
     }
     if(name=="trx"){
         $('#trxCheck').show();
@@ -155,9 +162,13 @@ $('#tokenList li').click(function(){
         $('#hecoCheck').hide();
         dName = "TRX Network";
         $('#networkFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX');
-        $('#netwrokFromUL li').addClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
         $('#trxNetwork').removeClass("disabled");
         network_From = 'trx';
+        $('.tokenCheck').hide();
+        $('#trxTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/trx-logo.png');
+        $('#reciveName').html('TRX');
     }
     if(name=="matic"){
         $('#maticCheck').show();
@@ -168,8 +179,12 @@ $('#tokenList li').click(function(){
         $('#hecoCheck').hide();
         dName = "Polygon Network";
         $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> MATIC');
-        $('#netwrokFromUL li').addClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
         $('#maticNetwork').removeClass("disabled");
+        $('.tokenCheck').hide();
+        $('#maticTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png');
+        $('#reciveName').html('MATIC');
     }
     if(name=="ht"){
         $('#hecoCheck').show();
@@ -180,33 +195,58 @@ $('#tokenList li').click(function(){
         $('#solCheck').hide();
         dName = "Heco Network";
         $('#networkFromUL').html('<img class="icons" src="assets/img/heco-logo.png"> HT');
-        $('#netwrokFromUL li').addClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
         $('#hecoNetwork').removeClass("disabled");
+        $('.tokenCheck').hide();
+        $('#hecoTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/heco-logo.png');
+        $('#reciveName').html('HT');
     }
     if(name=="usdt"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> USDT');
-        $('#netwrokFromUL li').removeClass("disabled");
+        $('#networkFromUL li').removeClass("disabled");
         asset_Name = 'usdt';
+        $('.tokenCheck').hide();
+        $('#usdtTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png')
+        $('#reciveName').html('USDT');
     }
     if(name=="usdc"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/usdc-logo.png"> USDC');
-        $('#netwrokFromUL li').removeClass("disabled");
+        $('#networkFromUL li').removeClass("disabled");
         asset_Name = 'usdc';
+        $('.tokenCheck').hide();
+        $('#usdcTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/usdc-logo.png')
+        $('#reciveName').html('USDC');
     }
     if(name=="busd"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/busd-logo.png"> BUSD');
-        $('#netwrokFromUL li').removeClass("disabled");
+        $('#networkFromUL li').removeClass("disabled");
         asset_Name = 'busd';
+        $('.tokenCheck').hide();
+        $('.tokenCheck').hide();
+        $('#busdTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/busd-logo.png')
+        $('#reciveName').html('BUSD');
     }
     if(name=="dai"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/dai-logo.png"> DAI');
-        $('#netwrokFromUL li').removeClass("disabled");
+        $('#networkFromUL li').removeClass("disabled");
         asset_Name = 'dai';
+        $('.tokenCheck').hide();
+        $('#daiTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/dai-logo.png')
+        $('#reciveName').html('DAI');
     }
     if(name=="pax"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/pax-logo.png"> PAX');
-        $('#netwrokFromUL li').removeClass("disabled");
+        $('#networkFromUL li').removeClass("disabled");
         asset_Name = 'pax';
+        $('.tokenCheck').hide();
+        $('#paxTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/pax-logo.png')
+        $('#reciveName').html('PAX');
     }
 
     $('#networkFrom').text(dName);
@@ -215,6 +255,19 @@ $('#tokenList li').click(function(){
 //network From select
 $(document).on('click', '#networkFromUL li', function () {
     var name = $(this).data('name');
+    if(name=='dithNetwork'){
+        name = 'Dithereum Network';
+        $('#ethCheck').show();
+        $('#trxCheck').hide();
+        $('#solCheck').hide();
+        $('#bnbCheck').hide();
+        $('#maticCheck').hide();
+        $('#hecoCheck').hide();
+        addNetowrk('DITH');
+        network_From = 'dith';
+        $('#networkToUL li').removeClass("disabled");
+        $('#dithNetworkTo').addClass("disabled");
+    }
     if(name=='ethNetwork'){
         name = 'Ethereum Network';
         $('#ethCheck').show();
@@ -225,8 +278,8 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#hecoCheck').hide();
         addNetowrk('ETH');
         network_From = 'eth';
-        $('#networkToUL li').removeClass("disabled");
-        $('#ethNetworkTo').addClass("disabled");
+        $('#networkToUL li').addClass("disabled");
+        $('#dithNetworkTo').removeClass("disabled");
     }
     if(name=='trxNetwork'){
         name = 'TRX Network';
@@ -239,8 +292,8 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#trxCheckTo').attr("disabled","disabled");
         addNetowrk('TRX');
         network_From = 'trx';
-        $('#networkToUL li').removeClass("disabled");
-        $('#trxNetworkTo').addClass("disabled");
+       // $('#networkToUL li').removeClass("disabled");
+       // $('#trxNetworkTo').addClass("disabled");
     }
     if(name=='solNetwork'){
         name = 'SOL Network';
@@ -252,8 +305,8 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#hecoCheck').hide();
         //addNetowrk('SOL');
         network_From = 'sol';
-        $('#networkToUL li').removeClass("disabled");
-        $('#solNetworkTo').addClass("disabled");
+      //  $('#networkToUL li').removeClass("disabled");
+       // $('#solNetworkTo').addClass("disabled");
     }
     if(name=='bnbNetwork'){
         name = 'Binance Network';
@@ -265,8 +318,8 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#hecoCheck').hide();
         addNetowrk('BNB');
         network_From = 'bsc';
-        $('#networkToUL li').removeClass("disabled");
-        $('#bnbNetworkTo').addClass("disabled");
+       // $('#networkToUL li').removeClass("disabled");
+       // $('#bnbNetworkTo').addClass("disabled");
     }
     if(name=='maticNetwork'){
         name = 'Polygon Network';
@@ -278,8 +331,8 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#hecoCheck').hide();
         addNetowrk('POLYGON');
         network_From = 'polygon';
-        $('#networkToUL li').removeClass("disabled");
-        $('#maticNetworkTo').addClass("disabled");
+       // $('#networkToUL li').removeClass("disabled");
+       // $('#maticNetworkTo').addClass("disabled");
     }
     if(name=='hecoNetwork'){
         name = 'Heco Network';
@@ -291,8 +344,8 @@ $(document).on('click', '#networkFromUL li', function () {
         $('#solCheck').hide();
         addNetowrk('HECO');
         network_From = 'heco';
-        $('#networkToUL li').removeClass("disabled");
-        $('#hecoNetworkTo').addClass("disabled");
+       // $('#networkToUL li').removeClass("disabled");
+       // $('#hecoNetworkTo').addClass("disabled");
     }
 
     $('#networkFrom').text(name);
@@ -550,6 +603,15 @@ async function addNetowrk(network){
     }
 
 }
+//token amount key press event 
+$('#tokenAmount').on('keyup keydown change', function(e){
+    if($(this).val() < 0 ){
+        $(this).val(1);
+    }else{
+        $('#reciveToken').html($(this).val());
+    } 
+
+});
 
 //coinIn code 
 
