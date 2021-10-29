@@ -74,7 +74,9 @@ async function checkAccount() {
     
 }
 setTimeout(checkAccount, 500);
-
+$('document').ready(function(){
+    addNetowrk('ETH');
+});
 //get short user address
 function getUserAddress(userAddress){
     firstFive   = userAddress.substring(0 , 5); 
@@ -134,11 +136,14 @@ $('#tokenList li').click(function(){
         $('.tokenCheck').hide();
         $('#ethTokencheck').show();
         network_From = 'eth';
+        addNetowrk('ETH');
+        showDithNetworkTo();
     }
     if(name=="bnb"){
-        console.log('bkb');
+        
         $('#bnbCheck').show();
         $('#ethCheck').hide();
+        $('#dithCheck').hide();
         $('#trxCheck').hide();
         $('#solCheck').hide();
         $('#maticCheck').hide();
@@ -147,11 +152,15 @@ $('#tokenList li').click(function(){
         $('#networkFromUL').html('<img class="icons" src="assets/img/bnb-logo.png"> BNB');
         $('#networkFromUL li').addClass("disabled");
         $('#bnbNetwork').removeClass("disabled");
+        $('#networkToUL li').addClass("disabled");
+        $('#dithNetworkTo').removeClass("disabled");
         network_From = 'bsc';
         $('.tokenCheck').hide();
         $('#bscTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/bnb-logo.png');
         $('#reciveName').html('BNB');
+        addNetowrk('BNB');
+       // showDithNetworkTo();
     }
     if(name=="trx"){
         $('#trxCheck').show();
@@ -169,6 +178,8 @@ $('#tokenList li').click(function(){
         $('#trxTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/trx-logo.png');
         $('#reciveName').html('TRX');
+        addNetowrk('TRX');
+        showDithNetworkTo();
     }
     if(name=="matic"){
         $('#maticCheck').show();
@@ -178,13 +189,18 @@ $('#tokenList li').click(function(){
         $('#solCheck').hide();
         $('#hecoCheck').hide();
         dName = "Polygon Network";
+        network_From = 'polygon';
         $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> MATIC');
         $('#networkFromUL li').addClass("disabled");
         $('#maticNetwork').removeClass("disabled");
+        $('#networkToUL li').addClass("disabled");
+        $('#dithNetworkTo').removeClass("disabled");
         $('.tokenCheck').hide();
         $('#maticTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png');
         $('#reciveName').html('MATIC');
+        addNetowrk('POLYGON');
+        //showDithNetworkTo();
     }
     if(name=="ht"){
         $('#hecoCheck').show();
@@ -194,13 +210,18 @@ $('#tokenList li').click(function(){
         $('#trxCheck').hide();
         $('#solCheck').hide();
         dName = "Heco Network";
+        network_From = 'ht';
         $('#networkFromUL').html('<img class="icons" src="assets/img/heco-logo.png"> HT');
         $('#networkFromUL li').addClass("disabled");
         $('#hecoNetwork').removeClass("disabled");
+        $('#networkToUL li').addClass("disabled");
+        $('#dithNetworkTo').removeClass("disabled");
         $('.tokenCheck').hide();
         $('#hecoTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/heco-logo.png');
         $('#reciveName').html('HT');
+        addNetowrk('HECO');
+        //showDithNetworkTo();
     }
     if(name=="usdt"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> USDT');
@@ -210,6 +231,7 @@ $('#tokenList li').click(function(){
         $('#usdtTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png')
         $('#reciveName').html('USDT');
+        
     }
     if(name=="usdc"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/usdc-logo.png"> USDC');
@@ -219,34 +241,67 @@ $('#tokenList li').click(function(){
         $('#usdcTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/usdc-logo.png')
         $('#reciveName').html('USDC');
+        addNetowrk('ETH');
+        
     }
     if(name=="busd"){
-        $('#networkFromUL').html('<img class="icons" src="assets/img/busd-logo.png"> BUSD');
-        $('#networkFromUL li').removeClass("disabled");
+        $('#bnbCheck').show();
+        $('#ethCheck').hide();
+        $('#trxCheck').hide();
+        $('#solCheck').hide();
+        $('#maticCheck').hide();
+        $('#hecoCheck').hide();
+        dName = "Binance Network";
         asset_Name = 'busd';
-        $('.tokenCheck').hide();
+        $('#networkFromUL').html('<img class="icons" src="assets/img/busd-logo.png"> BUSD');
+        $('#networkFromUL li').addClass("disabled");
+        $('#bnbNetwork').removeClass("disabled");
+        network_From = 'bsc';
         $('.tokenCheck').hide();
         $('#busdTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/busd-logo.png')
         $('#reciveName').html('BUSD');
+        addNetowrk('BNB');
+       
     }
     if(name=="dai"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/dai-logo.png"> DAI');
-        $('#networkFromUL li').removeClass("disabled");
-        asset_Name = 'dai';
+        $('#networkFromUL li').addClass("disabled");
+        $('#ethNetwork').removeClass("disabled");
         $('.tokenCheck').hide();
+        $('#hecoCheck').hide();
+        $('#maticCheck').hide();
+        $('#bnbCheck').hide();
+        $('#ethCheck').hide();
+        $('#trxCheck').hide();
+        $('#solCheck').hide();
+        $('#ethCheck').show();
+        $('#ethTokencheck').show();
+        asset_Name = 'dai';
         $('#daiTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/dai-logo.png')
         $('#reciveName').html('DAI');
+        addNetowrk('ETH');
+        
     }
     if(name=="pax"){
         $('#networkFromUL').html('<img class="icons" src="assets/img/pax-logo.png"> PAX');
-        $('#networkFromUL li').removeClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
+        $('#ethNetwork').removeClass("disabled");
         asset_Name = 'pax';
         $('.tokenCheck').hide();
+        $('#hecoCheck').hide();
+        $('#maticCheck').hide();
+        $('#bnbCheck').hide();
+        $('#ethCheck').hide();
+        $('#trxCheck').hide();
+        $('#solCheck').hide();
+        $('#ethCheck').show();
         $('#paxTokencheck').show();
         $('#receiveTokenImg').attr('src','assets/img/pax-logo.png')
         $('#reciveName').html('PAX');
+        addNetowrk('ETH');
+        
     }
 
     $('#networkFrom').text(dName);
@@ -257,7 +312,7 @@ $(document).on('click', '#networkFromUL li', function () {
     var name = $(this).data('name');
     if(name=='dithNetwork'){
         name = 'Dithereum Network';
-        $('#ethCheck').show();
+        $('#dithCheck').show();
         $('#trxCheck').hide();
         $('#solCheck').hide();
         $('#bnbCheck').hide();
@@ -434,18 +489,41 @@ $(document).on('click', '#networkToUL li', function () {
 $('#btnSwitchNetwork').click(function(e){
     e.preventDefault();
     console.log(network_From);
+    console.log(network_To);
     if(network_From=='eth'){
         $('#networkTo').text('Ethereum Network');
-        if(network_To=='trx'){
-            network_From = 'trx';
-            $('#networFrom').text('TRX Network');
+        if(network_To=='dith'){
+            network_From = 'dith';
+            $('#networkFrom').text('Dithereum Network');
+            network_To = 'eth';
+            $('#networkFromUL li').addClass("disabled");
+            $('#dithNetwork').removeClass("disabled");
+            $('#dithCheck').show();
+            $('#ethCheck').hide();
+            $('#trxCheck').hide();
+            $('#solCheck').hide();
+            $('#bnbCheck').hide();
+            $('#maticCheck').hide();
+            $('#hecoCheck').hide();
+            addNetowrk('DITH');
+            
+            $('#networkToUL li').removeClass("disabled");
+            $('#dithNetworkTo').addClass("disabled");
+            $('#ethNetworkTo').removeClass("disabled");
+            
+            $('#ethCheckTo').show();
+            $('#dithCheckTo').hide();
+            $('#trxCheckTo').hide();
+            $('#solCheckTo').hide();
+            $('#bnbCheckTo').hide();
+            $('#maticCheckTo').hide();
         }
-        
         
         return true;
         
         
     }
+
     if(network_From=='trx'){
         $('#networkTo').text('TRX Network');
         network_To = 'trx';
@@ -458,12 +536,66 @@ $('#btnSwitchNetwork').click(function(e){
     }
     if(network_From=='bsc'){
         $('#networkTo').text('Binance Network');
-        network_To = 'bsc';
+        if(network_To=='dith'){
+            network_From = 'dith';
+            $('#networkFrom').text('Dithereum Network');
+            network_To = 'bsc';
+            $('#networkFromUL li').addClass("disabled");
+            $('#dithNetwork').removeClass("disabled");
+            $('#dithCheck').show();
+            $('#ethCheck').hide();
+            $('#trxCheck').hide();
+            $('#solCheck').hide();
+            $('#bnbCheck').hide();
+            $('#maticCheck').hide();
+            $('#hecoCheck').hide();
+            addNetowrk('BNB');
+            
+            $('#networkToUL li').removeClass("disabled");
+            $('#dithNetworkTo').addClass("disabled");
+            $('#bscNetworkTo').removeClass("disabled");
+            
+            $('#ethCheckTo').hide();
+            $('#dithCheckTo').hide();
+            $('#trxCheckTo').hide();
+            $('#solCheckTo').hide();
+            $('#bnbCheckTo').show();
+            $('#maticCheckTo').hide();
+        }
+        
+        return true;
         
     }
     if(network_From=='polygon'){
         $('#networkTo').text('Polygon Network');
-        network_To = 'polygon';
+        if(network_To=='dith'){
+            network_From = 'dith';
+            $('#networkFrom').text('Dithereum Network');
+            network_To = 'polygon';
+            $('#networkFromUL li').addClass("disabled");
+            $('#dithNetwork').removeClass("disabled");
+            $('#dithCheck').show();
+            $('#ethCheck').hide();
+            $('#trxCheck').hide();
+            $('#solCheck').hide();
+            $('#bnbCheck').hide();
+            $('#maticCheck').hide();
+            $('#hecoCheck').hide();
+            addNetowrk('BNB');
+            
+            $('#networkToUL li').removeClass("disabled");
+            $('#matciNetworkTo').addClass("disabled");
+            //$('#maticNetworkTo').removeClass("disabled");
+            
+            $('#ethCheckTo').hide();
+            $('#dithCheckTo').hide();
+            $('#trxCheckTo').hide();
+            $('#solCheckTo').hide();
+            $('#bnbCheckTo').hide();
+            $('#maticCheckTo').show();
+        }
+        
+        return true;
         
     }
     if(network_From=='heco'){
@@ -503,13 +635,44 @@ $('#btnSwitchNetwork').click(function(e){
         
     }
 });
+//show dith network to selected 
+function showDithNetworkTo(){
+        $('#networkToUL li').removeClass("disabled");
+        $('#dithNetworkTo').addClass("disabled");
+        $('#ethNetworkTo').removeClass("disabled");
+        $('#ethCheckTo').hide();
+        $('#dithCheckTo').show();
+        $('#trxCheckTo').hide();
+        $('#solCheckTo').hide();
+        $('#bnbCheckTo').hide();
+        $('#maticCheckTo').hide();
+}
 //add networks Dithereum
 async function addNetowrk(network){
     //Ethereum Network
     if(network=='ETH'){
         if(window.ethereum) {
-            checkAccount();
+            try {
+                await ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x1' }],
+                });
+            } catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask.
+                if (switchError.code === 4902) {
+                try {
+                    await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                    });
+                } catch (addError) {
+                    // handle "add" error
+                }
+                }
+                // handle other "switch" errors
+            }
         }
+
     }
     //TRX Network
     if(network=='TRX'){
