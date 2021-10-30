@@ -1,7 +1,7 @@
 var myAccountAddress,contractInstance;
 var network_From = 'eth';
 var network_To = 'dith';
-var asset_Name = 'usdt';
+var asset_Name = 'eth';
 // const ABI = JSON.parse('');
 // const contractAddress = '';
 var global = {
@@ -129,6 +129,7 @@ $('#tokenList li').click(function(){
         $('#bnbCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
+        $('#dithCheck').hide();
         dName = "Ethereum Network";
         $('#networkFromUL').html('<img class="icons" src="assets/img/eth-icon.svg"> ETH');
         $('#networkFromUL li').addClass("disabled");
@@ -149,6 +150,7 @@ $('#tokenList li').click(function(){
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         dName = "Binance Network";
+        asset_Name = 'bnb';
         $('#networkFromUL').html('<img class="icons" src="assets/img/bnb-logo.png"> BNB');
         $('#networkFromUL li').addClass("disabled");
         $('#bnbNetwork').removeClass("disabled");
@@ -169,7 +171,9 @@ $('#tokenList li').click(function(){
         $('#bnbCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
+        $('#dithCheck').hide();
         dName = "TRX Network";
+        asset_Name = 'trx';
         $('#networkFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX');
         $('#networkFromUL li').addClass("disabled");
         $('#trxNetwork').removeClass("disabled");
@@ -187,9 +191,11 @@ $('#tokenList li').click(function(){
         $('#ethCheck').hide();
         $('#trxCheck').hide();
         $('#solCheck').hide();
+        $('#dithCheck').hide();
         $('#hecoCheck').hide();
         dName = "Polygon Network";
         network_From = 'polygon';
+        asset_Name = 'matic';
         $('#networkFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> MATIC');
         $('#networkFromUL li').addClass("disabled");
         $('#maticNetwork').removeClass("disabled");
@@ -209,7 +215,9 @@ $('#tokenList li').click(function(){
         $('#ethCheck').hide();
         $('#trxCheck').hide();
         $('#solCheck').hide();
+        $('#dithCheck').hide();
         dName = "Heco Network";
+        asset_Name = 'ht';
         network_From = 'heco';
         $('#networkFromUL').html('<img class="icons" src="assets/img/heco-logo.png"> HT');
         $('#networkFromUL li').addClass("disabled");
@@ -230,14 +238,29 @@ $('#tokenList li').click(function(){
         $('.tokenCheck').hide();
         $('#usdtTokencheck').show();
         $('#dithNetwork').addClass('disabled');
-        //$('#networkFromUL li').addClass("disabled");
+        $('#networkFromUL li').addClass("disabled");
         $('#ethNetwork').removeClass("disabled");
+        $('#bnbNetwork').removeClass("disabled");
+        $('#ethNetwork').removeClass("disabled");
+        $('#networkToUL li').addClass("disabled");
+        $('#dithNetworkTo').removeClass("disabled");
+        $('#networkTo').text('Dithereum Network');
+        $('#dithCheckTo').show();
+        $('#ethCheckTo').hide();
+        $('#bnbCheckTo').hide();        
+        $('#trxCheckTo').hide();
+        $('#solCheckTo').hide();
+        $('#maticCheckTo').hide();
+        $('#hecoCheckTo').hide();
+        network_From = 'eth';
+        network_To = 'dith';
         $('#ethCheck').show();
         $('#bnbCheck').hide();        
         $('#trxCheck').hide();
         $('#solCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
+        $('#dithCheck').hide();
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png')
         $('#reciveName').html('USDT');
         
@@ -253,6 +276,7 @@ $('#tokenList li').click(function(){
         $('#bnbCheck').hide();
         $('#ethCheck').show();
         $('#trxCheck').hide();
+        $('#dithCheck').hide();
         $('#solCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
@@ -266,6 +290,7 @@ $('#tokenList li').click(function(){
         $('#ethCheck').hide();
         $('#trxCheck').hide();
         $('#solCheck').hide();
+        $('#dithCheck').hide();
         $('#maticCheck').hide();
         $('#hecoCheck').hide();
         dName = "Binance Network";
@@ -289,8 +314,7 @@ $('#tokenList li').click(function(){
         $('#dithCheck').hide();
         $('#hecoCheck').hide();
         $('#maticCheck').hide();
-        $('#bnbCheck').hide();
-        $('#ethCheck').hide();
+        $('#bnbCheck').hide();        
         $('#trxCheck').hide();
         $('#solCheck').hide();
         $('#ethCheck').show();
@@ -314,7 +338,7 @@ $('#tokenList li').click(function(){
         $('#hecoCheck').hide();
         $('#maticCheck').hide();
         $('#bnbCheck').hide();
-        $('#ethCheck').hide();
+        $('#dithCheck').hide();
         $('#trxCheck').hide();
         $('#solCheck').hide();
         $('#ethCheck').show();
@@ -511,8 +535,7 @@ $(document).on('click', '#networkToUL li', function () {
 //switch network button
 $('#btnSwitchNetwork').click(function(e){
     e.preventDefault();
-    console.log(network_From);
-    console.log(network_To);
+    
     if(network_From=='eth'){
         $('#networkTo').text('Ethereum Network');
         if(network_To=='dith'){
@@ -540,6 +563,9 @@ $('#btnSwitchNetwork').click(function(e){
             $('#solCheckTo').hide();
             $('#bnbCheckTo').hide();
             $('#maticCheckTo').hide();
+            if(asset_Name=='usdt'){
+                $('#bnbNetworkTo').removeClass("disabled");
+            }
         }
         return true;
     }
@@ -569,6 +595,9 @@ $('#btnSwitchNetwork').click(function(e){
             $('#solCheckTo').hide();
             $('#bnbCheckTo').hide();
             $('#maticCheckTo').hide();
+            if(asset_Name=='usdt'){
+                $('#bnbNetwork').removeClass("disabled");
+            }
         } 
         
         if(network_To=='bsc'){
@@ -788,7 +817,8 @@ async function addNetowrk(network){
             try {
                 await ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x1' }],
+                //params: [{ chainId: '0x1' }],
+                params: [{ chainId: '0x4' }],
                 });
             } catch (switchError) {
                 // This error code indicates that the chain has not been added to MetaMask.
@@ -796,7 +826,8 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                     method: 'wallet_addEthereumChain',
-                    params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   // params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   params: [{ chainId: '0x4', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
                     });
                 } catch (addError) {
                     // handle "add" error
@@ -844,14 +875,15 @@ async function addNetowrk(network){
             window.ethereum.request({method: 'eth_requestAccounts'})
             window.ethereum.request({
                 method: 'wallet_addEthereumChain',
-                params: [{chainId: '0x38',
+                params: [{chainId: '0x61', //chainId: '0x38',
                     chainName: "BSC Mainnet",
                     nativeCurrency: {
                     name: "Binance Chain",
                     symbol: "BNB",
                     decimals: 18
                     },
-                    rpcUrls: ['https://bsc-dataseed1.defibit.io/'],     blockExplorerUrls: ['https://bscscan.com/']
+                    //rpcUrls: ['https://bsc-dataseed1.defibit.io/'],     blockExplorerUrls: ['https://bscscan.com/']
+                    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'], blockExplorerUrls: ['https://testnet.bscscan.com']
                 }]
             })
             checkAccount();
@@ -884,14 +916,15 @@ async function addNetowrk(network){
             window.ethereum.request({method: 'eth_requestAccounts'})
             window.ethereum.request({
                 method: 'wallet_addEthereumChain',
-                params: [{chainId: '0x80',
+                params: [{chainId: '0x100', //chainId: '0x80',
                     chainName: "Heco-Mainnet",
                     nativeCurrency: {
                     name: "Heco",
                     symbol: "HT",
                     decimals: 18
                     },
-                    rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
+                    // rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
+                    rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
                 }]
             })
             checkAccount();
@@ -1214,6 +1247,54 @@ $('#btnNext').click(async function(){
             
                
         }
+        if(asset_Name=='busd'){
+            usdtContractInstance =  new myweb3.eth.Contract(busdBscABI, busdBscAddress, {
+                from: myAccountAddress, // default from address
+            });
+            const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,bscContract).call();
+            if(allowance<1){
+                var result = await usdtContractInstance.methods.approve(bscContract,tokenAmount).send({
+                    from: myAccountAddress,
+                    to: busdBscAddress,
+                    gasPrice: web3GasPrice,
+                    gasLimit: gasLimit,
+                    value : 0,       
+                });
+                if(result){
+                    var result = await bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).send({
+                        from: myAccountAddress,
+                        to: bscContract,
+                        gasPrice: web3GasPrice,
+                        gasLimit: gasLimit,
+                        value : 0,       
+                    });
+                    if(result){
+                        swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                    
+                    }else{
+                        swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                    }
+                }else{
+                    swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                }
+            }else{
+                var result = await bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).send({
+                    from: myAccountAddress,
+                    to: bscContract,
+                    gasPrice: web3GasPrice,
+                    gasLimit: gasLimit,
+                    value : 0,       
+                });
+                if(result){
+                    swal("Success !", "Please wait upto 5 min for your coins to reflect.", "success");
+                
+                }else{
+                    swal("Warning !", "Transaction Fail, Please Try again.", "warning");
+                }
+            }
+        
+           
+    }
     }
     //polygon network
     if(network_From=='polygon'){
