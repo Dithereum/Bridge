@@ -37,4 +37,7 @@ const paxABI = JSON.parse('[{"inputs":[],"payable":false,"stateMutability":"nonp
 
 var usdtContractInstance,usdcContractInstance,daiContractInstance,paxContractInstance;
 
-//fee usdt 10 eth 5 // 10$ usdt 10$ of eth
+const ETHERSCAN_URL = 'https://etherscan.io/tx/';
+const BSCSCAN_URL = 'https://bscscan.com/tx/';
+const POLYSCAN_URL = 'https://polygonscan.com/tx/';
+const HECOSCAN_URL = 'https://hecoinfo.com/tx/';

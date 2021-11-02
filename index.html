@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/style.css">
 	<link rel="icon" type="image/png" href="assets/img/favicon.ico"/>
-	<link rel="stylesheet" href="assets/css/sweetalert.css">
+	<link rel="stylesheet" href="assets/css/alertify.min.css">
 </head>
 <body>
 	<div class="main">
@@ -67,9 +67,9 @@
 							<div class="under-line"></div>
 						</div>
 						<div class="assets">
-							<label for="inputEmail4">Assets</label>
+							<label for="inputEmail4">Assets From</label>
 							<div class="dropdown dropdown-custom">
-								<button class="btn btn-secondary dropdown-toggle" type="button" id="networkFromUL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<button class="btn btn-secondary dropdown-toggle" type="button" id="assetFromUL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									<img class="icons" src="assets/img/eth-icon.svg"> ETH
 								</button>
 								
@@ -84,7 +84,15 @@
 										</div>
 									  </div>
 
-									<ul class="list-group" id="tokenList">
+									<ul class="list-group" id="assetFrom">
+										<li id="assetFromDith" class="list-group-item d-flex justify-content-between align-items-center" data-name="dith">
+											<img src="assets/img/eth-icon.svg" class="mr-3" alt="DITH">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">DITH</h5>
+											  <span>Dithereum</span>
+											</div>
+										  <span id="dithTokencheck" style="display: none;" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
 										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="eth">
 											<img src="assets/img/eth-icon.svg" class="mr-3" alt="ETH">
 											<div class="media-body">
@@ -101,13 +109,7 @@
 											</div>
 											<span style="display: none;" id="bscTokencheck" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
 										</li>
-										<!-- <li class="list-group-item d-flex justify-content-between align-items-center" data-name="trx">
-											<img src="assets/img/tron-logo.png" class="mr-3" alt="TRX">
-											<div class="media-body">
-											  <h5 class="mt-0 mb-1">TRX</h5>
-											  <span>TRON</span>
-											</div>
-										</li> -->
+										
 										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="matic">
 											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="MATIC">
 											<div class="media-body">
@@ -131,6 +133,14 @@
 											  <span>TetherUs</span>
 											</div>
 											<span style="display: none;" id="usdtTokencheck" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="usdtbsc">
+											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="USDT">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">USDT</h5>
+											  <span>Binance</span>
+											</div>
+											<span style="display: none;" id="usdtbscTokencheck" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
 										</li>
 										<li class="list-group-item d-flex justify-content-between align-items-center" data-name="usdc">
 											<img src="assets/img/usdc-logo.png" class="mr-3" alt="USDC">
@@ -168,95 +178,117 @@
 								</div>
 							</div>
 						</div>
-						<div class="fromto mt-3">
-							<form>
-								<div class="form-row">
-									<div class="form-group col-md-5">
-									  <label for="inputEmail4">From</label>
-									  <div class="dropdown">
-										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="networkFrom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											Ethereum Network
-										</button>
-										<div class="dropdown-menu dDHYFV" aria-labelledby="networkFrom" style="padding: 0;">
-										  <ul class="list-group" id="networkFromUL">
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="dithNetwork" data-name="dithNetwork">
-												Dithereum Network
-												<span id="dithCheck" style="display: none;" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li> 
-											  <li class="list-group-item d-flex justify-content-between align-items-center" id="ethNetwork" data-name="ethNetwork">
-												Ethereum Network
-												 <span id="ethCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											  <!-- <li class="list-group-item d-flex justify-content-between align-items-center" id="trxNetwork" data-name="trxNetwork">
-											   TRX Network
-											    <span style="display: none;" id="trxCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li> -->
-											  <!-- <li class="list-group-item d-flex justify-content-between align-items-center" id="solNetwork" data-name="solNetwork">
-											   SOL Network
-											   <span style="display: none;" id="solCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li> -->
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="bnbNetwork" data-name="bnbNetwork">
-											   Binance Smart Chain Network
-											   <span style="display: none;" id="bnbCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="maticNetwork" data-name="maticNetwork">
-											   Polygon Network
-											   <span style="display: none;" id="maticCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="hecoNetwork" data-name="hecoNetwork">
-												Heco Network
-												<span style="display: none;" id="hecoCheck" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											   </li>
-											</ul>
+						
+						<div class="assets">
+							<label for="inputEmail4">Assets To</label>
+							<div class="dropdown dropdown-custom">
+								<button class="btn btn-secondary dropdown-toggle" type="button" id="assetToUl" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<img class="icons" src="assets/img/eth-icon.svg"> DITH
+								</button>
+								
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<div class="input-group mb-3">
+										<div class="input-group-prepend">
+										  <span class="input-group-text"><i class="fa fa-search" aria-hidden="true"></i></span>
+										</div>
+										<input type="text" class="form-control search-box" aria-label="Amount (to the nearest dollar)">
+										<div class="input-group-append">
+										  <span class="input-group-text"><i class="fa fa-times" aria-hidden="true"></i></span>
 										</div>
 									  </div>
-									</div>
-									<div class="form-group col-md-2 text-center swap-btn">
-										<button class="btn btn-secondary" id="btnSwitchNetwork"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
-									</div>
-									<div class="form-group col-md-5">
-									  <label for="inputPassword4">To</label>
-									  <div class="dropdown">
-										<button class="btn btn-secondary btn-block dropdown-toggle from-btn" type="button" id="networkTo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											Dithereum Network
-										</button>
-										<div class="dropdown-menu dDHYFV" aria-labelledby="networkToUL" style="padding: 0;">
-										  <ul class="list-group" id="networkToUL">
-											  
-											  <li class="list-group-item d-flex justify-content-between align-items-center" id="dithNetworkTo" data-name="dithNetworkTo">
-												Dithereum Network
-												<span id="dithCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li> 
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="ethNetworkTo" data-name="ethNetworkTo">
-												Ethereum Network
-												 <span style="display: none;" id="ethCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											  <!-- <li class="list-group-item d-flex justify-content-between align-items-center" id="trxNetworkTo" data-name="trxNetworkTo">
-											   TRX Network
-											    <span style="display: none;" id="trxCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li> -->
-											  <!-- <li class="list-group-item d-flex justify-content-between align-items-center" id="solNetworkTo" data-name="solNetworkTo">
-											   SOL Network
-											   <span style="display: none;" id="solCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li> -->
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="bnbNetworkTo" data-name="bnbNetworkTo">
-											   Binance Smart Chain Network
-											   <span style="display: none;" id="bnbCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="maticNetworkTo" data-name="maticNetworkTo">
-												Polygon Network
-												<span style="display: none;" id="maticCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											  <li class="list-group-item d-flex justify-content-between align-items-center disabled" id="hecoNetworkTo" data-name="hecoNetworkTo">
-												Heco Network
-												<span style="display: none;" id="hecoCheckTo" class="badge badge-success badge-pill"><i class="fa fa-check" aria-hidden="true"></i></span>
-											  </li>
-											</ul>
-										</div>
-									  </div>
-									</div>
-								  </div>
-							  </form>
+
+									<ul class="list-group" id="assetTo">
+										<li id="assetToDith" aria-disabled="true" class="list-group-item d-flex justify-content-between align-items-center" data-name="dith">
+											<img src="assets/img/eth-icon.svg" class="mr-3" alt="ETH">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">DITH</h5>
+											  <span>Dithereum</span>
+											</div>
+										  <span id="ethTokencheck" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li aria-disabled="true8" class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="eth">
+											<img src="assets/img/eth-icon.svg" class="mr-3" alt="ETH">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">ETH</h5>
+											  <span>Ethereum</span>
+											</div>
+										  <span style="display: none;" id="ethTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="bnb">
+											<img src="assets/img/bnb-logo.png" class="mr-3" alt="BNB" style="    width: 24px;">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">BNB</h5>
+											  <span>Binance</span>
+											</div>
+											<span style="display: none;" id="bscTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="matic">
+											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="MATIC">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">MATIC</h5>
+											  <span>Polygon</span>
+											</div>
+											<span style="display: none;" id="maticTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="ht">
+											<img src="assets/img/heco-logo.png" class="mr-3" alt="HT">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">HT</h5>
+											  <span>Hecochain</span>
+											</div>
+											<span style="display: none;" id="hecoTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="usdt">
+											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="USDT">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">USDT</h5>
+											  <span>TetherUs</span>
+											</div>
+											<span style="display: none;" id="usdtTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="usdtbsc">
+											<img src="assets/img/tether-usdt-logo.png" class="mr-3" alt="USDT">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">USDT</h5>
+											  <span>Binance</span>
+											</div>
+											<span style="display: none;" id="usdtbscTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="usdc">
+											<img src="assets/img/usdc-logo.png" class="mr-3" alt="USDC">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">USDC</h5>
+											  <span>USD Coin</span>
+											</div>
+											<span style="display: none;" id="usdcTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="busd">
+											<img src="assets/img/busd-logo.png" class="mr-3" alt="BUSD">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">BUSD</h5>
+											  <span>BUSD</span>
+											</div>
+											<span style="display: none;" id="busdTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="dai">
+											<img src="assets/img/dai-logo.png" class="mr-3" alt="DAI">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">DAI</h5>
+											  <span>Dai</span>
+											</div>
+											<span style="display: none;" id="daiTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center disabled2" data-name="pax">
+											<img src="assets/img/pax-logo.png" class="mr-3" alt="PAX">
+											<div class="media-body">
+											  <h5 class="mt-0 mb-1">PAX</h5>
+											  <span>Pax</span>
+											</div>
+											<span style="display: none;" id="paxTokencheckTo" class="badge badge-success badge-pill tokenCheck"><i class="fa fa-check" aria-hidden="true"></i></span>
+										</li>
+									  </ul>
+								</div>
+							</div>
 						</div>
 
 						<div class="amount">
@@ -266,7 +298,7 @@
 						<div class="jzBSFA">
 							<span>You will receive</span>
 							<span class="hnyPJs">≈</span>
-							<img id="receiveTokenImg" class="icons" src="assets/img/eth-icon.svg" style="width: 16px;">&nbsp;<span id="reciveToken">0</span>&nbsp;<span id="reciveName">ETH</span>&nbsp;
+							<img id="receiveTokenImg" class="icons" src="assets/img/eth-icon.svg" style="width: 16px;">&nbsp;<span id="reciveToken">0</span>&nbsp;<span id="reciveName">DITH</span>&nbsp;
 							<span id="feeText">(Fee  10$ USDT of ETH)</span>
 							<!-- <span class="styled__BadgeWrapper-xwou8c-34 tcVGd">
 								<span class="badge badge-warning">BEP20</span>
@@ -314,7 +346,7 @@
 	<script src="assets/js/popper.min.js"></script>
 	<script src="assets/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.js"></script>
-	<script src="assets/js/sweetalert.min.js"></script>
+	<script src="assets/js/alertify.js"></script>
 	<script src="assets/js/general.js"></script>
 	<script src="assets/js/script.js"></script>
 </body>

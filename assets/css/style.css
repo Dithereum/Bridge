@@ -458,3 +458,8 @@ body {
         margin: 0;
     }
 }
+
+.disabled2{
+    pointer-events: none;
+    opacity: 0.3;
+}
