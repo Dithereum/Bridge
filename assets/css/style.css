@@ -463,3 +463,6 @@ body {
     pointer-events: none;
     opacity: 0.3;
 }
+.img-small {
+    width: 24px;
+}
