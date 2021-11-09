@@ -174,50 +174,7 @@ async function	db_delete(_blockNumber){
 	}			
 }
 
-
 var job = new CronJob('*/2 * * * *', function() {  
   getTransaction();
 }, null, true, 'America/Los_Angeles');
 job.start();
-
-
-///// Additional blocks 
-async function getTransaction2(){
-	await db_select_desc().then(z=>{
-		var mydata = [];
-		mydata[z[0].blknumber] = z[0].blk.toString('utf8');	
-		//console.log(mydata[z[0].blknumber]);		
-		if(mydata[z[0].blknumber]){
-			getBlocksAllTransaction(z[0].blknumber, mydata[z[0].blknumber]);		
-		}
-	});	
-}
-
-async function	db_select_desc(){	
-	var con = mysql.createConnection({
-  		host: "localhost",
-  		user: "root",
-  		password: "Admin@1234",
-  		database: "dithereumbacked"
-	});
-	const query = util.promisify(con.query).bind(con);	
-	try{
-			var cnt = await query("SELECT count(blknumber) as totalrec FROM script1_blocks");
-			if(cnt[0].totalrec > 30){
-				var rec = await query("SELECT * FROM script1_blocks ORDER BY blknumber DESC limit 1");
-				console.log("RECORD >>>",rec);				
-			}					
-		}finally{
-			con.end();			
-	}			
-}
-
-db_select_desc();
-
-var job = new CronJob('*/3 * * * *', function() {  
-  getTransaction2();
-}, null, true, 'America/Los_Angeles');
-job.start();
-
-
-
