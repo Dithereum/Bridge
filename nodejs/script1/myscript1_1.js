@@ -80,7 +80,6 @@ async function getmyblock(BlokNum){
 	var _dt = new Date();
 	var _dt_timestamp = _dt.getTime();
 	console.log(">> In get my block:", _dt_timestamp);
-	
 	console.log("<<<< BlokNum >>>>",BlokNum);
 	var myblk = await web3.eth.getBlock(parseInt(BlokNum));
 	if(myblk){		
