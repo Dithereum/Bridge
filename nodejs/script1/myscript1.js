@@ -100,10 +100,10 @@ getmyblock(process.env.script1LBN);
 
 async function	db_insert(blknumber, blk){
 	var con = mysql.createConnection({
-  		host: "localhost",
-  		user: "root",
-  		password: "Admin@1234",
-  		database: "dithereumbacked"
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
 	});	
 	con.connect(function(err) {
   	if (err) { console.log("Error DB connect:",err); }
