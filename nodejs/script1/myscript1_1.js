@@ -20,6 +20,14 @@ And then filter out all the transactions as smart contract calls
   Increment this amounts for every transaction of that particular contract deployer and contract referrer. 
 */
 
+/*****
+CREATE VIEW COMMISSION_VIEW AS  
+(SELECT SUM(deployer_commission) as total_deployer_commission, deployer_addr, NULL as total_referrer_commission, NULL as referrer_addr FROM commissions GROUP BY deployer_addr) UNION ALL  
+(SELECT NULL as deployer_addr , NULL as total_deployer_commissions, SUM(referrer_commission) as total_referrer_commission, referrer_addr  FROM commissions where referrer_commission !=0 GROUP BY referrer_addr)
+
+SELECT * FROM COMMISSION_VIEW
+*****/
+
 var mysql = require('mysql');
 const WebSocket = require('ws');
 require('dotenv').config();
@@ -120,6 +128,7 @@ async function getTransactionDetails(q){
 		if(z.to === null){						
 			var _usersGasPrice = parseInt(z.gasPrice);		
 			web32.eth.getTransactionReceipt(q).then((x)=>{						
+				var _referrer_addr = '';
 				var _deployer_addr = x.from;
 				var _blockNumber = x.blockNumber;			
 				var _transaction_fees_wei = _usersGasPrice * parseInt(x.gasUsed.toString());										
@@ -130,6 +139,7 @@ async function getTransactionDetails(q){
 				console.log("Block Number >>>>>", _blockNumber);
 				var _contractAddress = x.contractAddress;				
 				db_insert(_contractAddress, _blockNumber, _deployer_addr, _transaction_fees_eth, _referrer_wallet='--', q);				
+				commission_insert(_transaction_fees_eth, _contractAddress, _deployer_addr, _referrer_addr);				
 			}).catch(console.log);						
 		}		
 	}).catch(console.log);
@@ -137,10 +147,10 @@ async function getTransactionDetails(q){
 
 async function	db_select(){	
 	var con = mysql.createConnection({
-  		host: "localhost",
-  		user: "root",
-  		password: "Admin@1234",
-  		database: "dithereumbacked"
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
@@ -150,17 +160,40 @@ async function	db_select(){
 	}			
 }
 
+async function commission_insert(_transaction_fees_eth, _contractAddress, deployer_addr, _referrer_addr){
+	var mycommission_con = mysql.createConnection({
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
+	});
+	const insertquery = util.promisify(mycommission_con.query).bind(mycommission_con);	
+	try{				
+			var deployer_commission = (parseFloat(_transaction_fees_eth) / 100) * 50;
+			var referrer_commission = 0;	
+			if(_referrer_addr){	
+				referrer_commission = (parseFloat(_transaction_fees_eth) / 100) * 10;
+			}		
+			console.log("_transaction_fees_eth >>>",_transaction_fees_eth);
+			console.log("_deployer_commission >>>",deployer_commission);
+			var insertsql = "INSERT INTO commissions (deployer_commission, referrer_commission, for_contractaddr_or_transhash, deployer_addr, referrer_addr) VALUES ("+deployer_commission+","+referrer_commission+",'"+_contractAddress+"','"+deployer_addr+"','"+_referrer_addr+"')";			
+			return await insertquery(insertsql);							
+		}finally{
+			mycommission_con.end();			
+	}			
+}
 
 async function	db_insert(_contractAddress, _blockNumber, _deployer_addr, _transaction_fees_eth, _referrer_wallet, q){	
 	var mycon = mysql.createConnection({
-  		host: "localhost",
-  		user: "root",
-  		password: "Admin@1234",
-  		database: "dithereumbacked"
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
 	});
 	const insertquery = util.promisify(mycon.query).bind(mycon);	
 	try{				
 			var insertsql = "INSERT INTO script1 (contract_address, block_num, deployer_addr, trans_fee, referrer_wallet) VALUES ('"+_contractAddress+"',"+_blockNumber+",'"+_deployer_addr.toString()+"','"+_transaction_fees_eth.toString()+"','"+_referrer_wallet.toString()+"')";
+			
 			return await insertquery(insertsql);							
 		}finally{
 			mycon.end();			
@@ -169,10 +202,10 @@ async function	db_insert(_contractAddress, _blockNumber, _deployer_addr, _transa
 
 async function	db_delete(_blockNumber){	
 	var mycon2 = mysql.createConnection({
-  		host: "localhost",
-  		user: "root",
-  		password: "Admin@1234",
-  		database: "dithereumbacked"
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
 	});
 	const deletequery = util.promisify(mycon2.query).bind(mycon2);	
 	try{
