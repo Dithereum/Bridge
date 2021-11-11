@@ -81,7 +81,7 @@ async function	db_select_deployer_commission(){
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
-			return await query("SELECT total_deployer_commission, deployer_addr FROM COMMISSION_VIEW limit 0,5");					
+			return await query("SELECT total_deployer_commission, deployer_addr FROM COMMISSION_VIEW where deployer_addr IS NOT NULL AND total_deployer_commission >0 limit 0,5");					
 		}finally{
 			con.end();			
 	}			
@@ -96,7 +96,7 @@ async function	db_select_referrer_commission(){
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
-			return await query("SELECT total_referrer_commission, referrer_addr FROM COMMISSION_VIEW limit 0,5");					
+			return await query("SELECT total_referrer_commission, referrer_addr FROM COMMISSION_VIEW where referrer_addr IS NOT NULL AND total_referrer_commission >0 limit 0,5");					
 		}finally{
 			con.end();			
 	}			
@@ -116,14 +116,16 @@ db_select_deployer_commission().then((z)=>{
 	}
 })
 
-async function company_bridge_send_method(_deployersary, _commissionary){      
+
+async function company_bridge_send_method(_walletary, _commissionary){
+	 console.log("_walletary[0],_commissionary[0] >>>>", _walletary[0],_commissionary[0]);      
     let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(MY_INFURA_URL));
     web3.eth.handleRevert = true;                                
     const company_bridgeinstance = new bridgeweb3.eth.Contract(JSON.parse(process.env.ROPSTEN_COMPANY_BRIDGE_ABI), process.env.ROPSTEN_COMPANY_BRIDGE_ADDR);
     /// NOTE ----
     // HERE I took First Ary Element using [0] index as sample call, Note -Change it to ary     
-    var mydata = company_bridgeinstance.methods.returnCoin(_deployersary[0],_commissionary[0]).encodeABI();    
-    var requiredGas = await company_bridgeinstance.methods.returnCoin(_deployersary[0],_commissionary[0]).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET});    
+    var mydata = company_bridgeinstance.methods.returnCoin(_walletary[0],_commissionary[0]).encodeABI();    
+    var requiredGas = await company_bridgeinstance.methods.returnCoin(_walletary[0],_commissionary[0]).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET});    
     //console.log("MYDATA >>>>",mydata);       
     //console.log(">>>>> REQUIRED GAS <<<<<",requiredGas);           
         bridgeweb3.eth.getTransactionCount(process.env.BRIDGE_ADMIN_WALLET,"pending").then((mynonce)=>{                            
@@ -161,8 +163,11 @@ async function company_bridge_send_method(_deployersary, _commissionary){
         });             
 }
 
-
 /*
+db_select_deployer_commission().then((z)=>{
+	console.log("ZZZZZZ>>>>",z);
+})
+
 db_select_referrer_commission().then((z)=>{
 	console.log("ZZZZZZ>>>>",z);
 })
@@ -170,7 +175,35 @@ db_select_referrer_commission().then((z)=>{
 
 cron.schedule('0,10,20,30,40,50 * * * *', () => {
    console.log('Running a task every 10 minute');
-  	db_select_deployer_commission().then((z)=>{
-		console.log("ZZZZZZ>>>>",z);
-	});
+	db_select_deployer_commission().then((z)=>{
+		var _deployerary = [];
+		var _commissionary = [];
+		z.forEach((zz)=>{	
+			_deployerary.push(zz.deployer_addr);
+			_commissionary.push(zz.total_deployer_commission * 1000000000000000000);
+			//console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
+			//console.log("ZZZZZZ>>>>",zz.deployer_addr);
+		});
+		if(_deployerary.length > 0){
+			company_bridge_send_method(_deployerary, _commissionary);
+		}
+	})
+});
+
+
+cron.schedule('5,15,25,35,45,55 * * * *', () => {
+   console.log('Running a task every 5 minute');
+	db_select_referrer_commission().then((z)=>{
+		var _referrerary = [];
+		var _commissionary = [];
+		z.forEach((zz)=>{	
+			_referrerary.push(zz.referrer_addr);
+			_commissionary.push(zz.total_referrer_commission * 1000000000000000000);
+			//console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
+			//console.log("ZZZZZZ>>>>",zz.referrer_addr);
+		});
+		if(_referrerary.length > 0){
+			company_bridge_send_method(_referrerary, _commissionary);
+		}
+	})
 });
