@@ -137,14 +137,21 @@ body {
 }
 
 
+.main .header header .navbar .navbar-brand img{
+        width: 100px;
+}
 .main .header header .navbar .navbar-collapse form .connect-btn{
-    background-color: rgb(240, 185, 11);
+    /*background-color: rgb(240, 185, 11);*/
+    background-color: #4762ff;
+    border-color: #4762ff;
+    color: #fff;
     border-radius: 0.571429em;
 }
 
 .main .header header .navbar .navbar-collapse form .connect-btn:hover{
-    background: rgb(248, 209, 47);
-    color: rgb(30, 32, 38);
+    /*background: rgb(248, 209, 47);*/
+    background: #007bffcf;
+    color: #ffffff;
 }
 
 .container{
@@ -181,10 +188,12 @@ body {
 }
 .links a{
     font-size: 1em;
-    color: rgb(248, 209, 47);
+    /*color: rgb(248, 209, 47);*/
+    color: rgb(71 98 255);
 }
 .links a:hover {
-    color: rgb(248, 209, 47);
+    /*color: rgb(248, 209, 47);*/
+    color: rgb(71 98 255);
     text-decoration: none;
 }
 .brand-img{
@@ -201,6 +210,10 @@ body {
     margin-top: 0px;
     /* margin-left: 1em; */
 }
+.main-text h2{
+    color: #4762ff;
+}
+
 .main-text{
     font-size: 0.75em;
     color: rgb(118, 128, 143);
@@ -346,13 +359,16 @@ body {
 }
 
 .main .connect-wallet .connect-btn {
-    background-color: rgb(240, 185, 11);
+    /*background-color: rgb(240, 185, 11);*/
+    background-color: #4762ff;
+    color: #ffffff;
     border-radius: 0.571429em;
 }
 
 .main .connect-wallet .connect-btn:hover {
-    background: rgb(248, 209, 47);
-    color: rgb(30, 32, 38);
+    /*background: rgb(248, 209, 47);*/
+    background: #007bffcf;
+    color: #ffffff;
 }
 .footer {
     background-color: #ffffff;
@@ -380,8 +396,13 @@ body {
 .footer ul li.dropdown a i{
     font-size: 26px;
 }
+.footer ul li.dropdown .dropdown-menu a{
+    font-size: 14px;
+    text-align: center;
+}
 .footer ul li.dropdown a span{
-    margin: 0 10px;
+    margin: 0 20px;
+    font-size: 14px;
 }
 
 .search-box {
@@ -395,6 +416,73 @@ body {
 }
 .input-group-text{
     background-color: transparent;
+}
+
+.btn-video .btn-outline-primary:hover{
+    background-color: #4762ff;
+}
+
+/* new css */
+
+.buulIQ {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    background: rgb(245, 245, 245);
+    border-radius: 8px;
+    margin-top: 16px;
+}
+.button-copy{
+    margin: 8px 0;
+    text-align: right;
+}
+.button-copy a{
+    color: #000;
+    border: none;
+    padding: 4px 5px;
+    border-radius: 4px;
+}
+
+.address-c{
+    font-size: 14px;
+}
+
+.link .ihrMNK {
+    font-size: 18px;
+    color: rgb(30, 32, 38);
+    background: rgb(245, 245, 245);
+    border-radius: 8px;
+    border: none;
+}
+
+.link .ihrMNK:hover {
+    background: rgb(248, 209, 47);
+    color: rgb(30, 32, 38);
+}
+
+.assets-proof .box-right{
+    min-height: auto!important;
+}
+
+.history-table thead tr th{
+    border-top: none;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.history-table tbody tr td{
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.social-media li a{
+    color: #4762ff;
+    font-size: 25px;
+    padding: 0px 10px;
+}
+
+.badge {
+    color: #fff;
 }
 
 @media (min-width: 1200px){
