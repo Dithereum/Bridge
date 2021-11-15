@@ -10,7 +10,6 @@ Please check in the contract that, how much maximum array length is allowed in c
 */
 
 var mysql = require('mysql');
-const WebSocket = require('ws');
 require('dotenv').config();
 const Web3 = require("web3");
 var Tx = require('ethereumjs-tx').Transaction;
@@ -19,7 +18,6 @@ const util = require('util');
 var cron = require('node-cron');
 var MY_INFURA_URL = "https://ropsten.infura.io/v3/c5147069a6de4315aed6494e1fa53266";
 var CHAIN = {'chain':'ropsten'}
-
 
 const options = {
     timeout: 30000,
@@ -37,37 +35,12 @@ const options = {
     },
 };
 
-var getwsprovider = () =>{     
-    const wsprovider = new Web3.providers.WebsocketProvider(process.env.COMPANY_CONTRACT_URL, options);    
-    wsprovider.on("connect", ()=>{
-        console.log(" websocket connected..")        
-    })
-    wsprovider.on("error", (e)=>{
-        console.log(" websocket error..")    
-    })
-    wsprovider.on("end", (e)=>{
-        console.log(" websocket end..")        
-    })
-    wsprovider.on("close", (e)=>{
-        console.log(" websocket close..")        
-    })
-    wsprovider.on("timeout", (e)=>{
-        console.log(" websocket timeout..")        
-    })
-    wsprovider.on("exit", (e)=>{
-        console.log(" websocket exit..")        
-    })
-    wsprovider.on("ready", (e)=>{
-        console.log(" websocket ready..")
-    })    
-    return wsprovider
+var getHTTPprovider = () =>{
+	 var httpprovider = new Web3(new Web3.providers.HttpProvider(process.env.COMPANY_CONTRACT_URL, options));     
+    return httpprovider
 }
 
-let web3 = new Web3(getwsprovider());
-let web31 = new Web3(getwsprovider());
-let web32 = new Web3(getwsprovider());
-let web33 = new Web3(getwsprovider());
-let web34 = new Web3(getwsprovider());
+let web3 = new Web3(getHTTPprovider());
 
 var lastBlockNumber = 0;
 // script1 last block number fetched
@@ -81,7 +54,8 @@ async function	db_select_deployer_commission(){
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
-			return await query("SELECT total_deployer_commission, deployer_addr FROM COMMISSION_VIEW where deployer_addr IS NOT NULL AND total_deployer_commission >0 limit 0,5");					
+			//return await query("SELECT total_deployer_commission, deployer_addr FROM COMMISSION_VIEW where deployer_addr IS NOT NULL AND total_deployer_commission >0 limit 0,5");
+			return await query("SELECT deployer_commission as total_deployer_commission, _deployer_wallet as deployer_addr FROM script1_deployer_commission  where _deployer_wallet IS NOT NULL AND deployer_commission >0 limit 0,5");					
 		}finally{
 			con.end();			
 	}			
@@ -96,11 +70,13 @@ async function	db_select_referrer_commission(){
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
-			return await query("SELECT total_referrer_commission, referrer_addr FROM COMMISSION_VIEW where referrer_addr IS NOT NULL AND total_referrer_commission >0 limit 0,5");					
+			//return await query("SELECT total_referrer_commission, referrer_addr FROM COMMISSION_VIEW where referrer_addr IS NOT NULL AND total_referrer_commission >0 limit 0,5");
+			return await query("SELECT referrer_commission as total_referrer_commission, _referrer_wallet as referrer_addr FROM script1_referrer_commission  where _referrer_wallet IS NOT NULL AND referrer_commission >0 limit 0,5");							
 		}finally{
 			con.end();			
 	}			
 }
+
 
 db_select_deployer_commission().then((z)=>{
 	var _deployerary = [];
@@ -120,12 +96,16 @@ db_select_deployer_commission().then((z)=>{
 async function company_bridge_send_method(_walletary, _commissionary){
 	 console.log("_walletary[0],_commissionary[0] >>>>", _walletary[0],_commissionary[0]);      
     let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(MY_INFURA_URL));
-    web3.eth.handleRevert = true;                                
+    bridgeweb3.eth.handleRevert = true;                                
     const company_bridgeinstance = new bridgeweb3.eth.Contract(JSON.parse(process.env.ROPSTEN_COMPANY_BRIDGE_ABI), process.env.ROPSTEN_COMPANY_BRIDGE_ADDR);
     /// NOTE ----
     // HERE I took First Ary Element using [0] index as sample call, Note -Change it to ary     
-    var mydata = company_bridgeinstance.methods.returnCoin(_walletary[0],_commissionary[0]).encodeABI();    
-    var requiredGas = await company_bridgeinstance.methods.returnCoin(_walletary[0],_commissionary[0]).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET});    
+    try{
+    	var mydata = company_bridgeinstance.methods.returnCoin(_walletary[0],_commissionary[0]).encodeABI();    
+    	var requiredGas = await company_bridgeinstance.methods.returnCoin(_walletary[0].toString(),_commissionary[0].toString()).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET.toString()});
+    }catch(e){
+    	console.log("EEEE>>>>",e);
+    }    
     //console.log("MYDATA >>>>",mydata);       
     //console.log(">>>>> REQUIRED GAS <<<<<",requiredGas);           
         bridgeweb3.eth.getTransactionCount(process.env.BRIDGE_ADMIN_WALLET,"pending").then((mynonce)=>{                            
@@ -145,33 +125,21 @@ async function company_bridge_send_method(_walletary, _commissionary){
                             tx.sign(privateKey);                        
                             var serializedTx = tx.serialize(); 
                                                                     
-                            bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex'))
-                            .then((receipt)=>{
+                            bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then((receipt)=>{
                                 console.log(JSON.stringify(receipt));                                
-                            })
-                            .catch(error=>{                       
+                            }).catch(error=>{                       
                                 console.log(error);              
                             })                                                                                                                      
                     }).catch(e=>{                        
-                        console.log(e);
+                        console.log("ERRROR >>>>",e);
                     })                    
             })().catch(e=>{                
-                console.log(e);
+                console.log("ErrOr >>>>",e);
             })             
         }).catch((e)=>{                        
-            console.log(e);
+            console.log("eRRor >>>>",e);
         });             
 }
-
-/*
-db_select_deployer_commission().then((z)=>{
-	console.log("ZZZZZZ>>>>",z);
-})
-
-db_select_referrer_commission().then((z)=>{
-	console.log("ZZZZZZ>>>>",z);
-})
-*/
 
 cron.schedule('0,10,20,30,40,50 * * * *', () => {
    console.log('Running a task every 10 minute');
@@ -181,8 +149,8 @@ cron.schedule('0,10,20,30,40,50 * * * *', () => {
 		z.forEach((zz)=>{	
 			_deployerary.push(zz.deployer_addr);
 			_commissionary.push(zz.total_deployer_commission * 1000000000000000000);
-			//console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
-			//console.log("ZZZZZZ>>>>",zz.deployer_addr);
+			console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
+			console.log("ZZZZZZ>>>>",zz.deployer_addr);
 		});
 		if(_deployerary.length > 0){
 			company_bridge_send_method(_deployerary, _commissionary);
@@ -199,8 +167,8 @@ cron.schedule('5,15,25,35,45,55 * * * *', () => {
 		z.forEach((zz)=>{	
 			_referrerary.push(zz.referrer_addr);
 			_commissionary.push(zz.total_referrer_commission * 1000000000000000000);
-			//console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
-			//console.log("ZZZZZZ>>>>",zz.referrer_addr);
+			console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
+			console.log("ZZZZZZ>>>>",zz.referrer_addr);
 		});
 		if(_referrerary.length > 0){
 			company_bridge_send_method(_referrerary, _commissionary);
