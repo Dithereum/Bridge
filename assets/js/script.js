@@ -589,20 +589,20 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
                
-                var result = await ethContractInstance.methods.coinIn().send({
+                var result =  ethContractInstance.methods.coinIn().send({
                     from: myAccountAddress,
                     to: ethereumContract,
                     gasPrice: web3GasPrice,
                     gasLimit: gasLimit,
                     value : tokenAmount,       
                 });
-                if(result){
+                //if(result){
                     alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                }else{
-                    alertify.alert('Fail',"Transaction Fail, Please Try again.");
-                }
+                //}else{
+                //    alertify.alert('Fail',"Transaction Fail, Please Try again.");
+               // }
         }
         if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){          
             
@@ -627,14 +627,14 @@ $('#btnNext').click(async function(){
                             gasLimit: gasLimit,
                             value : 0,       
                         });
-                        if(result){
+                        //if(result){
                             alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                         
-                        }else{
-                            alertify.alert("Fail","Transaction Fail, Please Try again.");
-                        }
+                       // }else{
+                          //  alertify.alert("Fail","Transaction Fail, Please Try again.");
+                       // }
                     // }else{
                     //         alertify.alert("Fail","Transaction Fail, Please Try again.");
                     // }
@@ -646,14 +646,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                    //if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                   // }else{
+                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                   // }
                 }
             }
             if(asset_Name=='usdc'){
@@ -678,14 +678,14 @@ $('#btnNext').click(async function(){
                             gasLimit: gasLimit,
                             value : 0,       
                         });
-                        if(result){
+                        //if(result){
                             alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                         
-                        }else{
-                            alertify.alert("Fail","Transaction Fail, Please Try again.");
-                        }
+                        //}else{
+                            //alertify.alert("Fail","Transaction Fail, Please Try again.");
+                       // }
                     // }else{
                     //     alertify.alert("Fail","Transaction Fail, Please Try again.");
                     // }
@@ -697,14 +697,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                   // if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                         'You can check transaction here, ' +
                         '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                    //}else{
+                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                   // }
                 }
             }
             if(asset_Name=='dai'){
@@ -729,14 +729,14 @@ $('#btnNext').click(async function(){
                             gasLimit: gasLimit,
                             value : 0,       
                         });
-                        if(result){
+                        //if(result){
                             alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                             'You can check transaction here, ' +
                             '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                         
-                        }else{
-                            alertify.alert("Fail","Transaction Fail, Please Try again.");
-                        }
+                       // }else{
+                      //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+                       // }
                     // }else{
                     //     alertify.alert("Fail","Transaction Fail, Please Try again.");
                     // }
@@ -748,14 +748,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                   // if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                  //  }else{
+                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+                  //  }
                 }
             }
             if(asset_Name=='pax'){
@@ -780,14 +780,14 @@ $('#btnNext').click(async function(){
                             gasLimit: gasLimit,
                             value : 0,       
                         });
-                        if(result){
+                      //  if(result){
                             alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                         
-                        }else{
-                            alertify.alert("Fail","Transaction Fail, Please Try again.");
-                        }
+                       // }else{
+                      //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+                      //  }
                     // }else{
                     //     alertify.alert("Fail","Transaction Fail, Please Try again.");
                     // }
@@ -799,14 +799,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                  //  if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                  //  }else{
+                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+                  //  }
                 }
             }
                
@@ -830,15 +830,15 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : tokenAmount,       
                 });
-                if(result){
+              //  if(result){
                     
                     alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                 
-                }else{
-                    alertify.alert("Fail","Transaction Fail, Please Try again.");
-                }
+                //}else{
+               //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+              //  }
         }
         if(asset_To=='usdt' || asset_To=='usdc' || asset_To=='dai' || asset_To=='pax'){          
             
@@ -850,14 +850,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                   // if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                  //  }else{
+                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+                  //  }
                 
             }
             if(asset_To=='usdc'){
@@ -872,14 +872,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                   // if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                         'You can check transaction here, ' +
                         '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                    //}else{
+                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                   // }
             }
             
             if(asset_To=='dai'){
@@ -891,14 +891,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                   // if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                   // }else{
+                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                   // }
                 
             }
             if(asset_To=='pax'){
@@ -909,14 +909,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                    //if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                         'You can check transaction here, ' +
                         '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                   // }else{
+                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                   // }
                 
             }
         }
@@ -936,14 +936,14 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : tokenAmount,       
                 });
-                if(result){
+                //if(result){
                     alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                                         'You can check transaction here, ' +
                                         '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                  
-                }else{
-                    alertify.alert("Fail","Transaction Fail, Please Try again.");
-                }
+               // }else{
+                //    alertify.alert("Fail","Transaction Fail, Please Try again.");
+               // }
             }
     
             if(asset_To=='usdtbsc'){
@@ -960,14 +960,14 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : 0,       
                 });
-                if(result){
+               // if(result){
                     alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                                 'You can check transaction here, ' +
                                 '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                 
-                }else{
-                    alertify.alert("Fail","Transaction Fail, Please Try again.");
-                }
+                //}else{
+               //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+              //  }
                     
             }
             if(asset_To=='busd'){
@@ -985,14 +985,14 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    if(result){
+                   // if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                         'You can check transaction here, ' +
                         '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }  
+                  //  }else{
+                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                   // }  
             }  
 
             if(network_To=='polygon'){
@@ -1011,14 +1011,14 @@ $('#btnNext').click(async function(){
                             gasLimit: gasLimit,
                             value : tokenAmount,       
                         });
-                        if(result){
+                        //if(result){
                             alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                                                 'You can check transaction here, ' +
                                                 '<a target="_blank" href="'+POLYSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                         
-                        }else{
-                            alertify.alert("Fail","Transaction Fail, Please Try again.");
-                        }
+                       // }else{
+                       //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                       // }
                 }
             }
 
@@ -1038,14 +1038,14 @@ $('#btnNext').click(async function(){
                             gasLimit: gasLimit,
                             value : tokenAmount,       
                         });
-                        if(result){
+                       // if(result){
                             alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                                                 'You can check transaction here, ' +
                                                 '<a target="_blank" href="'+HECOSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                         
-                        }else{
-                            alertify.alert("Fail","Transaction Fail, Please Try again.");
-                        }
+                      //  }else{
+                       //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+                      //  }
                 }
             }
         
@@ -1068,14 +1068,14 @@ $('#btnNext').click(async function(){
                 gasLimit: gasLimit,
                 value : tokenAmount,       
             });
-            if(result){
+          //  if(result){
                 alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
              
-            }else{
-                alertify.alert("Fail","Transaction Fail, Please Try again.");
-            }
+          //  }else{
+           //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+           // }
         }
 
         if(asset_Name=='usdtbsc'){
@@ -1087,14 +1087,14 @@ $('#btnNext').click(async function(){
                 gasLimit: gasLimit,
                 value : 0,       
             });
-            if(result){
+            //if(result){
                 alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                             'You can check transaction here, ' +
                             '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
             
-            }else{
-                alertify.alert("Fail","Transaction Fail, Please Try again.");
-            }
+            //}else{
+           //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+           // }
                 
         }
         if(asset_Name=='busd'){
@@ -1106,14 +1106,14 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : 0,       
                 });
-                if(result){
+              //  if(result){
                     alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                     'You can check transaction here, ' +
                     '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                 
-                }else{
-                    alertify.alert("Fail","Transaction Fail, Please Try again.");
-                }  
+             //   }else{
+              //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+             //   }  
         }
     }
     //polygon network
@@ -1132,14 +1132,14 @@ $('#btnNext').click(async function(){
                 gasLimit: gasLimit,
                 value : tokenAmount,       
             });
-            if(result){
+           // if(result){
                 alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+POLYSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
              
-            }else{
-                alertify.alert("Fail","Transaction Fail, Please Try again.");
-            }
+            //}else{
+            //    alertify.alert("Fail","Transaction Fail, Please Try again.");
+           // }
     }
     //heco network
     if(network_From=='heco'){
@@ -1157,14 +1157,14 @@ $('#btnNext').click(async function(){
                 gasLimit: gasLimit,
                 value : tokenAmount,       
             });
-            if(result){
+            //if(result){
                 alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+HECOSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
              
-            }else{
-                alertify.alert("Fail","Transaction Fail, Please Try again.");
-            }
+           // }else{
+            //    alertify.alert("Fail","Transaction Fail, Please Try again.");
+           // }
     }
     //trx network
     if(network_From=='trx'){
@@ -1180,14 +1180,14 @@ $('#btnNext').click(async function(){
                 callValue: tokenAmount,
                 from: global.userAddress
             });
-            if(result){
+            //if(result){
                 alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                 'You can check transaction here, ' +
                 '<a target="_blank" href="'+HECOSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
             
-            }else{
-                alertify.alert("Fail","Transaction Fail, Please Try again.");
-            }
+          //  }else{
+           //     alertify.alert("Fail","Transaction Fail, Please Try again.");
+         //   }
         }
         if(asset_To=='usdt'){
                     let result = await tronContractInstance.tokenIn(usdtTronAddress,tokenAmount).send({
@@ -1195,14 +1195,14 @@ $('#btnNext').click(async function(){
                         callValue: 0,
                         from: global.userAddress
                     });
-                    if(result){
+                  //  if(result){
                         alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
 					                'You can check transaction here, ' +
                                     '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
                     
-                    }else{
-                        alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    }
+                   // }else{
+                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
+                  //  }
                 
         }
     }
