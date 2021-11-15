@@ -20,58 +20,8 @@ And then filter out all the transactions as smart contract calls
 */
 
 var mysql = require('mysql');
-const WebSocket = require('ws');
 require('dotenv').config();
 const Web3 = require("web3");
-var Tx = require('ethereumjs-tx').Transaction;
-var EXCLUDE_THESE = ['Transfer']
-
-/*  FOR WEB SOCKET
-const options = {
-    timeout: 30000,
-    reconnect: {
-      auto: true,
-      delay: 5000,
-      maxAttempts: 10,
-      onTimeout: false,
-    },
-    clientConfig: {
-      keepalive: true,
-      keepaliveInterval: 60000,
-      maxReceivedFrameSize: 100000000,
-      maxReceivedMessageSize: 100000000,
-    },
-};
-
-var getwsprovider = () =>{     
-    const wsprovider = new Web3.providers.WebsocketProvider(process.env.COMPANY_CONTRACT_URL, options);    
-    wsprovider.on("connect", ()=>{
-        console.log(" websocket connected..")        
-    })
-    wsprovider.on("error", (e)=>{
-        console.log(" websocket error..")    
-    })
-    wsprovider.on("end", (e)=>{
-        console.log(" websocket end..")        
-    })
-    wsprovider.on("close", (e)=>{
-        console.log(" websocket close..")        
-    })
-    wsprovider.on("timeout", (e)=>{
-        console.log(" websocket timeout..")        
-    })
-    wsprovider.on("exit", (e)=>{
-        console.log(" websocket exit..")        
-    })
-    wsprovider.on("ready", (e)=>{
-        console.log(" websocket ready..")
-    })    
-    return wsprovider
-}
-
-let web3 = new Web3(getwsprovider());
-*/
-
 
 const options = {
     timeout: 30000,
@@ -100,7 +50,8 @@ var lastBlockNumber = 0;
 // script1 last block number fetched
 
 var mydata = [];
-process.env.script1LBN = 12189105;
+//process.env.script1LBN = 12189105;
+
 async function getmyblock(BlokNum){
 	var _dt = new Date();
 	var _dt_timestamp = _dt.getTime();
@@ -115,18 +66,24 @@ async function getmyblock(BlokNum){
 			console.log("<<<< MY BLK >>>>",myblk);
 			db_insert(myblk.number, myblk);
 		}
-		process.env.script1LBN = parseInt(process.env.script1LBN) +1;
-		
+		lastBlockWorked(process.env.script1LBN);
+		process.env.script1LBN = parseInt(process.env.script1LBN) +1;		
 		setTimeout(()=>{ 
 			getmyblock(process.env.script1LBN);
-		},9000);
+		},12000);
 	}catch(e){
 		console.log("ERROR CATCHED >>>",e);
-		setTimeout(()=>{ getmyblock(BlokNum) }, 1000);	
+		setTimeout(()=>{ getmyblock(BlokNum) }, 4000);	
 	}
 }
 
-getmyblock(process.env.script1LBN);
+// FIRST time will execute this, will give "latest" block
+web3.eth.getBlockNumber().then(a => {
+	process.env.script1LBN = parseInt(a);
+	//console.log("process.env.script1LBN >>>>> ",process.env.script1LBN);	
+	getmyblock(process.env.script1LBN);
+});
+
 
 async function	db_insert(blknumber, blk){
 	var con = mysql.createConnection({
@@ -144,6 +101,29 @@ async function	db_insert(blknumber, blk){
     		else{
     			console.log("1 record inserted");
     			con.end();    			    			
+    		}
+  		});  	
+	});	
+}
+
+
+async function lastBlockWorked(_lastBlocknumber){
+	var con2 = mysql.createConnection({
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
+	});	
+	con2.connect(function(err) {
+  	if (err) { console.log("Error DB connect:",err); }
+  	console.log("Connected to dithereum database:");
+  	_lastBlocknumber = _lastBlocknumber ? _lastBlocknumber : 0; 
+  	var sql = "UPDATE LastBlock SET blockid="+_lastBlocknumber+" LIMIT 1";   	
+  	con2.query(sql, function (err, result) {
+    	if(err){ console.log("Error Occured:", err); }
+    		else{
+    			console.log("Record Updated!");
+    			con2.end();    			    			
     		}
   		});  	
 	});	

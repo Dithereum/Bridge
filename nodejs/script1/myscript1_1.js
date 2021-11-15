@@ -20,72 +20,11 @@ And then filter out all the transactions as smart contract calls
   Increment this amounts for every transaction of that particular contract deployer and contract referrer. 
 */
 
-/*****
-CREATE VIEW COMMISSION_VIEW AS  
-(SELECT SUM(deployer_commission) as total_deployer_commission, deployer_addr, NULL as total_referrer_commission, NULL as referrer_addr FROM commissions GROUP BY deployer_addr) UNION ALL  
-(SELECT NULL as deployer_addr , NULL as total_deployer_commissions, SUM(referrer_commission) as total_referrer_commission, referrer_addr  FROM commissions where referrer_commission !=0 GROUP BY referrer_addr)
-
-SELECT * FROM COMMISSION_VIEW
-*****/
-
 var mysql = require('mysql');
-const WebSocket = require('ws');
 require('dotenv').config();
 const Web3 = require("web3");
-var Tx = require('ethereumjs-tx').Transaction;
 var EXCLUDE_THESE = ['Transfer']
 const util = require('util');
-
-/* FOR SOCKET 
-const options = {
-    timeout: 30000,
-    reconnect: {
-      auto: true,
-      delay: 5000,
-      maxAttempts: 10,
-      onTimeout: false,
-    },
-    clientConfig: {
-      keepalive: true,
-      keepaliveInterval: 60000,
-      maxReceivedFrameSize: 100000000,
-      maxReceivedMessageSize: 100000000,
-    },
-};
-
-var getwsprovider = () =>{     
-    const wsprovider = new Web3.providers.WebsocketProvider(process.env.COMPANY_CONTRACT_URL, options);    
-    wsprovider.on("connect", ()=>{
-        console.log(" websocket connected..")        
-    })
-    wsprovider.on("error", (e)=>{
-        console.log(" websocket error..")    
-    })
-    wsprovider.on("end", (e)=>{
-        console.log(" websocket end..")        
-    })
-    wsprovider.on("close", (e)=>{
-        console.log(" websocket close..")        
-    })
-    wsprovider.on("timeout", (e)=>{
-        console.log(" websocket timeout..")        
-    })
-    wsprovider.on("exit", (e)=>{
-        console.log(" websocket exit..")        
-    })
-    wsprovider.on("ready", (e)=>{
-        console.log(" websocket ready..")
-    })    
-    return wsprovider
-}
-
-let web3 = new Web3(getwsprovider());
-let web31 = new Web3(getwsprovider());
-let web32 = new Web3(getwsprovider());
-let web33 = new Web3(getwsprovider());
-let web34 = new Web3(getwsprovider());
-*/
-
 
 const options = {
     timeout: 30000,
