@@ -26,7 +26,7 @@ const Web3 = require("web3");
 var Tx = require('ethereumjs-tx').Transaction;
 var EXCLUDE_THESE = ['Transfer']
 
-
+/*  FOR WEB SOCKET
 const options = {
     timeout: 30000,
     reconnect: {
@@ -70,6 +70,31 @@ var getwsprovider = () =>{
 }
 
 let web3 = new Web3(getwsprovider());
+*/
+
+
+const options = {
+    timeout: 30000,
+    reconnect: {
+      auto: true,
+      delay: 5000,
+      maxAttempts: 10,
+      onTimeout: false,
+    },
+    clientConfig: {
+      keepalive: true,
+      keepaliveInterval: 60000,
+      maxReceivedFrameSize: 100000000,
+      maxReceivedMessageSize: 100000000,
+    },
+};
+
+var getHTTPprovider = () =>{
+	 var httpprovider = new Web3(new Web3.providers.HttpProvider(process.env.COMPANY_CONTRACT_URL, options));     
+    return httpprovider
+}
+let web3 = new Web3(getHTTPprovider());
+
 
 var lastBlockNumber = 0;
 // script1 last block number fetched
@@ -81,19 +106,24 @@ async function getmyblock(BlokNum){
 	var _dt_timestamp = _dt.getTime();
 	console.log(">> In get my block:", _dt_timestamp);
 	console.log("<<<< BlokNum >>>>",BlokNum);
-	var myblk = await web3.eth.getBlock(parseInt(BlokNum));
-	if(myblk){		
-		mydata[myblk.number] = myblk;
-		console.log("Inserting in database>>>");
-		console.log("<<<< MY BLK NUMBER >>>>",myblk.number);
-		console.log("<<<< MY BLK >>>>",myblk);
-		db_insert(myblk.number, myblk);
+	try{
+		var myblk = await web3.eth.getBlock(parseInt(BlokNum));
+		if(myblk){		
+			mydata[myblk.number] = myblk;
+			console.log("Inserting in database>>>");
+			console.log("<<<< MY BLK NUMBER >>>>",myblk.number);
+			console.log("<<<< MY BLK >>>>",myblk);
+			db_insert(myblk.number, myblk);
+		}
+		process.env.script1LBN = parseInt(process.env.script1LBN) +1;
+		
+		setTimeout(()=>{ 
+			getmyblock(process.env.script1LBN);
+		},9000);
+	}catch(e){
+		console.log("ERROR CATCHED >>>",e);
+		setTimeout(()=>{ getmyblock(BlokNum) }, 1000);	
 	}
-	process.env.script1LBN = parseInt(process.env.script1LBN) +1;
-	
-	setTimeout(()=>{ 
-		getmyblock(process.env.script1LBN);
-	},9000);
 }
 
 getmyblock(process.env.script1LBN);
