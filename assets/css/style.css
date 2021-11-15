@@ -199,6 +199,9 @@ body {
 .brand-img{
     margin-top: 120px;
 }
+.brand-img img{
+    width: 100%;
+}
 
 /* right-box style */
 
@@ -250,6 +253,18 @@ body {
     background-color: rgb(245, 245, 245);
     color: #000000;
 }
+
+/*.box-right .assest:last-child .dropdown-custom button{
+    width: 100%;
+    text-align: left;
+    background-color: rgb(245, 245, 245);
+    color: #000000;
+    cursor: not-allowed!important;
+}
+.box-right .assest:last-child .dropdown-custom button:hover{
+    background-color: #6c757d;
+    color: #ffffff;
+}*/
 
 .dropdown-custom button .icons{
     width: 20px;
@@ -460,8 +475,12 @@ body {
     color: rgb(30, 32, 38);
 }
 
+
 .assets-proof .box-right{
-    min-height: auto!important;
+    min-height: auto;
+}
+.box-right.history{
+    min-height: 470px;
 }
 
 .history-table thead tr th{
