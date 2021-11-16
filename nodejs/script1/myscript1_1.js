@@ -79,16 +79,19 @@ async function getBlocksAllTransaction(num, trans){
 	console.log(">>>> Block Number >>>",num);
 	var _ary = [];
 	_ary = JSON.parse(trans).transactions;
-	
+	console.log("ARY_LEGTH >>>",_ary.length);
+	if(_ary.length == 0){
+		db_delete(num);
+	}
 	for(i=0; i<_ary.length -1; i++){
 			try{		
 					console.log("getting transactions");
-					setTimeout(()=>{}, 8000); 					
+					setTimeout(()=>{}, 6000); 					
 					await getTransactionDetails(_ary[i]);
 					setTimeout(()=>{}, 2000);		
 					if(i === (_ary.length-2)){
 						console.log(">>>>Deleting Block>>>>", num);
-						db_delete(num);			
+						db_delete(num);		
 					}			
 			}catch(e){
 				console.log("<<< Exception >>>",e);
@@ -117,9 +120,13 @@ async function getTransactionDetails(q){
 				var _contractAddress = x.contractAddress;				
 				db_insert(_contractAddress, _blockNumber, _deployer_addr, _transaction_fees_eth, _referrer_wallet='--', q);				
 				commission_insert(_transaction_fees_eth, _contractAddress, _deployer_addr, _referrer_addr);				
-			}).catch(console.log);						
+			}).catch((e)=>{
+				console.log("Error, CATCH >>>>",e);
+			})						
 		}		
-	}).catch(console.log);	
+	}).catch((e)=>{
+		console.log("Error, catch >>>",e);
+	})	
 }
 
 async function	db_select(){	
@@ -127,12 +134,16 @@ async function	db_select(){
   		host: process.env.DB_HOST.toString(),
   		user: process.env.DB_USER.toString(),
   		password: process.env.DB_PASSWORD.toString(),
-  		database: process.env.DB_DATABASE.toString()
+  		database: process.env.DB_DATABASE.toString(),
+  		connectTimeout: 100000,
+  		port:3306
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
 			return await query("SELECT * FROM script1_blocks limit 0,1");					
-		}finally{
+	}catch(e){
+		console.log("ERROR >>Catch",e);
+	}finally{
 			con.end();			
 	}			
 }
@@ -142,7 +153,9 @@ async function commission_insert(_transaction_fees_eth, _contractAddress, deploy
   		host: process.env.DB_HOST.toString(),
   		user: process.env.DB_USER.toString(),
   		password: process.env.DB_PASSWORD.toString(),
-  		database: process.env.DB_DATABASE.toString()
+  		database: process.env.DB_DATABASE.toString(),
+  		connectTimeout: 100000,
+  		port:3306
 	});
 	const insertquery = util.promisify(mycommission_con.query).bind(mycommission_con);
 	const selectquery = util.promisify(mycommission_con.query).bind(mycommission_con);	
@@ -186,8 +199,10 @@ async function commission_insert(_transaction_fees_eth, _contractAddress, deploy
 					//console.log(" >>>> Insert SQL >>>>", _INSERT_SQL1);
 				}	
 			}			
-		}finally{
-			mycommission_con.end();			
+	}catch(e){
+		console.log("ERROR >>Catch",e);
+	}finally{
+		mycommission_con.end();			
 	}			
 }
 
@@ -196,14 +211,18 @@ async function	db_insert(_contractAddress, _blockNumber, _deployer_addr, _transa
   		host: process.env.DB_HOST.toString(),
   		user: process.env.DB_USER.toString(),
   		password: process.env.DB_PASSWORD.toString(),
-  		database: process.env.DB_DATABASE.toString()
+  		database: process.env.DB_DATABASE.toString(),
+  		connectTimeout: 100000,
+  		port:3306
 	});
 	const insertquery = util.promisify(mycon.query).bind(mycon);		
 	try{			
 			var insertsql = "INSERT INTO script1 (contract_address, block_num, deployer_addr, trans_fee, referrer_wallet) VALUES ('"+_contractAddress+"',"+_blockNumber+",'"+_deployer_addr.toString()+"','"+_transaction_fees_eth.toString()+"','"+_referrer_wallet.toString()+"')";
 			
 			return await insertquery(insertsql);
-		}finally{
+	}catch(e){
+		console.log("ERROR >>Catch",e);
+	}finally{
 			mycon.end();			
 	}			
 }
@@ -214,19 +233,20 @@ async function	db_delete(_blockNumber){
   		host: process.env.DB_HOST.toString(),
   		user: process.env.DB_USER.toString(),
   		password: process.env.DB_PASSWORD.toString(),
-  		database: process.env.DB_DATABASE.toString()
+  		database: process.env.DB_DATABASE.toString(),  
+ 		connectTimeout: 100000, 				
+  		port:3306
 	});
 	const deletequery = util.promisify(mycon2.query).bind(mycon2);	
 	try{
 			var deletesql = "DELETE FROM script1_blocks where blknumber="+_blockNumber;
-			console.log("<<< DELETING >>>", deletesql);
-			try{
-				await deletequery(deletesql);			
-				getTransaction();
-			}catch(e){
-				console.log("In Catch Block >>",e);							
-			}			
-		}finally{
+			console.log("<<< DELETING >>>", deletesql);			
+			await deletequery(deletesql);			
+			getTransaction();			
+		}
+	catch(e){
+		console.log("ERROR >>Catch",e);
+	}finally{
 			mycon2.end();			
 	}			
 }
