@@ -32,7 +32,7 @@ const options = {
       auto: true,
       delay: 5000,
       maxAttempts: 10,
-      onTimeout: false,
+      onTimeout: true,
     },
     clientConfig: {
       keepalive: true,
