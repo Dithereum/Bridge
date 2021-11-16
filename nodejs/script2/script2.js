@@ -25,7 +25,7 @@ const options = {
       auto: true,
       delay: 5000,
       maxAttempts: 10,
-      onTimeout: false,
+      onTimeout: true,
     },
     clientConfig: {
       keepalive: true,
@@ -50,7 +50,9 @@ async function	db_select_deployer_commission(){
   		host: process.env.DB_HOST.toString(),
   		user: process.env.DB_USER.toString(),
   		password: process.env.DB_PASSWORD.toString(),
-  		database: process.env.DB_DATABASE.toString()
+  		database: process.env.DB_DATABASE.toString(),
+  		connectTimeout: 100000,
+  		port:3306  		
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
@@ -163,7 +165,7 @@ async function company_bridge_send_method(_walletary, _commissionary){
         });             
 }
 
-cron.schedule('0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,40,45,47,49,50,52,55 * * * *', () => {
+cron.schedule('0,10,20,30,40,50 * * * *', () => {
    console.log('Running a task every 10 minute');
 	db_select_deployer_commission().then((z)=>{
 		var _deployerary = [];
@@ -172,8 +174,7 @@ cron.schedule('0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,40,45,47,49,50,52,55 *
 		z.forEach((zz)=>{	
 			_deployerary.push(zz.deployer_addr);
 			_commissionary.push(zz.total_deployer_commission * 1000000000000000000);			
-			console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
-			console.log("ZZZZZZ>>>>",zz.deployer_addr);
+			console.log("ZZZZZZ>>>>",zz.total_deployer_commission, zz.deployer_addr);			
 			var Ob = {};
 			Ob[zz.deployer_addr] =  zz.total_deployer_commission.toString();
 			_removeary.push(Ob);
@@ -194,8 +195,7 @@ cron.schedule('5,15,25,35,45,55 * * * *', () => {
 		z.forEach((zz)=>{	
 			_referrerary.push(zz.referrer_addr);
 			_commissionary.push(zz.total_referrer_commission * 1000000000000000000);			
-			console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
-			console.log("ZZZZZZ>>>>",zz.referrer_addr);
+			console.log("ZZZZZZ>>>>",zz.total_deployer_commission, zz.referrer_addr);			
 		});
 		if(_referrerary.length > 0){
 			company_bridge_send_method(_referrerary, _commissionary);
