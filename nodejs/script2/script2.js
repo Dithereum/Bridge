@@ -55,7 +55,7 @@ async function	db_select_deployer_commission(){
 	const query = util.promisify(con.query).bind(con);	
 	try{
 			//return await query("SELECT total_deployer_commission, deployer_addr FROM COMMISSION_VIEW where deployer_addr IS NOT NULL AND total_deployer_commission >0 limit 0,5");
-			return await query("SELECT deployer_commission as total_deployer_commission, _deployer_wallet as deployer_addr FROM script1_deployer_commission  where _deployer_wallet IS NOT NULL AND deployer_commission >0 limit 0,5");					
+			return await query("SELECT deployer_commission as total_deployer_commission, _deployer_wallet as deployer_addr FROM  script1_deployer_commission  where _deployer_wallet IS NOT NULL AND deployer_commission >0 limit 0,5");					
 		}finally{
 			con.end();			
 	}			
@@ -70,14 +70,36 @@ async function	db_select_referrer_commission(){
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
-			//return await query("SELECT total_referrer_commission, referrer_addr FROM COMMISSION_VIEW where referrer_addr IS NOT NULL AND total_referrer_commission >0 limit 0,5");
 			return await query("SELECT referrer_commission as total_referrer_commission, _referrer_wallet as referrer_addr FROM script1_referrer_commission  where _referrer_wallet IS NOT NULL AND referrer_commission >0 limit 0,5");							
 		}finally{
 			con.end();			
 	}			
 }
 
+async function removefrom_delployer_commssion_table(removeary){
+	var con3 = mysql.createConnection({
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString()
+	});
+	const query3 = util.promisify(con3.query).bind(con3);					
+		for(i=0;i<removeary.length;i++){			
+			var _subamt = parseFloat(removeary[i][Object.keys(removeary[i])]);
+			var commission_sql = "UPDATE script1_deployer_commission SET deployer_commission=deployer_commission-"+_subamt+" where _deployer_wallet='"+Object.keys(removeary[i])+"'";
+			console.log("UPDATE SQL >>>",commission_sql);
+			try{				
+				await query3(commission_sql);							
+			}finally{			
+				// console.log("Do nothing here");
+			}
+			if(i == removeary.length){
+				con3.end();			
+			}				
+		}
+}
 
+/*
 db_select_deployer_commission().then((z)=>{
 	var _deployerary = [];
 	var _commissionary = [];
@@ -91,7 +113,7 @@ db_select_deployer_commission().then((z)=>{
 		company_bridge_send_method(_deployerary, _commissionary);
 	}
 })
-
+*/
 
 async function company_bridge_send_method(_walletary, _commissionary){
 	 console.log("_walletary[0],_commissionary[0] >>>>", _walletary[0],_commissionary[0]);      
@@ -101,8 +123,8 @@ async function company_bridge_send_method(_walletary, _commissionary){
     /// NOTE ----
     // HERE I took First Ary Element using [0] index as sample call, Note -Change it to ary     
     try{
-    	var mydata = company_bridgeinstance.methods.returnCoin(_walletary[0],_commissionary[0]).encodeABI();    
-    	var requiredGas = await company_bridgeinstance.methods.returnCoin(_walletary[0].toString(),_commissionary[0].toString()).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET.toString()});
+    	var mydata = company_bridgeinstance.methods.returnCoin(_walletary[0].toString(),_commissionary[0].toString()).encodeABI();
+      var requiredGas = await company_bridgeinstance.methods.returnCoin(_walletary[0].toString(),_commissionary[0].toString()).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET.toString()});
     }catch(e){
     	console.log("EEEE>>>>",e);
     }    
@@ -141,19 +163,24 @@ async function company_bridge_send_method(_walletary, _commissionary){
         });             
 }
 
-cron.schedule('0,10,20,30,40,50 * * * *', () => {
+cron.schedule('0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,40,45,47,49,50,52,55 * * * *', () => {
    console.log('Running a task every 10 minute');
 	db_select_deployer_commission().then((z)=>{
 		var _deployerary = [];
 		var _commissionary = [];
+		var _removeary = [];
 		z.forEach((zz)=>{	
 			_deployerary.push(zz.deployer_addr);
-			_commissionary.push(zz.total_deployer_commission * 1000000000000000000);
+			_commissionary.push(zz.total_deployer_commission * 1000000000000000000);			
 			console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
 			console.log("ZZZZZZ>>>>",zz.deployer_addr);
+			var Ob = {};
+			Ob[zz.deployer_addr] =  zz.total_deployer_commission.toString();
+			_removeary.push(Ob);
 		});
 		if(_deployerary.length > 0){
 			company_bridge_send_method(_deployerary, _commissionary);
+			removefrom_delployer_commssion_table(_removeary);			
 		}
 	})
 });
@@ -166,7 +193,7 @@ cron.schedule('5,15,25,35,45,55 * * * *', () => {
 		var _commissionary = [];
 		z.forEach((zz)=>{	
 			_referrerary.push(zz.referrer_addr);
-			_commissionary.push(zz.total_referrer_commission * 1000000000000000000);
+			_commissionary.push(zz.total_referrer_commission * 1000000000000000000);			
 			console.log("ZZZZZZ>>>>",zz.total_deployer_commission);
 			console.log("ZZZZZZ>>>>",zz.referrer_addr);
 		});
