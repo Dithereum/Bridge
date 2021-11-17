@@ -516,7 +516,7 @@ function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL){
             gasPrice : web3GasPrice,
             gasLimit: gasLimit,
             data: data, // deploying a contracrt
-            value : 0,
+            value : value,
             }).on('transactionHash',function(hash){
                 alertify.alert("Transaction Recorded","Please wait upto 5 min for your coins to reflect.<br>" +
                                                     "Please check the status of transaction <a href='"+TX_URL+hash+"' target='_blank'> Here</a>", function(){});
@@ -524,7 +524,7 @@ function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL){
                 alertify.alert('Transaction Success', 'Your transaction is confirmed successfully.<br>'+
                                                        'Dithereum Bridge will send you the coins soon.<br>'+
                                                        'You can check transaction details into History page.<br>'+
-                                                       'If you have any questions, please reach out to Dithereum Bridge Support', function(){}); 
+                                                       'If you have any questions, please reach out to Dithereum Bridge Support', function(){});  
             }).on('error',function(error){
                 var ErrorMsg=error.message;
                 alertify.alert('Error', ""+ErrorMsg, function(){});
@@ -533,10 +533,59 @@ function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL){
 
 //coinIn code 
 
+function logEtoLongNumber(amountInLogE){
+    
+    amountInLogE = amountInLogE.toString();
+    var noDecimalDigits = "";
+  
+    if(amountInLogE.includes("e-")){
+      
+      var splitString = amountInLogE.split("e-"); //split the string from 'e-'
+  
+      noDecimalDigits = splitString[0].replace(".", ""); //remove decimal point
+  
+      //how far decimals to move
+      var zeroString = "";
+      for(var i=1; i < splitString[1]; i++){
+        zeroString += "0";
+      }
+  
+      return  "0."+zeroString+noDecimalDigits;
+      
+    }
+    else if(amountInLogE.includes("e+")){
+  
+      var splitString = amountInLogE.split("e+"); //split the string from 'e+'
+      var ePower = parseInt(splitString[1]);
+  
+      noDecimalDigits = splitString[0].replace(".", ""); //remove decimal point
+  
+      if(ePower >= noDecimalDigits.length-1){
+        var zerosToAdd = ePower  - noDecimalDigits.length;
+  
+        for(var i=0; i <= zerosToAdd; i++){
+          noDecimalDigits += "0";
+        }
+  
+      }
+      else{
+        //this condition will run if the e+n is less than numbers
+        var stringFirstHalf = noDecimalDigits.slice(0, ePower+1);
+        var stringSecondHalf = noDecimalDigits.slice(ePower+1);
+  
+        return stringFirstHalf+"."+stringSecondHalf;
+      }
+      return noDecimalDigits;
+    }
+    return amountInLogE;  //by default it returns stringify value of original number if its not logarithm number
+  }
+
 $('#btnNext').click(async function(){
     var confirmMessage = '';
     var tokenAmount = $('#tokenAmount').val();
     var tAmount = tokenAmount;
+    //var approveAmount = '1000000000000000000000000000000';
+    var approveAmount = logEtoLongNumber(1000000000000000000000000000000000);
         if(tokenAmount==0 || tokenAmount=="" || tokenAmount<0){
             alertify.alert("Warning","Please enter Amount.");
             return false;
@@ -623,8 +672,10 @@ $('#btnNext').click(async function(){
                     from: myAccountAddress, // default from address
                 });
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                console.log(allowance);
+                console.log(tAmount);
                 if(allowance<tAmount){
-                    var result = usdtContractInstance.methods.approve(ethereumContract,tokenAmount).send({
+                    var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
                         from: myAccountAddress,
                         to: usdtEthAddress,
                         gasPrice: web3GasPrice,
@@ -718,13 +769,13 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_To=='eth'){
-                var data = ethContractInstance.methods.coinIn().encodeABI();
+                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,tokenAmount,ETHERSCAN_URL);
         }
         if(asset_To=='usdt' || asset_To=='usdc' || asset_To=='dai' || asset_To=='pax'){          
             
             if(asset_To=='usdt'){  
-                var data = ethContractInstance.methods.tokenIn(usdtAddress,tokenAmount).encodeABI();
+                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL); 
             }
             if(asset_To=='usdc'){
@@ -743,14 +794,13 @@ $('#btnNext').click(async function(){
         }
 
             if(asset_To=='bnb'){
-                console.log('bn');
                 bscContractInstance = new myweb3.eth.Contract(bscABI, bscContract, {
                     from: myAccountAddress, // default from address
                 });
                 
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                var data = bscContractInstance.methods.coinIn().encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
             }
     
@@ -786,7 +836,8 @@ $('#btnNext').click(async function(){
                    
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
-                    var data = polygonContractInstance.methods.coinIn().encodeABI();
+                    //var data = polygonContractInstance.methods.coinIn().encodeABI();
+                    var data = polygonContractInstance.methods.tokenIn(polygonContract,tokenAmount).encodeABI();
                     processTx(data,polygonContract,web3GasPrice,gasLimit,tokenAmount,POLYSCAN_URL);
                 }
             }
@@ -799,7 +850,8 @@ $('#btnNext').click(async function(){
                 if(asset_To='ht'){
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
-                    var data = hecoContractInstance.methods.coinIn().encodeABI();
+                   // var data = hecoContractInstance.methods.coinIn().encodeABI();
+                   var data = hecoContractInstance.methods.tokenIn(hecoContract,tokenAmount).encodeABI();
                     processTx(data,hecoContract,web3GasPrice,gasLimit,tokenAmount,HECOSCAN_URL);
                 }
             }
@@ -816,6 +868,7 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
 
         if(asset_Name=='bnb'){
+            console.log(tokenAmount);
             var data = bscContractInstance.methods.coinIn().encodeABI();
             processTx(data,bscContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
         }
