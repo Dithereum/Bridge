@@ -830,7 +830,7 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_To=='eth'){
                 var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
-                processTx(data,ethereumContract,web3GasPrice,gasLimit,tokenAmount,ETHERSCAN_URL);
+                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
         }
         if(asset_To=='usdt' || asset_To=='usdc' || asset_To=='dai' || asset_To=='pax'){          
             
@@ -861,7 +861,7 @@ $('#btnNext').click(async function(){
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
                 var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
-                processTx(data,bscContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
             }
     
             if(asset_To=='usdtbsc'){
@@ -898,7 +898,7 @@ $('#btnNext').click(async function(){
                     const web3GasPrice = await myweb3.eth.getGasPrice();
                     //var data = polygonContractInstance.methods.coinIn().encodeABI();
                     var data = polygonContractInstance.methods.tokenIn(polygonContract,tokenAmount).encodeABI();
-                    processTx(data,polygonContract,web3GasPrice,gasLimit,tokenAmount,POLYSCAN_URL);
+                    processTx(data,polygonContract,web3GasPrice,gasLimit,0,POLYSCAN_URL);
                 }
             }
 
@@ -912,7 +912,7 @@ $('#btnNext').click(async function(){
                     const web3GasPrice = await myweb3.eth.getGasPrice();
                    // var data = hecoContractInstance.methods.coinIn().encodeABI();
                    var data = hecoContractInstance.methods.tokenIn(hecoContract,tokenAmount).encodeABI();
-                    processTx(data,hecoContract,web3GasPrice,gasLimit,tokenAmount,HECOSCAN_URL);
+                    processTx(data,hecoContract,web3GasPrice,gasLimit,0,HECOSCAN_URL);
                 }
             }
         
