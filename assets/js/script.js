@@ -521,9 +521,10 @@ function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL){
                 alertify.alert("Transaction Recorded","Please wait upto 5 min for your coins to reflect.<br>" +
                                                     "Please check the status of transaction <a href='"+TX_URL+hash+"' target='_blank'> Here</a>", function(){});
             }).on('receipt', function(receipt){
-                alertify.alert('Transaction Success', 'Transaction Done successfully', function(){
-                //window.location.reload();
-                });  
+                alertify.alert('Transaction Success', 'Your transaction is confirmed successfully.<br>'+
+                                                       'Dithereum Bridge will send you the coins soon.<br>'+
+                                                       'You can check transaction details into History page.<br>'+
+                                                       'If you have any questions, please reach out to Dithereum Bridge Support', function(){}); 
             }).on('error',function(error){
                 var ErrorMsg=error.message;
                 alertify.alert('Error', ""+ErrorMsg, function(){});
