@@ -172,7 +172,8 @@ $('#assetFrom li').click(function(){
         $('#receiveTokenImg').attr('src','assets/img/bnb-logo.png');
         $('#reciveName').html('BNB');
         $('#feeText').hide();
-        addNetowrk('DITH');
+        //addNetowrk('DITH');
+        addNetowrk('BNB');
     }
     if(name=="trx"){
         
@@ -216,7 +217,7 @@ $('#assetFrom li').click(function(){
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png');
         $('#reciveName').html('MATIC');
         $('#feeText').hide();
-        addNetowrk('DITH');
+        addNetowrk('POLYGON');
     }
     if(name=="ht"){
         asset_Name = 'ht';
@@ -244,7 +245,7 @@ $('#assetFrom li').click(function(){
         $('#receiveTokenImg').attr('src','assets/img/heco-logo.png');
         $('#reciveName').html('HT');
         $('#feeText').hide();
-        addNetowrk('DITH');;
+        addNetowrk('HECO');;
     }
     if(name=="dusd"){
         $('#assetFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> DUSD (Dithereum Network)');
@@ -255,7 +256,7 @@ $('#assetFrom li').click(function(){
         network_To = 'bsc';
         $('.tokenCheck').hide();
         $('#dusdTokencheck').show();
-        addNetowrk('DITH');
+        addNetowrk('BNB');
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png');
         $('#reciveName').html('USDT');
         //$('#feeText').html('(Fee 10 USDT)');
@@ -506,6 +507,29 @@ $('#tokenAmount').on('keyup keydown change', function(e){
 
 });
 
+//function for tx alert etc
+function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL){
+        myweb3.eth.sendTransaction({
+            from: myAccountAddress,
+            to: contractAddress,
+            //gasPrice: localStorage.getItem('ethGasPrice'),
+            gasPrice : web3GasPrice,
+            gasLimit: gasLimit,
+            data: data, // deploying a contracrt
+            value : 0,
+            }).on('transactionHash',function(hash){
+                alertify.alert("Transaction Recorded","Please wait upto 5 min for your coins to reflect.<br>" +
+                                                    "Please check the status of transaction <a href='"+TX_URL+hash+"' target='_blank'> Here</a>", function(){});
+            }).on('receipt', function(receipt){
+                alertify.alert('Transaction Success', 'Transaction Done successfully', function(){
+                //window.location.reload();
+                });  
+            }).on('error',function(error){
+                var ErrorMsg=error.message;
+                alertify.alert('Error', ""+ErrorMsg, function(){});
+            });
+}
+
 //coinIn code 
 
 $('#btnNext').click(async function(){
@@ -588,21 +612,8 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
-               
-                var result =  ethContractInstance.methods.coinIn().send({
-                    from: myAccountAddress,
-                    to: ethereumContract,
-                    gasPrice: web3GasPrice,
-                    gasLimit: gasLimit,
-                    value : tokenAmount,       
-                });
-                //if(result){
-                    alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                //}else{
-                //    alertify.alert('Fail',"Transaction Fail, Please Try again.");
-               // }
+              var data = ethContractInstance.methods.coinIn().encodeABI();
+              processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
         }
         if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){          
             
@@ -619,41 +630,13 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                   // if(result){
-                        var result = await ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).send({
-                            from: myAccountAddress,
-                            to: ethereumContract,
-                            gasPrice: web3GasPrice,
-                            gasLimit: gasLimit,
-                            value : 0,       
-                        });
-                        //if(result){
-                            alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                        
-                       // }else{
-                          //  alertify.alert("Fail","Transaction Fail, Please Try again.");
-                       // }
-                    // }else{
-                    //         alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    // }
+
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
+                   
                 }else{
-                    var result = await ethContractInstance.methods.tokenIn(usdtAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                    //if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                   // }else{
-                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                   // }
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
             if(asset_Name=='usdc'){
@@ -670,41 +653,12 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    //if(result){
-                        var result = await ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).send({
-                            from: myAccountAddress,
-                            to: ethereumContract,
-                            gasPrice: web3GasPrice,
-                            gasLimit: gasLimit,
-                            value : 0,       
-                        });
-                        //if(result){
-                            alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                        
-                        //}else{
-                            //alertify.alert("Fail","Transaction Fail, Please Try again.");
-                       // }
-                    // }else{
-                    //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    // }
+
+                    var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);                  
                 }else{
-                    var result = await ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                   // if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                        'You can check transaction here, ' +
-                        '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                    //}else{
-                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                   // }
+                    var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
             if(asset_Name=='dai'){
@@ -721,41 +675,12 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                   //if(result){
-                        var result = await ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).send({
-                            from: myAccountAddress,
-                            to: ethereumContract,
-                            gasPrice: web3GasPrice,
-                            gasLimit: gasLimit,
-                            value : 0,       
-                        });
-                        //if(result){
-                            alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                            'You can check transaction here, ' +
-                            '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                        
-                       // }else{
-                      //      alertify.alert("Fail","Transaction Fail, Please Try again.");
-                       // }
-                    // }else{
-                    //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    // }
+
+                    var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }else{
-                    var result = await ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                   // if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                  //  }else{
-                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
-                  //  }
+                    var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
             if(asset_Name=='pax'){
@@ -772,41 +697,11 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                   // if(result){
-                        var result = await ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).send({
-                            from: myAccountAddress,
-                            to: ethereumContract,
-                            gasPrice: web3GasPrice,
-                            gasLimit: gasLimit,
-                            value : 0,       
-                        });
-                      //  if(result){
-                            alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                        
-                       // }else{
-                      //      alertify.alert("Fail","Transaction Fail, Please Try again.");
-                      //  }
-                    // }else{
-                    //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                    // }
+                    var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }else{
-                    var result = await ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                  //  if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                  //  }else{
-                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
-                  //  }
+                    var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).encodeABI();
+                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
                
@@ -822,128 +717,40 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_To=='eth'){
-            
-                var result = await ethContractInstance.methods.coinIn().send({
-                    from: myAccountAddress,
-                    to: ethereumContract,
-                    gasPrice: web3GasPrice,
-                    gasLimit: gasLimit,
-                    value : tokenAmount,       
-                });
-              //  if(result){
-                    
-                    alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                
-                //}else{
-               //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-              //  }
+                var data = ethContractInstance.methods.coinIn().encodeABI();
+                processTx(data,ethereumContract,web3GasPrice,gasLimit,tokenAmount,ETHERSCAN_URL);
         }
         if(asset_To=='usdt' || asset_To=='usdc' || asset_To=='dai' || asset_To=='pax'){          
             
-            if(asset_To=='usdt'){    
-                    var result = await ethContractInstance.methods.tokenIn(usdtAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                   // if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                  //  }else{
-                  //      alertify.alert("Fail","Transaction Fail, Please Try again.");
-                  //  }
-                
+            if(asset_To=='usdt'){  
+                var data = ethContractInstance.methods.tokenIn(usdtAddress,tokenAmount).encodeABI();
+                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL); 
             }
             if(asset_To=='usdc'){
-            
-               
-                const allowance = await usdcContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
-               
-                    var result = await ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                   // if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                        'You can check transaction here, ' +
-                        '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                    //}else{
-                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                   // }
+                var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).encodeABI();
+                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
             }
             
             if(asset_To=='dai'){
-               
-                    var result = await ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                   // if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                   // }else{
-                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                   // }
-                
+                var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).encodeABI();
+                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
             }
             if(asset_To=='pax'){
-                    var result = await ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: ethereumContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                    //if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                        'You can check transaction here, ' +
-                        '<a target="_blank" href="'+ETHERSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                   // }else{
-                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                   // }
-                
+                var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).encodeABI();
+                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
             }
         }
 
             if(asset_To=='bnb'){
-                
+                console.log('bn');
                 bscContractInstance = new myweb3.eth.Contract(bscABI, bscContract, {
                     from: myAccountAddress, // default from address
                 });
                 
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                var result = await bscContractInstance.methods.coinIn().send({
-                    from: myAccountAddress,
-                    to: bscContract,
-                    gasPrice: web3GasPrice,
-                    gasLimit: gasLimit,
-                    value : tokenAmount,       
-                });
-                //if(result){
-                    alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                                        'You can check transaction here, ' +
-                                        '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                 
-               // }else{
-                //    alertify.alert("Fail","Transaction Fail, Please Try again.");
-               // }
+                var data = bscContractInstance.methods.coinIn().encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
             }
     
             if(asset_To=='usdtbsc'){
@@ -953,21 +760,8 @@ $('#btnNext').click(async function(){
                
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                var result = await bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).send({
-                    from: myAccountAddress,
-                    to: bscContract,
-                    gasPrice: web3GasPrice,
-                    gasLimit: gasLimit,
-                    value : 0,       
-                });
-               // if(result){
-                    alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                                'You can check transaction here, ' +
-                                '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                
-                //}else{
-               //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-              //  }
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                     
             }
             if(asset_To=='busd'){
@@ -978,21 +772,8 @@ $('#btnNext').click(async function(){
                
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                    var result = await bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).send({
-                        from: myAccountAddress,
-                        to: bscContract,
-                        gasPrice: web3GasPrice,
-                        gasLimit: gasLimit,
-                        value : 0,       
-                    });
-                   // if(result){
-                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                        'You can check transaction here, ' +
-                        '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                    
-                  //  }else{
-                   //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                   // }  
+                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
             }  
 
             if(network_To=='polygon'){
@@ -1004,21 +785,8 @@ $('#btnNext').click(async function(){
                    
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
-                        var result = await polygonContractInstance.methods.coinIn().send({
-                            from: myAccountAddress,
-                            to: polygonContract,
-                            gasPrice: web3GasPrice,
-                            gasLimit: gasLimit,
-                            value : tokenAmount,       
-                        });
-                        //if(result){
-                            alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                                                'You can check transaction here, ' +
-                                                '<a target="_blank" href="'+POLYSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                        
-                       // }else{
-                       //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                       // }
+                    var data = polygonContractInstance.methods.coinIn().encodeABI();
+                    processTx(data,polygonContract,web3GasPrice,gasLimit,tokenAmount,POLYSCAN_URL);
                 }
             }
 
@@ -1028,24 +796,10 @@ $('#btnNext').click(async function(){
                 });
                 
                 if(asset_To='ht'){
-                    
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
-                        var result = await hecoContractInstance.methods.coinIn().send({
-                            from: myAccountAddress,
-                            to: hecoContract,
-                            gasPrice: web3GasPrice,
-                            gasLimit: gasLimit,
-                            value : tokenAmount,       
-                        });
-                       // if(result){
-                            alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                                                'You can check transaction here, ' +
-                                                '<a target="_blank" href="'+HECOSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                        
-                      //  }else{
-                       //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-                      //  }
+                    var data = hecoContractInstance.methods.coinIn().encodeABI();
+                    processTx(data,hecoContract,web3GasPrice,gasLimit,tokenAmount,HECOSCAN_URL);
                 }
             }
         
@@ -1061,59 +815,50 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
 
         if(asset_Name=='bnb'){
-            var result = await bscContractInstance.methods.coinIn().send({
-                from: myAccountAddress,
-                to: bscContract,
-                gasPrice: web3GasPrice,
-                gasLimit: gasLimit,
-                value : tokenAmount,       
-            });
-          //  if(result){
-                alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-             
-          //  }else{
-           //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-           // }
+            var data = bscContractInstance.methods.coinIn().encodeABI();
+            processTx(data,bscContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
         }
 
         if(asset_Name=='usdtbsc'){
-               
-            var result = await bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).send({
-                from: myAccountAddress,
-                to: bscContract,
-                gasPrice: web3GasPrice,
-                gasLimit: gasLimit,
-                value : 0,       
+            var usdtbscContractInstance =  new myweb3.eth.Contract(usdtBscABI, usdtBscAddress, {
+                from: myAccountAddress, // default from address
             });
-            //if(result){
-                alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                            'You can check transaction here, ' +
-                            '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-            
-            //}else{
-           //     alertify.alert("Fail","Transaction Fail, Please Try again.");
-           // }
-                
-        }
-        if(asset_Name=='busd'){
-            
-                var result = await bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).send({
+            const allowance = await usdtbscContractInstance.methods.allowance(myAccountAddress,bscContract).call();
+            if(allowance<tAmount){
+                var result = usdtbscContractInstance.methods.approve(bscContract,tokenAmount).send({
                     from: myAccountAddress,
-                    to: bscContract,
+                    to: usdtBscAddress,
                     gasPrice: web3GasPrice,
                     gasLimit: gasLimit,
                     value : 0,       
                 });
-              //  if(result){
-                    alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-                    'You can check transaction here, ' +
-                    '<a target="_blank" href="'+BSCSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-                
-             //   }else{
-              //      alertify.alert("Fail","Transaction Fail, Please Try again.");
-             //   }  
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
+            }else{
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
+            }            
+        }
+        if(asset_Name=='busd'){
+            var busdbscContractInstance =  new myweb3.eth.Contract(busdBscABI, busdBscAddress, {
+                from: myAccountAddress, // default from address
+            });
+            const allowance = await busdbscContractInstance.methods.allowance(myAccountAddress,bscContract).call();
+            if(allowance<tAmount){
+                var result = busdbscContractInstance.methods.approve(bscContract,tokenAmount).send({
+                    from: myAccountAddress,
+                    to: busdBscAddress,
+                    gasPrice: web3GasPrice,
+                    gasLimit: gasLimit,
+                    value : 0,       
+                });
+                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);      
+            }else{
+                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).encodeABI();
+                processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);   
+            } 
+            
         }
     }
     //polygon network
@@ -1125,21 +870,8 @@ $('#btnNext').click(async function(){
        
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
-            var result = await polygonContractInstance.methods.coinIn().send({
-                from: myAccountAddress,
-                to: polygonContract,
-                gasPrice: web3GasPrice,
-                gasLimit: gasLimit,
-                value : tokenAmount,       
-            });
-           // if(result){
-                alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+POLYSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-             
-            //}else{
-            //    alertify.alert("Fail","Transaction Fail, Please Try again.");
-           // }
+        var data = polygonContractInstance.methods.coinIn().encodeABI();
+        processTx(data,polygonContract,web3GasPrice,gasLimit,tokenAmount,POLYSCAN_URL);            
     }
     //heco network
     if(network_From=='heco'){
@@ -1150,21 +882,8 @@ $('#btnNext').click(async function(){
        
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
-            var result = await hecoContractInstance.methods.coinIn().send({
-                from: myAccountAddress,
-                to: hecoContract,
-                gasPrice: web3GasPrice,
-                gasLimit: gasLimit,
-                value : tokenAmount,       
-            });
-            //if(result){
-                alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
-					                'You can check transaction here, ' +
-                                    '<a target="_blank" href="'+HECOSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
-             
-           // }else{
-            //    alertify.alert("Fail","Transaction Fail, Please Try again.");
-           // }
+        var data = hecoContractInstance.methods.coinIn().encodeABI();
+        processTx(data,hecoContract,web3GasPrice,gasLimit,tokenAmount,HECOSCAN_URL);            
     }
     //trx network
     if(network_From=='trx'){
