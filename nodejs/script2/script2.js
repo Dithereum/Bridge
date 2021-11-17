@@ -19,6 +19,15 @@ var cron = require('node-cron');
 var MY_INFURA_URL = "https://ropsten.infura.io/v3/c5147069a6de4315aed6494e1fa53266";
 var CHAIN = {'chain':'ropsten'}
 
+var WALLET_NONCE_COUNT = []; // to keep track for nonce  
+var LAST_WALLET_INDEX = 0; 
+var BRIDGE_ADMIN_WALLET_ARY = process.env.BRIDGE_ADMIN_WALLET_ARY.split(','); 
+var BRIDGE_ADMIN_WALLET_ARY_PK = process.env.BRIDGE_ADMIN_WALLET_ARY_PK.split(',');
+//console.log(">>>>>>>", BRIDGE_ADMIN_WALLET_ARY);
+//console.log(">>>>>>>", BRIDGE_ADMIN_WALLET_ARY_PK);
+var max_admin_wallets = BRIDGE_ADMIN_WALLET_ARY.length; 
+console.log(">>>>>>>", max_admin_wallets, BRIDGE_ADMIN_WALLET_ARY_PK.length);
+
 const options = {
     timeout: 30000,
     reconnect: {
@@ -117,6 +126,7 @@ db_select_deployer_commission().then((z)=>{
 })
 */
 
+/*
 async function company_bridge_send_method(_walletary, _commissionary){
 	 console.log("_walletary[0],_commissionary[0] >>>>", _walletary[0],_commissionary[0]);      
     let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(MY_INFURA_URL));
@@ -163,6 +173,77 @@ async function company_bridge_send_method(_walletary, _commissionary){
         }).catch((e)=>{                        
             console.log("eRRor >>>>",e);
         });             
+}
+*/
+
+async function company_bridge_send_method(_walletary, _commissionary){
+	 console.log("_walletary[0],_commissionary[0] >>>>", _walletary[0],_commissionary[0]);      
+    let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(MY_INFURA_URL));
+    bridgeweb3.eth.handleRevert = true;                                
+    const company_bridgeinstance = new bridgeweb3.eth.Contract(JSON.parse(process.env.ROPSTEN_COMPANY_BRIDGE_ABI), process.env.ROPSTEN_COMPANY_BRIDGE_ADDR);
+    /// NOTE ----
+    // HERE I took First Ary Element using [0] index as sample call, Note -Change it to ary     
+    try{
+    	var mydata = company_bridgeinstance.methods.returnCoin(_walletary[0].toString(),_commissionary[0].toString()).encodeABI();
+      var requiredGas = await company_bridgeinstance.methods.returnCoin(_walletary[0].toString(),_commissionary[0].toString()).estimateGas({from: process.env.BRIDGE_ADMIN_WALLET.toString()});      
+    }catch(e){
+    	console.log("EEEE>>>>",e);
+    }    
+    console.log("MYDATA >>>>",mydata);       
+    console.log(">>>>> REQUIRED GAS <<<<<",requiredGas);
+    var mynonce = 0;
+    var bridge_admin_wallet;
+    var bridge_admin_wallet_ary_pk;
+    var transcount;
+    console.log("<<<< LAST_WALLET_INDEX >>>>",LAST_WALLET_INDEX);
+    console.log("<<< max_admin_wallets >>>",max_admin_wallets);
+	 if(LAST_WALLET_INDEX === (max_admin_wallets-1)){
+	 		bridge_admin_wallet = BRIDGE_ADMIN_WALLET_ARY[0];
+	 		bridge_admin_wallet_ary_pk = BRIDGE_ADMIN_WALLET_ARY_PK[0];
+			LAST_WALLET_INDEX = 0;			
+	 }else{
+			var _index = LAST_WALLET_INDEX+1;
+			LAST_WALLET_INDEX = _index;
+			bridge_admin_wallet = BRIDGE_ADMIN_WALLET_ARY[LAST_WALLET_INDEX];
+			bridge_admin_wallet_ary_pk = BRIDGE_ADMIN_WALLET_ARY_PK[LAST_WALLET_INDEX];			
+	 }
+	 transcount = await bridgeweb3.eth.getTransactionCount(bridge_admin_wallet.toString());
+	 var MY_TX_COUNT = WALLET_NONCE_COUNT[bridge_admin_wallet] ? (WALLET_NONCE_COUNT[bridge_admin_wallet]+1) : 0;
+	 mynonce = transcount + MY_TX_COUNT;	
+	 WALLET_NONCE_COUNT[bridge_admin_wallet] = WALLET_NONCE_COUNT[bridge_admin_wallet]+1;
+			   
+	 console.log("<<< transcount, MY_TX_COUNT, mynonce >>>", transcount, MY_TX_COUNT, mynonce);
+	 console.log("bridge_admin_wallet >>>", bridge_admin_wallet);  
+            (async function(){                       
+                    bridgeweb3.eth.getGasPrice().then(gasPrice=>{                                                                 
+                            const myrawTx = {   
+                                nonce: web3.utils.toHex(mynonce),                    
+                                gasPrice: web3.utils.toHex(gasPrice),
+                                gasLimit: requiredGas,
+                                from: bridge_admin_wallet.toString(),
+                                to: process.env.ROPSTEN_COMPANY_BRIDGE_ADDR.toString(),                        
+                                value: 0x0, 
+                                data: mydata                  
+                            };
+ 									                                                         
+                            //console.log("MY RAW TX >>>>>>",myrawTx);                                            
+                            var tx = new Tx(myrawTx, CHAIN);
+                            var privateKey = Buffer.from(bridge_admin_wallet_ary_pk.toString(), 'hex');
+									                            
+                            tx.sign(privateKey);                        
+                            var serializedTx = tx.serialize(); 
+                                                                    
+                            bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then((receipt)=>{
+                                console.log(JSON.stringify(receipt));                                
+                            }).catch(error=>{                       
+                                console.log(error);              
+                            })                                                                                                        
+                    }).catch(e=>{                        
+                        console.log("ERRROR >>>>",e);
+                    })                    
+            })().catch(e=>{                
+                console.log("ErrOr >>>>",e);
+            })
 }
 
 cron.schedule('0,10,20,30,40,50 * * * *', () => {
