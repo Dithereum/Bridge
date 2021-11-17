@@ -592,36 +592,76 @@ $('#btnNext').click(async function(){
         }
     if(network_From=='eth'){
         if(asset_Name=='eth'){
+            if(tokenAmount<0.0025){
+                alertify.alert("Warning","Minimum Amount is 0.0025");
+                return false;
+            }   
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' ETH (Dithereum Network)';
         }
         if(asset_Name=='usdt'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            } 
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' DUSD (Dithereum Network)';
         }
         if(asset_Name=='usdc'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDC (Ethereum Network) to ' +  tokenAmount +' DUSD (Dithereum Network)';
         }
         if(asset_Name=='dai'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' DAI (Ethereum Network) to ' +  tokenAmount +' DUSD (Dithereum Network)';
         }
         if(asset_Name=='pax'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' PAX (Ethereum Network) to ' +  tokenAmount +' DUSD (Dithereum Network)';
         }
 
     }
     if(network_From=='dith'){
         if(asset_Name=='dith'){
+            if(tokenAmount<0.0025){
+                alertify.alert("Warning","Minimum Amount is 0.0025");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Dithereum Network) to ' +  tokenAmount +' ETH (Ethereum Network)';
         }
         if(asset_Name=='dbnb'){
+            if(tokenAmount<0.02){
+                alertify.alert("Warning","Minimum Amount is 0.02");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Dithereum Network) to ' +  tokenAmount +' BNB (Binance Network)';
         }
         if(asset_Name=='dmatic'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Dithereum Network) to ' +  tokenAmount +' MATIC (Polygon Network)';
         }
         if(asset_Name=='dht'){
+            if(tokenAmount<1){
+                alertify.alert("Warning","Minimum Amount is 1");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' HT (Dithereum Network) to ' +  tokenAmount +' HT (Heco Network)';
         }
         if(asset_Name=='dusd'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' DUSD (Dithereum Network) to ' +  tokenAmount +' USDT (Binance Network)';
         }
         
@@ -629,22 +669,42 @@ $('#btnNext').click(async function(){
     
     if(network_From=='bsc'){
         if(asset_Name=='bnb'){
+            if(tokenAmount<0.02){
+                alertify.alert("Warning","Minimum Amount is 0.02");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' BNB (Dithereum Network)';
         }
         if(asset_Name=='usdtbsc'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' DUSD (Dithereum Network)';
         }
         if(asset_Name=='busd'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BUSD (Binance Network) to ' +  tokenAmount +' DUSD (Dithereum Network)';
         }
     }
     if(network_From=='polygon'){
         if(asset_Name=='matic'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' MATIC (Dithereum Network)';
         }
     }
     if(network_From=='heco'){
         if(asset_Name=='ht'){
+            if(tokenAmount<1){
+                alertify.alert("Warning","Minimum Amount is 1");
+                return false;
+            }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' HT (Heco Network) to ' +  tokenAmount +' HT (Dithereum Network)';
         }
     }
@@ -663,7 +723,7 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
               var data = ethContractInstance.methods.coinIn().encodeABI();
-              processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
+              processTx(data,ethereumContract,web3GasPrice,gasLimit,tokenAmount,ETHERSCAN_URL);
         }
         if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){          
             
