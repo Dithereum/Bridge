@@ -3,6 +3,7 @@ var network_From = 'eth';
 var network_To = 'dith';
 var asset_Name = 'eth';
 var asset_To = 'dith';
+var chainID = 4;
 var global = {
 	tronUserAddress : '',
 	tronUserAddressHex : '',
@@ -356,7 +357,7 @@ async function addNetowrk(network){
                 await ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 //params: [{ chainId: '0x1' }],
-                params: [{ chainId: '0x4' }],
+                params: [{ chainId: '0x18' }],
                 });
             } catch (switchError) {
                 // This error code indicates that the chain has not been added to MetaMask.
@@ -364,9 +365,10 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                     method: 'wallet_addEthereumChain',
-                   // params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
-                   params: [{ chainId: '0x4', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   // params: [{ chainId: '0x18', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   params: [{ chainId: '0x18', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
                     });
+                    chainID = 24;
                 } catch (addError) {
                     // handle "add" error
                 }
@@ -383,7 +385,7 @@ async function addNetowrk(network){
                 await ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 //params: [{ chainId: '0x1' }],
-                params: [{ chainId: '0x4' }],
+                params: [{ chainId: '0x1' }],
                 });
             } catch (switchError) {
                 // This error code indicates that the chain has not been added to MetaMask.
@@ -392,8 +394,9 @@ async function addNetowrk(network){
                     await ethereum.request({
                     method: 'wallet_addEthereumChain',
                    // params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
-                   params: [{ chainId: '0x4', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   params: [{ chainId: '0x1', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
                     });
+                    chainID = 1;
                 } catch (addError) {
                     // handle "add" error
                 }
@@ -451,6 +454,7 @@ async function addNetowrk(network){
                     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'], blockExplorerUrls: ['https://testnet.bscscan.com']
                 }]
             })
+            chainID = 97;
             checkAccount();
         }
     }
@@ -471,6 +475,7 @@ async function addNetowrk(network){
                     rpcUrls: ['https://polygon-rpc.com'],     blockExplorerUrls: ['https://polygonscan.com/']
                 }]
             })
+            chainID = 137;
             checkAccount();
         }
     }
@@ -492,6 +497,7 @@ async function addNetowrk(network){
                     rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
                 }]
             })
+            chainID = 256;
             checkAccount();
         }
     }
@@ -732,8 +738,7 @@ $('#btnNext').click(async function(){
                     from: myAccountAddress, // default from address
                 });
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
-                console.log(allowance);
-                console.log(tAmount);
+               
                 if(allowance<tAmount){
                     var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
                         from: myAccountAddress,
@@ -743,11 +748,11 @@ $('#btnNext').click(async function(){
                         value : 0,       
                     });
 
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                    
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
@@ -766,10 +771,10 @@ $('#btnNext').click(async function(){
                         value : 0,       
                     });
 
-                    var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);                  
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
@@ -788,10 +793,10 @@ $('#btnNext').click(async function(){
                         value : 0,       
                     });
 
-                    var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
@@ -809,10 +814,10 @@ $('#btnNext').click(async function(){
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-                    var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
@@ -829,26 +834,26 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_To=='eth'){
-                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
+                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
         }
         if(asset_To=='usdt' || asset_To=='usdc' || asset_To=='dai' || asset_To=='pax'){          
             
             if(asset_To=='usdt'){  
-                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount).encodeABI();
+                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL); 
             }
             if(asset_To=='usdc'){
-                var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount).encodeABI();
+                var data = ethContractInstance.methods.tokenIn(usdcAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
             }
             
             if(asset_To=='dai'){
-                var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount).encodeABI();
+                var data = ethContractInstance.methods.tokenIn(daiAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
             }
             if(asset_To=='pax'){
-                var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount).encodeABI();
+                var data = ethContractInstance.methods.tokenIn(paxAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
             }
         }
@@ -860,7 +865,7 @@ $('#btnNext').click(async function(){
                 
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
             }
     
@@ -871,7 +876,7 @@ $('#btnNext').click(async function(){
                
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                     
             }
@@ -883,7 +888,7 @@ $('#btnNext').click(async function(){
                
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
             }  
 
@@ -897,7 +902,7 @@ $('#btnNext').click(async function(){
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
                     //var data = polygonContractInstance.methods.coinIn().encodeABI();
-                    var data = polygonContractInstance.methods.tokenIn(polygonContract,tokenAmount).encodeABI();
+                    var data = polygonContractInstance.methods.tokenIn(polygonContract,tokenAmount,chainID).encodeABI();
                     processTx(data,polygonContract,web3GasPrice,gasLimit,0,POLYSCAN_URL);
                 }
             }
@@ -911,7 +916,7 @@ $('#btnNext').click(async function(){
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
                    // var data = hecoContractInstance.methods.coinIn().encodeABI();
-                   var data = hecoContractInstance.methods.tokenIn(hecoContract,tokenAmount).encodeABI();
+                   var data = hecoContractInstance.methods.tokenIn(hecoContract,tokenAmount,chainID).encodeABI();
                     processTx(data,hecoContract,web3GasPrice,gasLimit,0,HECOSCAN_URL);
                 }
             }
@@ -928,7 +933,6 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
 
         if(asset_Name=='bnb'){
-            console.log(tokenAmount);
             var data = bscContractInstance.methods.coinIn().encodeABI();
             processTx(data,bscContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
         }
@@ -946,10 +950,10 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : 0,       
                 });
-                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
             }else{
-                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
             }            
         }
@@ -966,10 +970,10 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : 0,       
                 });
-                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);      
             }else{
-                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount,chainID).encodeABI();
                 processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);   
             } 
             
