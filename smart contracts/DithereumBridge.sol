@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2021-10-23
-*/
-
 pragma solidity 0.8.9; 
 
 
@@ -28,13 +24,14 @@ contract owned
 {
     address internal owner;
     address internal newOwner;
-    address public signer;
+    mapping(address => bool) public signer;
 
     event OwnershipTransferred(address indexed _from, address indexed _to);
+    event SignerUpdated(address indexed signer, bool indexed status);
 
     constructor() {
         owner = msg.sender;
-        signer = msg.sender;
+        signer[msg.sender] = true;
     }
 
     modifier onlyOwner {
@@ -44,13 +41,14 @@ contract owned
 
 
     modifier onlySigner {
-        require(msg.sender == signer, 'caller must be signer');
+        require(signer[msg.sender], 'caller must be signer');
         _;
     }
 
 
-    function changeSigner(address _signer) public onlyOwner {
-        signer = _signer;
+    function changeSigner(address _signer, bool _status) public onlyOwner {
+        signer[_signer] = _status;
+        emit SignerUpdated(_signer, _status);
     }
 
     function transferOwnership(address _newOwner) public onlyOwner {
@@ -75,15 +73,17 @@ contract owned
     
 contract DthEthBridge is owned {
     
+    uint256 public orderID;
+    
     
 
     // This generates a public event of coin received by contract
-    event CoinIn(address indexed user, uint256 value);
-    event CoinOut(address indexed user, uint256 value);
-    event CoinOutFailed(address indexed user, uint256 value);
-    event TokenIn(address indexed tokenAddress, address indexed user, uint256 value);
-    event TokenOut(address indexed tokenAddress, address indexed user, uint256 value);
-    event TokenOutFailed(address indexed tokenAddress, address indexed user, uint256 value);
+    event CoinIn(uint256 indexed orderID, address indexed user, uint256 value);
+    event CoinOut(uint256 indexed orderID, address indexed user, uint256 value);
+    event CoinOutFailed(uint256 indexed orderID, address indexed user, uint256 value);
+    event TokenIn(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID);
+    event TokenOut(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID);
+    event TokenOutFailed(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID);
 
    
 
@@ -93,37 +93,39 @@ contract DthEthBridge is owned {
     }
     
     function coinIn() public payable returns(bool){
-        emit CoinIn(msg.sender, msg.value);
+        orderID++;
+        emit CoinIn(orderID, msg.sender, msg.value);
         return true;
     }
     
-    function coinOut(address user, uint256 amount) external onlySigner returns(bool){
+    function coinOut(address user, uint256 amount, uint256 _orderID) external onlySigner returns(bool){
         if(address(this).balance >= amount){
             payable(user).transfer(amount);
-            emit CoinOut(user, amount);
+            emit CoinOut(_orderID, user, amount);
         }
         else{
-            emit CoinOutFailed(user, amount);
+            emit CoinOutFailed(_orderID, user, amount);
         }
         return true;
     }
     
     
-    function tokenIn(address tokenAddress, uint256 tokenAmount) external returns(bool){
+    function tokenIn(address tokenAddress, uint256 tokenAmount, uint256 chainID) external returns(bool){
+        orderID++;
         ERC20Essential(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
-        emit TokenIn(tokenAddress, msg.sender, tokenAmount);
+        emit TokenIn(orderID, tokenAddress, msg.sender, tokenAmount, chainID);
         return true;
     }
     
     
-    function tokenOut(address tokenAddress, address user, uint256 tokenAmount) external onlySigner returns(bool){
+    function tokenOut(address tokenAddress, address user, uint256 tokenAmount, uint256 _orderID, uint256 chainID) external onlySigner returns(bool){
         
         if(ERC20Essential(tokenAddress).balanceOf(address(this)) >= tokenAmount){
             ERC20Essential(tokenAddress).transfer(user, tokenAmount);
-            emit TokenOut(tokenAddress, user, tokenAmount);
+            emit TokenOut(_orderID, tokenAddress, user, tokenAmount, chainID);
         }
         else{
-            emit TokenOutFailed(tokenAddress, user, tokenAmount);
+            emit TokenOutFailed(_orderID, tokenAddress, user, tokenAmount, chainID);
         }
         return true;
     }
