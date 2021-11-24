@@ -12,11 +12,13 @@ var LinkContract = '0xA07c5b74C9B40447a954e1466938b865b6BBea36';
 var filter = { 'to': LinkContract.toString()}
 var MY_INFURA_URL = "https://ropsten.infura.io/v3/c5147069a6de4315aed6494e1fa53266";
 var CHAIN = {'chain':'ropsten'}
+var RINKEBY_CHAIN = {'chain':'rinkeby'}
 
 // chainid - 97 - BINANCE HTTP PROVIDER
 var contract_network_chainid_ary=[];
 var company_contract_addr=[];
 var company_contract_abi=[];
+var token_address=[];
 
 ////BINANCE_TESTNET DETAILS
 contract_network_chainid_ary[97] = "https://data-seed-prebsc-1-s1.binance.org:8545/";
@@ -24,10 +26,12 @@ company_contract_addr[97] = '0x6CCE93dA30DaE700fFe26CE980DfE6D183922d45';
 company_contract_abi[97] = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinIn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"signer","type":"address"},{"indexed":true,"internalType":"bool","name":"status","type":"bool"}],"name":"SignerUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenIn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOutFailed","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_signer","type":"address"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"changeSigner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coinIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"}],"name":"coinOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"orderID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"signer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
 contract_network_chainid_ary[4] = "https://rinkeby.infura.io/v3/8102c6c81e12418588c89d69ac7a3f04";
-company_contract_addr[4] = '0x6CCE93dA30DaE700fFe26CE980DfE6D183922d45';
-company_contract_abi[4] = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinIn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"signer","type":"address"},{"indexed":true,"internalType":"bool","name":"status","type":"bool"}],"name":"SignerUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenIn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOutFailed","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_signer","type":"address"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"changeSigner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coinIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"}],"name":"coinOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"orderID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"signer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
-ADMIN_WALLET_ARY='0xF420Bc88E472191B936e7904b17DFD9E6043C12e,0xF420Bc88E472191B936e7904b17DFD9E6043C12e,0xF420Bc88E472191B936e7904b17DFD9E6043C12e';
-ADMIN_WALLET_ARY_PK='43f92fcfbecf0aa228b427f9f3958cf12a2ef9498310bbc26216445f54e7a47b,43f92fcfbecf0aa228b427f9f3958cf12a2ef9498310bbc26216445f54e7a47b,43f92fcfbecf0aa228b427f9f3958cf12a2ef9498310bbc26216445f54e7a47b';
+company_contract_addr[4] = '0xB6495879f4f88D3563B52c097Cb009E286586137';
+company_contract_abi[4] = [{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinIn","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOut","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"address","name":"_from","type":"address"},{"indexed":!0,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"address","name":"signer","type":"address"},{"indexed":!0,"internalType":"bool","name":"status","type":"bool"}],"name":"SignerUpdated","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":!1,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenIn","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":!1,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOut","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":!1,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOutFailed","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_signer","type":"address"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"changeSigner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coinIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"}],"name":"coinOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"orderID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"signer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
+token_address[4] = "0xb01f18db95f3634ac7b1f508a3850c2c80e1bdca";
+ 
+ADMIN_WALLET_ARY='0x6077516eea959B7fb04bB211AD0569351f3eBDbc,0x62E1960De1F9CA64d8fA578E871c2fe48b596b59,0xF420Bc88E472191B936e7904b17DFD9E6043C12e';
+ADMIN_WALLET_ARY_PK='8342678b959589fb5ad3cc593b410d892c8cb243363b2a30ee817070a89e8e8b,daedd37c356345aa579c5aff0a8d17e90fe9deec38054eb072fbbd10dd753942,43f92fcfbecf0aa228b427f9f3958cf12a2ef9498310bbc26216445f54e7a47b';
 TESTNET_BINANCE_TOKEN_ADDRESS = "0x850129e0E4BfaFD263E5b1e91f8a97BAc09a93f8"  // THIS IS FAKE ADDR
 
 /// NETWORKS SETTINGS
@@ -43,16 +47,14 @@ TESTNET_BINANCE_TOKEN_ADDRESS = "0x850129e0E4BfaFD263E5b1e91f8a97BAc09a93f8"  //
  }
 
 
-
 var WALLET_NONCE_COUNT = []; // to keep track for nonce  
-var LAST_WALLET_INDEX = 0; 
+var LAST_WALLET_INDEX = -1; 
 var BRIDGE_ADMIN_WALLET_ARY = ADMIN_WALLET_ARY.split(','); 
 var BRIDGE_ADMIN_WALLET_ARY_PK = ADMIN_WALLET_ARY_PK.split(',');
 //console.log(">>>>>>>", ADMIN_WALLET_ARY);
 //console.log(">>>>>>>", ADMIN_WALLET_ARY_PK);
-var max_admin_wallets = ADMIN_WALLET_ARY.length; 
-console.log(">>>>>>>", max_admin_wallets, ADMIN_WALLET_ARY_PK.length);
-
+var max_admin_wallets = BRIDGE_ADMIN_WALLET_ARY.length;
+console.log(">>>>>> max_admin_wallets >>>>>", max_admin_wallets);
 
 const options = {
     timeout: 30000,
@@ -87,82 +89,90 @@ async function company_bridge_send_method(_toWallet, _amt, _chainid, orderid){
 			                              
 		    var mynonce = 0;
 		    var bridge_admin_wallet;
-		    var bridge_admin_wallet_ary_pk;
+		    var bridge_admin_walletpk;
 		    var transcount;
-		    console.log("<<<< LAST_WALLET_INDEX >>>>",LAST_WALLET_INDEX);
-		    console.log("<<< max_admin_wallets >>>",max_admin_wallets);
-			 if(LAST_WALLET_INDEX === (max_admin_wallets-1)){
+		    console.log("<<<< LAST_WALLET_INDEX, max_admin_wallets >>>>",LAST_WALLET_INDEX, max_admin_wallets);
+		    		    
+			 if(LAST_WALLET_INDEX === (max_admin_wallets-1)){			 		
 			 		bridge_admin_wallet = BRIDGE_ADMIN_WALLET_ARY[0];
-			 		bridge_admin_wallet_ary_pk = BRIDGE_ADMIN_WALLET_ARY_PK[0];
+			 		bridge_admin_walletpk = BRIDGE_ADMIN_WALLET_ARY_PK[0];
 					LAST_WALLET_INDEX = 0;			
-			 }else{
-					var _index = LAST_WALLET_INDEX+1;
-					LAST_WALLET_INDEX = _index;
+			 }else{			 		
+					LAST_WALLET_INDEX++;					
 					bridge_admin_wallet = BRIDGE_ADMIN_WALLET_ARY[LAST_WALLET_INDEX];
-					bridge_admin_wallet_ary_pk = BRIDGE_ADMIN_WALLET_ARY_PK[LAST_WALLET_INDEX];			
-			 }
-				console.log(">>>>>>>bridge_admin_wallet >>>>", bridge_admin_wallet);							  
+					bridge_admin_walletpk = BRIDGE_ADMIN_WALLET_ARY_PK[LAST_WALLET_INDEX];			
+			 }			   
+			   console.log("~~~~~~~~~~~~~~~~~~######################~~~~~~~~~~~~~~~~~~~~~~");
+				console.log(">>>> WALLET_INDEX, bridge_admin_wallet >>>>", LAST_WALLET_INDEX, bridge_admin_wallet);
+				console.log("~~~~~~~~~~~~~~~~~~######################~~~~~~~~~~~~~~~~~~~~~~");										  
 			 try{
 		    	var company_bridgeinstance = new bridgeweb3.eth.Contract(companycontract_abi, companycontract_addr.toString());		    	
 		    }catch(e){
 				console.log(" >>>>> EEEEE >>>>",e);		    
 		    }
 		    
-		    var mydata = await company_bridgeinstance.methods.tokenOut(_toWallet.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();     
+		    var _tokenAddress = token_address[_chainid]; 
+		    console.log(">>>> _tokenAddress.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()", _tokenAddress.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString());
+		    var mydata = await company_bridgeinstance.methods.tokenOut(_tokenAddress.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
+  		         
 		    try{
-		    	//var requiredGas = 345344;
-		      var requiredGas = await company_bridgeinstance.methods.tokenOut( _toWallet.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).estimateGas({from: bridge_admin_wallet});
-		      console.log(requiredGas);
-		      process.exit(1);      
+		    	var requiredGas = 345344;
+		    	//console.log(" >>>>> bridge_admin_wallet >>>>>>", bridge_admin_wallet);
+		    	//web3.eth.defaultAccount = "0xF420Bc88E472191B936e7904b17DFD9E6043C12e";
+		      //var requiredGas = await company_bridgeinstance.methods.tokenOut(_tokenAddress, _toWallet, _amt, orderid, _chainid).estimateGas({from: bridge_admin_wallet.toString()});
+		      //console.log(">>> Gas require >>", requiredGas);		      
+		      //process.exit(1);
 		    }catch(e){
-		    	console.log("@@@@@ Eeee>>>>",e);
+		    	console.log(">>>>ERR,Calculating GAS price >>",e);
 		    }    
-		    console.log("MYDATA >>>>",mydata);       
-		    console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, bridge_admin_wallet);			 
-			 transcount = await bridgeweb3.eth.getTransactionCount(bridge_admin_wallet);
-			 var MY_TX_COUNT = WALLET_NONCE_COUNT[bridge_admin_wallet] ? (WALLET_NONCE_COUNT[bridge_admin_wallet]+1) : 0;
+		    //console.log("MYDATA >>>>",mydata);       
+		    console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, bridge_admin_wallet);
+		    try{			 
+		      	console.log(">>>> bridge_admin_wallet.toString() >>>", bridge_admin_wallet.toString());
+			 		var transcount = await web3.eth.getTransactionCount(bridge_admin_wallet);
+			 		console.log("TRANSACTION COUNT >>>>>>>",JSON.parse(transcount));		 				  	
+			 }catch(e){
+					console.log("ERR getting admin wallet transaction count",e);			 
+			 }
+			 var MY_TX_COUNT = WALLET_NONCE_COUNT[bridge_admin_wallet.toString()] ? (WALLET_NONCE_COUNT[bridge_admin_wallet.toString()]+1) : 0;
 			 mynonce = transcount + MY_TX_COUNT;	
 			 WALLET_NONCE_COUNT[bridge_admin_wallet] = WALLET_NONCE_COUNT[bridge_admin_wallet]+1;
 					   
 			 console.log("<<< transcount, MY_TX_COUNT, mynonce >>>", transcount, MY_TX_COUNT, mynonce);
-			 console.log("bridge_admin_wallet >>>", bridge_admin_wallet);  
+			 console.log("<<< bridge_admin_wallet >>>", bridge_admin_wallet);
+			 return 1;			   
 		            (async function(){                       
-		                    bridgeweb3.eth.getGasPrice().then(gasPrice=>{                                                                 
+		                    bridgeweb3.eth.getGasPrice().then(gasPrice=>{
+		                    			 //console.log(">>>>> gasPrice >>>>",gasPrice);		                    				                    			                                                                  
 		                            const myrawTx = {   
 		                                nonce: web3.utils.toHex(mynonce),                    
 		                                gasPrice: web3.utils.toHex(gasPrice),
 		                                gasLimit: requiredGas,
 		                                from: bridge_admin_wallet.toString(),
-		                                to: company_contract_addr.toString(),                        
+		                                to: companycontract_addr.toString(),                        
 		                                value: '0x0', 
 		                                data: mydata, 
-		                                chainId: _chainid    
+		                                chainId: web3.utils.toHex(_chainid)    
 		                            };
-		 									 
-		 									 //////////////////          
-		 									 /*
-											  const common = Common.forCustomChain('Smart Chain - Testnet', {
-									            name: 'BNB',
-									            networkId: 97,
-									            chainId: 97
-									        }, 'petersburg');
-									       */		 									                   
-		 									 /////////////////                            
-		                            //console.log("MY RAW TX >>>>>>",myrawTx);                                            
-		                            // var tx = new Tx(myrawTx, CHAIN);
-		                            var tx = new Tx(web3.utils.toHex(myrawTx));		                            
-		                            var privateKey = Buffer.from(bridge_admin_wallet_ary_pk, 'hex');
-											                            
+		                            //console.log(">>>> MYRAWTX >>>>", myrawTx);
+		                            		 									 
+		                            var tx = new Tx(myrawTx, RINKEBY_CHAIN);
+		                            		                            		                            
+		                            var privateKey = Buffer.from(bridge_admin_walletpk.toString(), 'hex');		                            
+											 //console.log(">>>> PrivateKey, Bridge Admin Walletpk >>>>>", privateKey, bridge_admin_walletpk.toString());									 											 														 																						                            
 		                            tx.sign(privateKey);                        
 		                            var serializedTx = tx.serialize(); 
 		                                                                    
 		                            bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then((receipt)=>{
-		                                console.log(JSON.stringify(receipt));                                
+		                            	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		                            	  console.log("<<< bridge_admin_wallet >>>", bridge_admin_wallet);
+		                            	  console.log("<<<< RECEIPT >>>>",JSON.stringify(receipt));              
+		                            	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		                            }).catch(error=>{                       
-		                                console.log(error);         
-		                            })                                                                                                        
+		                                console.log("<<< ERR, sendsigedTransaction >>>",error);         
+		                            })		                                                                                                                                    
 		                    }).catch(e=>{                        
-		                        console.log("ERRROR >>>>",e);
+		                        console.log("ERR, GasPrice >>>>",e);
 		                    })                    
 		            })().catch(e=>{                
 		                console.log("ErrOr >>>>",e);
@@ -203,17 +213,16 @@ function getEventData(_fromBlock, _toBlock){
         console.log("Paused ... ");
     }else{
         setTimeout(()=>{
-            console.log("Get event Data block ...");                           
+            //console.log("Get event Data block ...");                           
             const myinstance = new web3.eth.Contract(RINKEBY_CONTRACT_DITETHBRIDGE_ABI, "0xb6495879f4f88d3563b52c097cb009e286586137");
                                          
             // BLOCK REMOVED FROM HERE 
             blockcode(myinstance,_fromBlock,_toBlock);   
             process.env.mylastBlock = _fromBlock;    
             process.env.mylasttoBlock = _toBlock;
-            console.log("Last fromBlock checked ..",process.env.mylastBlock);
-            console.log("Last toBlock checked ..",process.env.mylasttoBlock);            	
+            console.log("Last fromBlock checked .., Last toBlock checked ..",process.env.mylastBlock, process.env.mylasttoBlock);            
             var nextFromBlock = _toBlock+1;
-            var nextToBlock = nextFromBlock + 10;
+            var nextToBlock = nextFromBlock + 50;
             getEventData(nextFromBlock, nextToBlock);
         }, 2900);
     }    
@@ -241,7 +250,7 @@ async function blockcode(myinstance, _fromBlock, _toBlock){
 								//(async ()=>{
 									try{
 										console.log("_sendcoinsTo, _amount, _chainid, _orderid >>>>",_sendcoinsTo, _amount, _chainid, _orderid);
-										//company_bridge_send_method(_sendcoinsTo, _amount, _chainid, _orderid);
+										company_bridge_send_method(_sendcoinsTo, _amount, _chainid, _orderid);
 									}catch(e){
 										console.log("<<<EEE>>>",e);							
 									}
@@ -258,7 +267,8 @@ async function blockcode(myinstance, _fromBlock, _toBlock){
 		 				console.log(error);		 				
 		 				var eventlen = events.length;
 		 				events.forEach((eve)=>{
-		 					console.log("<<< CoinIn EVE >>>>",eve);
+		 					console.log("<<< CoinIn EVE >>>>");
+		 					//console.log("<<< CoinIn EVE >>>>",eve);
  				         //emit CoinIn(orderID, msg.sender, msg.value)
 		 					var _blkNumber = eve.blockNumber;	
 		 									
@@ -292,13 +302,15 @@ async function checkLatestBlock(){
 }
 
 process.env.lastLatestBlockNumber = 9668379;
+//UNCOMMNET BELOW LINE  //// CHECKTHIS 
 //checkLatestBlock(); //12322224
+
+
 setTimeout(()=>{    
-    console.log("I love you all!!!");    
-    process.env.mylastBlock=parseInt(process.env.lastLatestBlockNumber)-50;    
-    process.env.mylasttoBlock=parseInt(process.env.mylastBlock)+10;
+    console.log("Started script >>>");    
+    process.env.mylastBlock=parseInt(process.env.lastLatestBlockNumber)-3000;    
+    process.env.mylasttoBlock=parseInt(process.env.mylastBlock)+50;
     console.log("process.env.lastLatestBlockNumber >>>>>",process.env.lastLatestBlockNumber);
-    console.log("process.env.mylastBlock >>>>",process.env.mylastBlock);
-    console.log("process.env.mylasttoBlock >>>>",process.env.mylasttoBlock);
+    console.log("process.env.mylasttoBlock, process.env.mylasttoBlock >>>>",process.env.mylasttoBlock, process.env.mylastBlock);    
     getEventData(parseInt(process.env.mylastBlock), parseInt(process.env.mylasttoBlock));
 },9000);
