@@ -316,7 +316,7 @@ async function	db_select(chainid, orderid){
 	});
 	const query = util.promisify(con.query).bind(con);	
 	try{
-			return await query("SELECT count(*) as rec FROM contract_orders where chain_id="+chainid+",id="+orderid);					
+			return await query("SELECT count(*) as rec FROM contract_orders where chain_id="+chainid+",orderid="+orderid);					
 	}catch(e){
 		console.log("ERROR >>Catch",e);
 	}finally{
