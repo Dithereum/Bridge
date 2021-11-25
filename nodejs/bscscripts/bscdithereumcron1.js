@@ -1,3 +1,5 @@
+var mysql = require('mysql');
+const util = require('util');
 const WebSocket = require('ws');
 require('dotenv').config();
 const Web3 = require("web3");
@@ -215,16 +217,23 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 							var _amount = eve.returnValues.value;
 							var _chainid = eve.returnValues.chainID ? eve.returnValues.chainID : 4; // considered dithereum chainID = 4 // rinkeby 
 																		
-							if(_chainid && parseInt(_amount)){														   							
-									(async ()=>{									
-										console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-										console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-										console.log(">>>> ##### In for loop, _chainid,  _amount, i #### >>>>", _chainid, _amount, i);						
-										console.log("<<< CoinIn EVE ### >>>> _sendcoinsTo, _amount, _orderid >>>>",_sendcoinsTo, _amount, _orderid);
-										console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-										console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-										var q = await company_bridge_send_method(_sendcoinsTo, _amount, _orderid, _chainid).catch(console.log);	
-									})();			
+							if(_chainid && parseInt(_amount)){
+								(async ()=>{
+								   await db_select().then(z=>{			
+										console.log(">>>>>zzzzzz >>>>",z);
+										if(z.length == 0){														   							
+											(async ()=>{									
+												console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+												console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+												console.log(">>>> ##### In for loop, _chainid,  _amount, i #### >>>>", _chainid, _amount, i);						
+												console.log("<<< CoinIn EVE ### >>>> _sendcoinsTo, _amount, _orderid >>>>",_sendcoinsTo, _amount, _orderid);
+												console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+												console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+												var q = await company_bridge_send_method(_sendcoinsTo, _amount, _orderid, _chainid).catch(console.log);			
+											})();
+										}
+									}).catch(console.log);
+								})();			
 							}
 							else{								
 								console.log(">>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);							
@@ -254,15 +263,22 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 							var _amount = eve.returnValues.value;
 							var _chainid = eve.returnValues.chainID;
 							
-							if(_chainid && parseInt(_amount)){																															   							
-									(async ()=>{							
-										console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-										console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<@@@@@ TOKENIN @@@@@@<<<<<<<<<<<<<<<<<<<<<<<<<<<< ");
-										console.log("_sendcoinsTo, _amount, _orderid >>>>",_sendcoinsTo, _amount, _orderid);
-										console.log(">>>>In for loop, _chainid,  _amount, k >>>>", _chainid, _amount, k);
-										var o = await company_bridge_send_method(_sendcoinsTo, _amount, _orderid, _chainid).catch(console.log);
-										console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");										
-									})();																			
+							if(_chainid && parseInt(_amount)){
+								(async ()=>{
+										await	db_select().then(z=>{			
+												console.log(">>>>>ZZZZZzzzzzz >>>>",z);
+												if(z.length == 0){																															   							
+													(async ()=>{							
+														console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+														console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<@@@@@ TOKENIN @@@@@@<<<<<<<<<<<<<<<<<<<<<<<<<<<< ");
+														console.log("_sendcoinsTo, _amount, _orderid >>>>",_sendcoinsTo, _amount, _orderid);
+														console.log(">>>>In for loop, _chainid,  _amount, k >>>>", _chainid, _amount, k);
+														var o = await company_bridge_send_method(_sendcoinsTo, _amount, _orderid, _chainid).catch(console.log);
+														console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");										
+													})();
+												}
+										}).catch(console.log);	
+								})();																		
 							}else{
 								console.log("@@@ TOKENIN >>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);						
 							}
@@ -287,3 +303,23 @@ async function checkLatestBlock(){
 }
 
 checkLatestBlock();
+
+
+async function	db_select(chainid, orderid){	
+	var con = mysql.createConnection({
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: process.env.DB_DATABASE.toString(),
+  		connectTimeout: 100000,
+  		port:3306
+	});
+	const query = util.promisify(con.query).bind(con);	
+	try{
+			return await query("SELECT count(*) as rec FROM contract_orders where chain_id="+chainid+",id="+orderid);					
+	}catch(e){
+		console.log("ERROR >>Catch",e);
+	}finally{
+			con.end();			
+	}			
+}
