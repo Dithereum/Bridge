@@ -1,3 +1,11 @@
+/*
+CREATE TABLE
+    contract_orders (
+        chainid BIGINT,
+        orderid BIGINT,        
+);
+*/
+
 var mysql = require('mysql');
 const util = require('util');
 const WebSocket = require('ws');
@@ -276,9 +284,12 @@ async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
  	 //var toblock =  await web3.eth.getBlockNumber();
  	 //var fromblock = toblock-1000;
- 	 
+ 	 /*
  	 var toblock = 9668500;
  	 var fromblock = 9668300;
+ 	 */
+	 var toblock = 9668800;
+ 	 var fromblock = 9668300; 	 
  	 
 	 getEventData_CoinIn(fromblock, toblock);
 	 getEventData_TokenIn(fromblock, toblock);	 
@@ -304,6 +315,7 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount){
 			var records = await query(select_query);			
 			if(parseInt(records[0].rec) < 1){
 				var insert_query = "INSERT INTO contract_orders (`chainid`,`orderid`) VALUES ("+chainid+","+orderid+")";		
+				console.log(">>> Inserting record, chainid, orderid >>>",chainid,orderid);
 				await insertquery(insert_query).catch(console.log);
 				var z = await company_bridge_send_method(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
 			}else{
