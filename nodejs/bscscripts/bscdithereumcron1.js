@@ -126,7 +126,6 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 }
 
 
-
 var getwsprovider = () =>{     
 	 var httpprovider = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER, options));     
     return httpprovider
@@ -248,12 +247,13 @@ async function checkLatestBlock(){
  	 //var fromblock = toblock-100;
  	 
  	 // For testing 	  	  
- 	 var toblock = 9668500;
- 	 var fromblock = 9666300;
+ 	 var toblock=9668500;
+ 	 var fromblock=9668400;
  	 	 
  	 console.log(">>> Getting records >>> for blocks fromblock, toblock >>", fromblock, toblock);
  	 
 	 getEventData_CoinIn(fromblock, toblock);
+	 setTimeout(()=>{},6000);
 	 getEventData_TokenIn(fromblock, toblock);	                   
 }
 
