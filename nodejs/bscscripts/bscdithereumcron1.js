@@ -95,8 +95,11 @@ async function getWalletTransactionCount(mywallet){
 	 }
 }
 
+async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
+	
+}
 
-async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){	 
+async function company_bridge_send_method_old(_toWallet, _amt, orderid, _chainid){	 
     console.log( ">>>>> WORKING ON >>>>>>",_toWallet, _amt, orderid, _chainid);	 	   
     _amt = Math.floor(_amt / 1000000000); /// JUST TO TEST SOME RANDOM AMT TO MAKE SMALL		    		           
     console.log(" Calling company bridge send coins >>>", _toWallet , _amt);    
@@ -197,7 +200,7 @@ async function myasynCall(bridgeweb3, mynonce, bridge_admin_wallet, bridge_admin
 
 async function getEventData_CoinIn(_fromBlock, _toBlock){ 
 	 const myinstance = new web3.eth.Contract(RINKEBY_CONTRACT_DITETHBRIDGE_ABI, "0xb6495879f4f88d3563b52c097cb009e286586137");
-	 try{
+	 try{				
 		 		await myinstance.getPastEvents('CoinIn',  {
 		 				'filter':{'orderID': myorderID},
 		 				fromBlock: _fromBlock,       
@@ -205,44 +208,29 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		    	},function(error,events){		    			
 		 				console.log(error);		 				
 		 				var eventlen = events.length;
-		 				console.log("eventlen >>>>", eventlen);		 				
+		 				console.log("COIN IN >>> eventlen >>>>", eventlen);		 				
+		 				
 		 				for(var i=0;i<eventlen; i++){		 					
 		 					var eve = events[i];
-		 					console.log("<<< CoinIn EVE >>>>", i);	 					
  				         //emit CoinIn(orderID, msg.sender, msg.value)
 		 					var _blkNumber = eve.blockNumber;			 									
 		 					var _orderid = eve.returnValues.orderID;							
 							var _sendcoinsTo = eve.returnValues.user;
 							var _amount = eve.returnValues.value;
-							var _chainid = eve.returnValues.chainID ? eve.returnValues.chainID : 4; // considered dithereum chainID = 4 // rinkeby 
-																		
-							if(_chainid && parseInt(_amount)){								
-									try{
-										(async ()=>{ 
-									      await db_select(_chainid, _orderid).then((rec)=>{
-										   	console.log(rec[0].rec);									   
-											   console.log(">>>>>>>>>>>>>>>>>> REC_COUNT <<<<<<<<<<<<<<<<<<<<<<<",parseInt(rec[0].rec));									   
-											   if(parseInt(rec[0].rec) < 1){										   					   																																					   							
-														console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-														console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-														console.log(">>>> ##### In for loop, _chainid,  _amount #### >>>>", _chainid, _amount);						
-														console.log("<<< CoinIn EVE ### >>>> _sendcoinsTo, _amount, _orderid >>>>",_sendcoinsTo, _amount, _orderid);
-														console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-														console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");													
-														company_bridge_send_method(_sendcoinsTo, _amount, _orderid, _chainid).catch(console.log);
-														insert_sql(_chainid, _orderid).catch(console.log);
-												}else{
-													console.log(">>> skipping for, chainid, orderid >>>", _chainid, _orderid);								
-												}		
-										   }).catch(console.log);
-										 })();								
-									}catch(e){
-										console.log(">>>>>Catch >>>>",e);									
-									}											
-							}
-							else{								
-								console.log(">>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);							
-							}
+							var _chainid = eve.returnValues.chainID ? eve.returnValues.chainID : '0';   
+							
+							//console.log(">>>>> CHAIN id, Order Id >>>>",_chainid, _orderid);							
+							if(_chainid && (parseInt(_amount))){							
+								try{
+									(async()=>{																																			 		
+									   var cnt = await db_select(_chainid, _orderid, _sendcoinsTo, _amount).catch(console.log);											      											   
+									})();									   										   
+								}catch(e){
+									console.log(">>>>>Catch >>>>",e);									
+								}																
+							}else{
+								console.log(">>>> CoinIn >>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);						
+							}														
 						}																		
 		 		});
 		 		////
@@ -253,47 +241,32 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 async function getEventData_TokenIn(_fromBlock, _toBlock){ 
 	 const myinstance = new web3.eth.Contract(RINKEBY_CONTRACT_DITETHBRIDGE_ABI, "0xb6495879f4f88d3563b52c097cb009e286586137");	 
 	 try{
-		 		await myinstance.getPastEvents('TokenIn', {	'filter':{'orderID': myorderID},	fromBlock: _fromBlock, toBlock: _toBlock },function(error,events){		    			
+		 		await myinstance.getPastEvents('TokenIn', {	'filter':{'orderID': myorderID},	fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		    			
 		 				console.log(error);		 				
-		 				var eventlen = events.length;						 				
+		 				var myeventlen = myevents.length;						 				
 		 				
-		 				for(var k=0; k<eventlen;k++){		 					
-		 					console.log("<<< TokenIn eventlen,k >>>>", eventlen, k);		 					
-		 					var eve = events[k];
-		 					var _blkNumber = eve.blockNumber;					
-		 					var _orderid = eve.returnValues.orderID;
-							var _tokenAddress = eve.returnValues.tokenAddress;
-							var _sendcoinsTo = eve.returnValues.user;
-							var _amount = eve.returnValues.value;
-							var _chainid = eve.returnValues.chainID;
-							console.log(">>>>> CHAIN id >>>>",_chainid);
+		 				for(var k=0; k<myeventlen;k++){	 					
+		 					var myeve = myevents[k];
+		 					//console.log(">>> k, myeve >>>",k, myeve);							
+		 					var _myblkNumber = myeve.blockNumber;					
+		 					var _myorderid = myeve.returnValues.orderID;
+							var _mytokenAddress = myeve.returnValues.tokenAddress;
+							var _mysendcoinsTo = myeve.returnValues.user;
+							var _myamount = myeve.returnValues.value;
+							var _mychainid = myeve.returnValues.chainID;
+							//console.log(">>>>>### TokenIn eventlen, k, CHAIN id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
 							
-							if(_chainid && parseInt(_amount)){								
+							if(_mychainid && (parseInt(_myamount))){							
 									try{
-										(async ()=>{ 
-									      await db_select(_chainid, _orderid).then((rec)=>{
-										   	console.log(rec[0].rec);									   
-											   console.log(">>>>>>>>>>>>>>>>>> REC_COUNT <<<<<<<<<<<<<<<<<<<<<<<",parseInt(rec[0].rec));									   
-											   if(parseInt(rec[0].rec) < 1){										   					   																																					   							
-														console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-														console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-														console.log(">>>> ##### In for loop, _chainid,  _amount #### >>>>", _chainid, _amount);						
-														console.log("<<< CoinIn EVE ### >>>> _sendcoinsTo, _amount, _orderid >>>>",_sendcoinsTo, _amount, _orderid);
-														console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-														console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");													
-														company_bridge_send_method(_sendcoinsTo, _amount, _orderid, _chainid).catch(console.log);
-														insert_sql(_chainid, _orderid).catch(console.log);
-												}else{
-													console.log(">>> skipping for, chainid, orderid >>>", _chainid, _orderid);								
-												}		
-										   }).catch(console.log);
-										 })();								
+										(async()=>{																																			 		
+										   var cnt = await db_select(_mychainid, _myorderid, _mysendcoinsTo, _myamount).catch(console.log);											      											   
+										})();									   										   
 									}catch(e){
 										console.log(">>>>>Catch >>>>",e);									
-									}																											
+									}																
 							}else{
 								console.log("@@@ TOKENIN >>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);						
-							}
+							}							
 						}													
 		 		});
 		 }catch(e){	console.log("<<<< Error >>>>",e); }	 	 	 
@@ -307,16 +280,15 @@ async function checkLatestBlock(){
  	 var toblock = 9668500;
  	 var fromblock = 9668300;
  	 
-	 var y = await getEventData_CoinIn(fromblock, toblock);   
-	 var u = await getEventData_TokenIn(fromblock, toblock);
-	 console.log("<<<< YYYYY >>>>>",y);
-	 console.log("<<<< UUUUU >>>>>",u); 	  	 
+	 getEventData_CoinIn(fromblock, toblock);
+	 getEventData_TokenIn(fromblock, toblock);	 
+	 	  	 
  	 console.log(">>>> fromblock, toblock >>>>", fromblock, toblock);                  
 }
 
 checkLatestBlock();
 
-async function insert_sql(_chainid, orderid){
+async function	db_select(chainid, orderid, sendcoinsTo, amount){	
 	var con = mysql.createConnection({
   		host: process.env.DB_HOST.toString(),
   		user: process.env.DB_USER.toString(),
@@ -325,34 +297,20 @@ async function insert_sql(_chainid, orderid){
   		connectTimeout: 100000,
   		port:3306
 	});
-	const query = util.promisify(con.query).bind(con);	
+	const query = util.promisify(con.query).bind(con);
+	const insertquery = util.promisify(con.query).bind(con);	
 	try{
-			var insert_query = "INSERT INTO contract_orders (`chainid`,`orderid`) VALUES ("+_chainid+","+orderid+")";			
-			console.log(">>> INSERT QUERY >>>>", insert_query);
-			return await query(insert_query);					
+			var select_query = "SELECT count(orderid) as rec FROM contract_orders where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);			
+			var records = await query(select_query);			
+			if(parseInt(records[0].rec) < 1){
+				var insert_query = "INSERT INTO contract_orders (`chainid`,`orderid`) VALUES ("+chainid+","+orderid+")";		
+				await insertquery(insert_query).catch(console.log);
+				var z = await company_bridge_send_method(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
+			}else{
+				console.log(">>> Skipping already in database, orderid, chainid ",orderid, chainid);
+			}
 	}catch(e){
-		console.log("ERROR SQL>>Catch",e);
-	}finally{
-			con.end();			
-	}
-}
-
-async function	db_select(chainid, orderid){	
-	var con = mysql.createConnection({
-  		host: process.env.DB_HOST.toString(),
-  		user: process.env.DB_USER.toString(),
-  		password: process.env.DB_PASSWORD.toString(),
-  		database: process.env.DB_DATABASE.toString(),
-  		connectTimeout: 100000,
-  		port:3306
-	});
-	const query = util.promisify(con.query).bind(con);	
-	try{
-			var select_query = "SELECT count(orderid) as rec FROM contract_orders where chainid="+chainid+" AND orderid="+orderid;
-			console.log(">>> SELECT QUERY >>>>", select_query);
-			return await query(select_query);					
-	}catch(e){
-		console.log("ERROR SQL>>Catch",e);
+			console.log("ERROR SQL>>Catch",e);
 	}finally{
 			con.end();			
 	}			
