@@ -51,6 +51,7 @@ ADMIN_WALLET_ARY_PK='2079696c01f5e53190aa1c72e57a72b93ca4ff165bf46d6ffef3129d108
 /// NETWORKS SETTINGS
 var mynetworks = [...Array(200).keys()].toString().split(',');
 var myorderID = [...Array(90000).keys()].toString().split(',');
+
 if(myorderID[0] === '0'){
 	myorderID.shift();
  	//console.log(myorderID);	
@@ -237,7 +238,7 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 									console.log(">>>>>Catch >>>>",e);									
 								}																
 							}else{
-								console.log(">>>> CoinIn >>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);						
+								console.log(">>>> CoinIn >>>>In for loop, _orderid, _chainid,  _amount, i >>>>", _orderid, _chainid, _amount, i);						
 							}														
 						}																		
 		 		});
@@ -252,6 +253,7 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 		await myinstance.getPastEvents('TokenIn', {	'filter':{'orderID': myorderID},	fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		    			
 		 				console.log(error);		 				
 		 				var myeventlen = myevents.length;						 				
+		 				console.log("TOKEN IN >>> myeventlen >>>>", myeventlen);
 		 				
 		 				for(var k=0; k<myeventlen;k++){	 					
 		 					var myeve = myevents[k];
@@ -273,7 +275,7 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 										console.log(">>>>>Catch >>>>",e);									
 									}																
 							}else{
-								console.log("@@@ TOKENIN >>>>In for loop, _chainid,  _amount, i >>>>", _chainid, _amount, i);						
+								console.log(">>> TOKENIN >>>> In for loop, _orderid, _chainid,  _amount, i >>>>", _myorderid, _chainid, _amount, i);						
 							}							
 						}													
 		 		});
@@ -283,18 +285,16 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
  	 //var toblock =  await web3.eth.getBlockNumber();
- 	 //var fromblock = toblock-1000;
- 	 /*
+ 	 //var fromblock = toblock-100;
+ 	 
+ 	 // For testing 	  	  
  	 var toblock = 9668500;
- 	 var fromblock = 9668300;
- 	 */
-	 var toblock = 9668800;
- 	 var fromblock = 9668300; 	 
+ 	 var fromblock = 9666300;
+ 	 	 
+ 	 console.log(">>> Getting records >>> for blocks fromblock, toblock >>", fromblock, toblock);
  	 
 	 getEventData_CoinIn(fromblock, toblock);
-	 getEventData_TokenIn(fromblock, toblock);	 
-	 	  	 
- 	 console.log(">>>> fromblock, toblock >>>>", fromblock, toblock);                  
+	 getEventData_TokenIn(fromblock, toblock);	                   
 }
 
 checkLatestBlock();
@@ -315,7 +315,7 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount){
 			var records = await query(select_query);			
 			if(parseInt(records[0].rec) < 1){
 				var insert_query = "INSERT INTO contract_orders (`chainid`,`orderid`) VALUES ("+chainid+","+orderid+")";		
-				console.log(">>> Inserting record, chainid, orderid >>>",chainid,orderid);
+				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);
 				var z = await company_bridge_send_method(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
 			}else{
