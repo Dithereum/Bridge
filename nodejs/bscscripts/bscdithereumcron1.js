@@ -20,8 +20,11 @@ var CONTRACT_ADDR = '0xB6495879f4f88D3563B52c097Cb009E286586137';
 var CONTRACT_ADDR_ABI = [{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinIn","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOut","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"address","name":"_from","type":"address"},{"indexed":!0,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"address","name":"signer","type":"address"},{"indexed":!0,"internalType":"bool","name":"status","type":"bool"}],"name":"SignerUpdated","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":!1,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenIn","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":!1,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOut","type":"event"},{"anonymous":!1,"inputs":[{"indexed":!0,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":!0,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":!0,"internalType":"address","name":"user","type":"address"},{"indexed":!1,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":!1,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOutFailed","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_signer","type":"address"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"changeSigner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coinIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"}],"name":"coinOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"orderID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"signer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 var TOKEN_ADDRESS = "0xb01f18db95f3634ac7b1f508a3850c2c80e1bdca";
 
-ADMIN_WALLET_ARY='0x9dD35f936298565Cc17c241fc645Eb4D1e04d895,0x6077516eea959B7fb04bB211AD0569351f3eBDbc,0x62E1960De1F9CA64d8fA578E871c2fe48b596b59,0xF420Bc88E472191B936e7904b17DFD9E6043C12e';
-ADMIN_WALLET_ARY_PK='2079696c01f5e53190aa1c72e57a72b93ca4ff165bf46d6ffef3129d108a879f,8342678b959589fb5ad3cc593b410d892c8cb243363b2a30ee817070a89e8e8b,daedd37c356345aa579c5aff0a8d17e90fe9deec38054eb072fbbd10dd753942,43f92fcfbecf0aa228b427f9f3958cf12a2ef9498310bbc26216445f54e7a47b';
+//ADMIN_WALLET_ARY='0x9dD35f936298565Cc17c241fc645Eb4D1e04d895,0x6077516eea959B7fb04bB211AD0569351f3eBDbc,0x62E1960De1F9CA64d8fA578E871c2fe48b596b59,0xF420Bc88E472191B936e7904b17DFD9E6043C12e';
+//ADMIN_WALLET_ARY_PK='2079696c01f5e53190aa1c72e57a72b93ca4ff165bf46d6ffef3129d108a879f,8342678b959589fb5ad3cc593b410d892c8cb243363b2a30ee817070a89e8e8b,daedd37c356345aa579c5aff0a8d17e90fe9deec38054eb072fbbd10dd753942,43f92fcfbecf0aa228b427f9f3958cf12a2ef9498310bbc26216445f54e7a47b';
+ADMIN_WALLET_ARY='0x9dD35f936298565Cc17c241fc645Eb4D1e04d895';
+ADMIN_WALLET_ARY_PK='2079696c01f5e53190aa1c72e57a72b93ca4ff165bf46d6ffef3129d108a879f';
+
 var filter = {'to': CONTRACT_ADDR.toString()}
 
 // ORDERS
@@ -38,7 +41,7 @@ var BRIDGE_ADMIN_WALLET_ARY = [];
 BRIDGE_ADMIN_WALLET_ARY = ADMIN_WALLET_ARY.split(',');
 
 BRIDGE_ADMIN_WALLET_ARY.forEach((el)=>{	
-	WALLET_NONCE_COUNT[el.toString()] = 0;
+	WALLET_NONCE_COUNT[el.toString()]=0;
 })
  
 var BRIDGE_ADMIN_WALLET_ARY_PK = [];
@@ -178,7 +181,8 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		 				var eventlen = events.length;
 		 				console.log("COIN IN >>> eventlen >>>>", eventlen);		 				
 		 				
-		 				for(var i=0;i<eventlen; i++){		 					
+		 				for(var i=0;i<eventlen; i++){
+		 					setTimeout(()=>{},600);		 					
 		 					var eve = events[i];
  				         //emit CoinIn(orderID, msg.sender, msg.value)
 		 					var _blkNumber = eve.blockNumber;			 									
@@ -207,7 +211,7 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 
 
 async function getEventData_TokenIn(_fromBlock, _toBlock){ 
-	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 
+	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 	 
 	 try{
 		 		await myinstance.getPastEvents('TokenIn', {	'filter':{'orderID': myorderID},	fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		    			
 		 				console.log(error);		 				
@@ -215,6 +219,7 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 				console.log("TOKEN IN >>> myeventlen >>>>", myeventlen);
 		 				
 		 				for(var k=0; k<myeventlen;k++){	 					
+		 					setTimeout(()=>{},600);
 		 					var myeve = myevents[k];
 		 					//console.log(">>> k, myeve >>>",k, myeve);							
 		 					var _myblkNumber = myeve.blockNumber;					
@@ -248,12 +253,11 @@ async function checkLatestBlock(){
  	 
  	 // For testing 	  	  
  	 var toblock=9668500;
- 	 var fromblock=9668400;
+ 	 var fromblock=9668200;
  	 	 
  	 console.log(">>> Getting records >>> for blocks fromblock, toblock >>", fromblock, toblock);
  	 
-	 getEventData_CoinIn(fromblock, toblock);
-	 setTimeout(()=>{},6000);
+	 getEventData_CoinIn(fromblock, toblock);	 
 	 getEventData_TokenIn(fromblock, toblock);	                   
 }
 
