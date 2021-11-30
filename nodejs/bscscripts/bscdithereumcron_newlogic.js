@@ -49,11 +49,9 @@ async function	getAvailableAdminWallet(){
 				process.env.ADMIN_WALLET=_adminwallet[0].walletid;
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
 				process.env.CHAIN_ID=_adminwallet[0].chainid;
-				process.env.NETWORK_ID=_adminwallet[0].networkid;
-				// FREEZE WALLET
-				freeze_wallet();		
+				process.env.NETWORK_ID=_adminwallet[0].networkid;	
 			}else{
-				console.log(">>>>> No Admin wallet available >>>>");
+				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");				
 				process.exit(1);
 			}		
 	}catch(e){
@@ -66,18 +64,18 @@ async function	getAvailableAdminWallet(){
 process.env.lastnonce = 0;
 
 getAvailableAdminWallet().then(()=>{
-	console.log(" >>>> ADMIN_WALLET:",process.env.ADMIN_WALLET);
-	console.log(" >>>> ADMIN_WALLET_PK:",process.env.ADMIN_WALLET_PK);
-	console.log(" >>>> CHAIN_ID:",process.env.CHAIN_ID);
-	console.log(" >>>> NETWORK_ID:",process.env.NETWORK_ID);
-	(async()=>{
-		process.env.lastnonce = await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).catch(console.log);
-		console.log(">>>> Wallet Transcount >>>>",process.env.lastnonce);
-	})();
+		console.log(" >>>> ADMIN_WALLET:",process.env.ADMIN_WALLET);
+		console.log(" >>>> ADMIN_WALLET_PK:",process.env.ADMIN_WALLET_PK);
+		console.log(" >>>> CHAIN_ID:",process.env.CHAIN_ID);
+		console.log(" >>>> NETWORK_ID:",process.env.NETWORK_ID);
+		(async()=>{
+			await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
+				process.env.lastnonce = parseInt(z);
+				freeze_wallet();	
+			}).catch(console.log);	
+		})();
 });
 
-//process.env.ADMIN_WALLET
-//process.env.ADMIN_WALLET_PK
 
 var filter = {'to': CONTRACT_ADDR.toString()}
 
@@ -172,6 +170,20 @@ async function insert_into_noncetable(newnonce){
 	}
 }
 
+async function checkLatestBlock(){
+	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
+ 	 //var toblock =  await web3.eth.getBlockNumber();
+ 	 //var fromblock = toblock-50;
+ 	 
+ 	 // For testing 	  	  
+ 	 var toblock=9668500; 	 
+ 	 var fromblock=9668400;	 
+	 getEventData_CoinIn(fromblock, toblock);	 
+	 getEventData_TokenIn(fromblock, toblock); 	
+}
+
+//checkLatestBlock();
+
 async function freeze_wallet(){
 	var con8 = mysql.createConnection({
   		host: process.env.DB_HOST.toString(),
@@ -185,7 +197,8 @@ async function freeze_wallet(){
 	try{
 			var update_query = "UPDATE AdminWallets SET isFrozen=1 where walletid='"+process.env.ADMIN_WALLET+"' AND chainid="+process.env.CHAIN_ID;			
 			console.log(">>>> Query >>>> Update Query >>>>", update_query);			
-			await query8(update_query).catch(console.log);		
+			await query8(update_query).catch(console.log);
+			checkLatestBlock();		
 	}catch(e){
 			console.log("ERROR SQL>>Catch",e);
 	}finally{
@@ -291,19 +304,6 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 }catch(e){	console.log("<<<< Error >>>>",e); }	 	 	 
 }
 
-async function checkLatestBlock(){
-	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
- 	 //var toblock =  await web3.eth.getBlockNumber();
- 	 //var fromblock = toblock-50;
- 	 
- 	 // For testing 	  	  
- 	 var toblock=9668500; 	 
- 	 var fromblock=9668400;	 
-	 getEventData_CoinIn(fromblock, toblock);	 
-	 getEventData_TokenIn(fromblock, toblock); 	
-}
-
-checkLatestBlock();
 
 async function	db_select(chainid, orderid, sendcoinsTo, amount){	
 	var con6 = mysql.createConnection({
