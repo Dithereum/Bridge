@@ -136,17 +136,15 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 		       	 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		       	 console.log(">>>> Sending Signed Transaction >>>>> In Async Function >>>>>");
 		       	 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		       	 await bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then(console.log).catch(console.log);
-		       	 /*
+		       	 
 		       	 await bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then((receipt)=>{
 					     	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");       	  
 					     	  console.log("<<<< RECEIPT >>>>",JSON.stringify(receipt));              
-					     	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");					     	 
+					     	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					     	  insert_into_noncetable(process.env.lastnonce);					     	 
 					 }).catch(error=>{                       
 					        console.log("<<< ERR, sendsigedTransaction >>>",error);         
-					 });
-					 */		       	
-		       	 await insert_into_noncetable(process.env.lastnonce);
+					 });				 		       	
 		       })();		    		                                                                                                                   
 		  }) 
 	 })();		 
@@ -208,21 +206,6 @@ async function freeze_wallet(){
 			con8.end();			
 	}
 }
-
-/*
-async function sendTransaction(Tx1, bridgeweb3){		
-		console.log(">>> Here in sendTransaction function, with serializedTx >>>>",Tx1);
-		//await bridgeweb3.eth.sendSignedTransaction(Tx1).then(console.log).catch(console.log);
-		
-		bridgeweb3.eth.sendSignedTransaction(Tx1).then((receipt)=>{
-       	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");       	  
-       	  console.log("<<<< RECEIPT >>>>",JSON.stringify(receipt));              
-       	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-       }).catch(error=>{                       
-           console.log("<<< ERR, sendsigedTransaction >>>",error);         
-       })             
-}
-*/
 
 var getwsprovider = () =>{     
 	 var httpprovider = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER, options));     
