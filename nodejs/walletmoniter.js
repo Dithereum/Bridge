@@ -40,6 +40,9 @@ const options = {
 };
 
 
+
+
+
 /// This will remove/unfreeze maximum two wallets if present in noncetable and freezed/locked 
 db_select_frozenWallets().then((frozenWallets)=>{		
 		   console.log("Frozen Wallet Length >>>>",frozenWallets.length);      
@@ -130,7 +133,7 @@ async function remove_from_noncetable_and_ufreeze(_walletid, _chainid, _networki
 			
 			var delete_query = "Delete from noncetable where walletid='"+_walletid+"' AND chainid="+_chainid;
 			console.log(">>>> Delete Query >>>>", delete_query);			
-			await query4(delete_query).catch(console.log)		
+			await query4(delete_query).catch(console.log);						
 	}catch(e){
 			console.log("ERROR SQL>>Catch",e);
 	}finally{
@@ -213,3 +216,53 @@ async function	db_select_noncetable(chainid, walletid){
 			con2.end();			
 	}			
 }
+
+////////////////////// ********* //////////////////////
+// This function is for wallets got freeze but no associated data in noncetable,
+// this happens when we get events from blocks but orderid is already present in database.
+// this will get records of last 2 mins freezed wallets.
+///// VIEW USED /////
+/*
+CREATE VIEW orphan_wallets_view as 
+SELECT chainid, networkid, walletid from AdminWallets where (isFrozen=1) AND (freezetime<(UNIX_TIMESTAMP()-120))
+*/
+////////////////////// ********* //////////////////////
+
+async function orphan_wallets(){
+	var con = mysql.createConnection({
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: "dithereumbacked",
+  		connectTimeout: 100000,
+  		port:3306
+	});
+	
+	const query = util.promisify(con.query).bind(con);	
+	try{
+			// SELECT wallets that not having any data in nonce table and freezed from last 2 mins
+			var select_query = "SELECT ow.chainid as ow_chainid, ow.networkid as ow_netid, ow.walletid as ow_walletid, nt.chainid as nt_cid, nt.networkid as net_ntid, nt.walletid as nt_walletid from orphan_wallets_view ow LEFT JOIN noncetable  nt  ON (ow.chainid = nt.chainid) AND (ow.networkid = nt.networkid) AND (ow.walletid = nt.walletid) limit 1";			
+			//console.log(">>>> Query >>>> Select Query >>>>", select_query);			
+			var xdata = await query(select_query).catch(console.log);
+			console.log("xdata.length, xdata >>>>",xdata.length, xdata);			
+			if(xdata.length>0){
+				if((xdata[0].n_cid == null) && (xdata[0].nt_cid == null) && (xdata[0].nt_cid == null)){					
+					console.log(">> Unfreezing for >> ow_chainid, ow_netid, ow_walletid >>>>", xdata[0].ow_chainid, xdata[0].ow_netid, xdata[0].ow_walletid);					
+					// UNFREEZE this wallet				
+					var unfreeze_query = "UPDATE AdminWallets SET isFrozen=0, freezetime=null where walletid='"+xdata[0].ow_walletid+"' AND chainid="+xdata[0].ow_chainid+" AND networkid='"+xdata[0].ow_netid+"'";
+					console.log(">>>>> UNFREEZE QUERY >>>>>", unfreeze_query);			
+					await query(unfreeze_query);		
+				}
+			}else{
+				console.log(" >>> no orphan wallets found >>>");							
+			}
+	}catch(e){
+			console.log("ERROR SQL>>Catch",e);
+	}finally{
+			con.end();			
+	}
+}
+
+setTimeout(()=>{
+	orphan_wallets().then(console.log).catch(console.log);
+}, 40000);
