@@ -65,7 +65,7 @@ process.env.lastnonce = 0;
 
 getAvailableAdminWallet().then(()=>{
 		console.log(" >>>> ADMIN_WALLET:",process.env.ADMIN_WALLET);
-		console.log(" >>>> ADMIN_WALLET_PK:",process.env.ADMIN_WALLET_PK);
+		//console.log(" >>>> ADMIN_WALLET_PK:",process.env.ADMIN_WALLET_PK);
 		console.log(" >>>> CHAIN_ID:",process.env.CHAIN_ID);
 		console.log(" >>>> NETWORK_ID:",process.env.NETWORK_ID);
 		(async()=>{
@@ -180,8 +180,8 @@ async function insert_into_noncetable(newnonce){
 
 async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
- 	 var toblock =  await web3.eth.getBlockNumber();
- 	 var fromblock = toblock-1000;
+ 	 //var toblock =  await web3.eth.getBlockNumber();
+ 	 //var fromblock = toblock-1000;
  	 
  	 // For testing 	  	  
  	 var toblock=9668500;
@@ -203,7 +203,7 @@ async function freeze_wallet(){
 	});
 	const query8 = util.promisify(con8.query).bind(con8);	
 	try{
-			var update_query = "UPDATE AdminWallets SET isFrozen=1 where walletid='"+process.env.ADMIN_WALLET+"' AND chainid="+process.env.CHAIN_ID;			
+			var update_query = "UPDATE AdminWallets SET isFrozen=1, freezetime=UNIX_TIMESTAMP() where walletid='"+process.env.ADMIN_WALLET+"' AND chainid="+process.env.CHAIN_ID;			
 			console.log(">>>> Query >>>> Update Query >>>>", update_query);			
 			await query8(update_query).catch(console.log);
 			checkLatestBlock();		
