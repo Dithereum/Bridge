@@ -111,8 +111,6 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET.toString());     		
  
   	 (async()=>{
-  	 	  process.env.lastnonce = parseInt(process.env.lastnonce)+1;
- 	 	  console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce);
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
 		  	    process.env.lastnonce = parseInt(process.env.lastnonce)+1;
  	 	  		 console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce);                    			                    				                    			                                                                  
@@ -136,7 +134,7 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 		       	 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		       	 console.log(">>>> Sending Signed Transaction >>>>> In Async Function >>>>>");
 		       	 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		       	 
+		       	 /*
 		       	 await bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then((receipt)=>{
 					     	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");       	  
 					     	  console.log("<<<< RECEIPT >>>>",JSON.stringify(receipt));              
@@ -144,7 +142,16 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 					     	  insert_into_noncetable(process.env.lastnonce);					     	 
 					 }).catch(error=>{                       
 					        console.log("<<< ERR, sendsigedTransaction >>>",error);         
-					 });				 		       	
+					 });
+					 */
+					bridgeweb3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), (err, hash) => {
+					  if (err) { 
+					    console.log(err);
+					    return; 
+					  }else{
+					    console.log("Transaction Hash >>>",hash);
+					 	}
+					 });				 	 		       	
 		       })();		    		                                                                                                                   
 		  }) 
 	 })();		 
@@ -173,12 +180,12 @@ async function insert_into_noncetable(newnonce){
 
 async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
- 	 //var toblock =  await web3.eth.getBlockNumber();
- 	 //var fromblock = toblock-50;
+ 	 var toblock =  await web3.eth.getBlockNumber();
+ 	 var fromblock = toblock-1000;
  	 
  	 // For testing 	  	  
- 	 var toblock=9668500; 	 
- 	 var fromblock=9668400;	 
+ 	 var toblock=9668500;
+ 	 var fromblock=9668200;	 
 	 getEventData_CoinIn(fromblock, toblock);	 
 	 getEventData_TokenIn(fromblock, toblock); 	
 }
@@ -225,6 +232,7 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		    		try{
 		    			console.log(error);		 				
 		 				var eventlen = events.length;
+		 				process.env.CoinInEventLen = events.length;
 		 				console.log("COIN IN >>> eventlen >>>>", eventlen);		 				
 		 				
 		 				for(var i=0;i<eventlen; i++){		 						 										
@@ -263,7 +271,12 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 	 try{
 		 		await myinstance.getPastEvents('TokenIn', {	'filter':{'orderID': myorderID},	fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		    			
 		 				console.log(error);		 				
-		 				var myeventlen = myevents.length;						 				
+		 				var myeventlen = myevents.length;		
+		 				process.env.TokenInEventLen = myevents.length;
+		 				if((parseInt(process.env.CoinInEventLen) === 0) && (parseInt(process.env.TokenInEventLen) === 0)){
+		 						// UNFREEZE ROW as no events found in specified block range 
+								no_records_found_unfreeze_row()
+						}		 								 				
 		 				console.log("TOKEN IN >>> myeventlen >>>>", myeventlen);		 				
 		 				for(var k=0; k<myeventlen;k++){		 						
 		 					var myeve = myevents[k];
@@ -287,11 +300,37 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 							}else{
 								console.log(">>> TOKENIN >>>> In for loop, _orderid, _chainid,  _amount, i >>>>", _myorderid, _chainid, _amount, i);						
 							}							
-						}													
+						}													 												
 		 		});
 		 }catch(e){	console.log("<<<< Error >>>>",e); }	 	 	 
 }
 
+
+async function no_records_found_unfreeze_row(){
+	var con6 = mysql.createConnection({
+  		host: process.env.DB_HOST.toString(),
+  		user: process.env.DB_USER.toString(),
+  		password: process.env.DB_PASSWORD.toString(),
+  		database: "dithereumbacked",
+  		connectTimeout: 100000,
+  		port:3306
+	});
+	const query = util.promisify(con6.query).bind(con6);
+	const insertquery = util.promisify(con6.query).bind(con6);	
+	try{
+		  	process.env.ADMIN_WALLET
+			process.env.CHAIN_ID
+			process.env.NETWORK_ID
+			console.log(" >>>> No record found >>>>");
+			var unfreeze_query = "UPDATE AdminWallets SET isFrozen=0 where walletid='"+process.env.ADMIN_WALLET+"' AND chainid="+process.env.CHAIN_ID+" AND networkid='"+process.env.NETWORK_ID+"'";
+			console.log(">>>>> UNFREEZE QUERY >>>>>", unfreeze_query);			
+			await query(unfreeze_query);		
+	}catch(e){
+			console.log("ERROR SQL>>Catch",e);
+	}finally{
+			con6.end();			
+	}	
+}
 
 async function	db_select(chainid, orderid, sendcoinsTo, amount){	
 	var con6 = mysql.createConnection({
