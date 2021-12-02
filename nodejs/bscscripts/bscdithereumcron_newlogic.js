@@ -144,14 +144,19 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 					        console.log("<<< ERR, sendsigedTransaction >>>",error);         
 					 });
 					 */
-					bridgeweb3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), (err, hash) => {
-					  if (err) { 
-					    console.log(err);
-					    return; 
-					  }else{
-					    console.log("Transaction Hash >>>",hash);
+					 try{
+					  insert_into_noncetable(process.env.lastnonce);					 
+					  bridgeweb3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), (err, hash) => {
+					 	 if (err) { 
+					   	 console.log(err);
+					       return; 
+					  	 }else{
+					   	 console.log("Transaction Hash >>>",hash);
 					 	}
-					 });				 	 		       	
+					 })
+					}catch(e){
+						console.log(">>>>catch >>>",e);		
+					}					 				 	 		       	
 		       })();		    		                                                                                                                   
 		  }) 
 	 })();		 
