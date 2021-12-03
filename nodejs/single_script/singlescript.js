@@ -54,9 +54,10 @@ async function	getAvailableAdminWallet(){
 				process.env.ADMIN_WALLET=_adminwallet[0].walletid;
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
 				process.env.CHAIN_ID=_adminwallet[0].chainid;					
-			}else{
-				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");				
-				process.exit(1);
+			}else{							
+				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");
+				//process.exit(1);
+				tryToUnfreezeWallets();									
 			}		
 	}catch(e){
 			console.log("ERROR SQL>>Catch",e);
@@ -65,20 +66,62 @@ async function	getAvailableAdminWallet(){
 	}			
 }
 
+
+////// Unfreeze Wallets 
+function tryToUnfreezeWallets(){
+	/// This will remove/unfreeze maximum two wallets if present in noncetable and freezed/locked 
+	db_select_frozenWallets().then((frozenWallets)=>{		
+			   console.log("Frozen Wallet Length >>>>",frozenWallets.length);
+				if(frozenWallets.length > 0){					
+					//console.log(">>>> frozenWallets >>>>",frozenWallets[0]);								
+					frozenWallets.forEach((walet)=>{							
+						(async()=>{					
+							console.log("##>> Walet ##>>",walet);
+							await gTransactionCount(walet).then((transcount)=>{
+								console.log("#> Waletid, Transaction Count >>>>>",walet.walletid, transcount);
+								console.log("#> walet.nonce, walet.chainid, walet.walletid >>>>>", walet.nonce, walet.chainid, walet.walletid);
+								if(walet.nonce < 1){
+									console.log(">>>>>>>>>");
+									console.log("@ NONCE is empty >",walet.nonce, walet.chainid, walet.walletid);
+									console.log("<<<<<<<<<");
+									unfreezeWallet(walet.chainid, walet.walletid);
+								}																					
+								
+								if(parseInt(walet.nonce) <= parseInt(transcount)){
+									console.log(">>>>> Removing from noncetable and unfreezing for >>> w[0].walletid, w[0].chainid, w[0].networkid, w[0].maxnonce >>>", w[0].walletid, w[0].chainid, w[0].networkid, w[0].maxnonce);
+									//remove_from_noncetable_and_ufreeze(w[0].walletid, w[0].chainid);
+								}																
+							}).catch(console.log);
+						})();						
+					})												
+				}
+	}).catch(console.log);
+}
+
+async function gTransactionCount(mywallet){		
+		console.log(">>>>>> mywallet.walletid, mywallet.chainid  >>>>", mywallet.walletid, mywallet.chainid);		
+		let myweb3 = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER));			
+		return await myweb3.eth.getTransactionCount(mywallet.walletid).catch(console.log);		
+}
+
 process.env.lastnonce = 0;
 
 // DONE Changes
 getAvailableAdminWallet().then(()=>{
 		console.log(" >>>> ADMIN_WALLET:",process.env.ADMIN_WALLET);
 		console.log(" >>>> ADMIN_WALLET_PK:",process.env.ADMIN_WALLET_PK);
-		console.log(" >>>> CHAIN_ID:",process.env.CHAIN_ID);		
-		(async()=>{
-			await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
-				process.env.lastnonce = parseInt(z);
-				freeze_wallet();	
-			}).catch(console.log);	
-		})();
-});
+		console.log(" >>>> CHAIN_ID:",process.env.CHAIN_ID);
+		if(process.env.ADMIN_WALLET){		
+			(async()=>{
+				await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
+					process.env.lastnonce = parseInt(z);
+					freeze_wallet();	
+				}).catch(console.log);	
+			})();	
+		}else{
+			console.log(">>> Admin Wallet not available >>>");		
+		}	
+}).catch(console.log);
 
 
 var filter = {'to': CONTRACT_ADDR.toString()}
@@ -352,8 +395,8 @@ async function	db_select_frozenWallets(){
 	var con = mysql.createConnection(DB_CONFIG);
 	const query = util.promisify(con.query).bind(con);	
 	try{	
-			var _wherecond = " isFrozen=1 AND chainid="+chainid+" AND freezetime<(UNIX_TIMESTAMP()-600) limit 1";
-			var select_query = "SELECT walletid, chainid from "+process.env.NONCE_ADMIN_TABLE+" WHERE "+wherecond;						
+			var _wherecond = " isFrozen=1 AND chainid="+chainid+" AND freezetime<(UNIX_TIMESTAMP()-600)";
+			var select_query = "SELECT walletid, chainid, nonce from "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_wherecond;						
 			var wallets = await query(select_query);	
 			
 			//console.log(">>>>> wallets >>>>", wallets);
@@ -362,5 +405,24 @@ async function	db_select_frozenWallets(){
 			console.log("ERROR SQL>>Catch",e);
 	}finally{
 			con.end();			
+	}
+}
+
+/// WORKING ON THIS >>>>> 03 DEC 2021
+async function unfreezeWallet(_chainid, _walletid){
+	console.log("IN UnfreezeWallet >>> _chainid, _walletid >>>>",_chainid, _walletid);
+	var con8 = mysql.createConnection(DB_CONFIG);
+	const query8 = util.promisify(con8.query).bind(con8);	
+	try{	
+			var _wherecond = " walletid='"+_walletid+"' AND chainid="+_chainid+" AND freezetime<(UNIX_TIMESTAMP()-600)";
+			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0 WHERE "+_wherecond;						
+			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
+			var wallets = await query8(update_query).console.log(console.log);
+			//console.log(">>>>> wallets >>>>", wallets);
+			return wallets;
+	}catch(e){
+			console.log("ERROR SQL>>Catch",e);
+	}finally{
+			con8.end();			
 	}
 }
