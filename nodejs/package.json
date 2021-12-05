@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "dotenv": "^10.0.0",
-    "ethereumjs-tx": "^2.1.2",
-    "trongrid": "^1.2.6",
-    "tronweb": "^4.0.0",
-    "web3": "^1.6.0"
-  }
-}
