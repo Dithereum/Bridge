@@ -159,7 +159,6 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
  
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
-		  	    process.env.lastnonce = parseInt(process.env.lastnonce)+1;
  	 	  		 console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce);                    			                    				                    			                                                                  
 		       const raw_tx = {   
 		           nonce: web3.utils.toHex(parseInt(process.env.lastnonce)),                    
@@ -170,6 +169,7 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 		           value: '0x0',
 		           data: mydata 
 		       }; 
+		       process.env.lastnonce = parseInt(process.env.lastnonce)+1;
 		       
 		       console.log("raw_tx >>>>",raw_tx);                                                                   		 									 
 		       var tx = new Tx(raw_tx, CHAIN);                            		                            		                            
@@ -417,7 +417,7 @@ async function unfreezeWallet(_chainid, _walletid){
 			var _wherecond = " walletid='"+_walletid+"' AND chainid="+_chainid+" AND freezetime<(UNIX_TIMESTAMP()-600)";
 			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0 WHERE "+_wherecond;						
 			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
-			var wallets = await query8(update_query).console.log(console.log);
+			var wallets = await query8(update_query);
 			//console.log(">>>>> wallets >>>>", wallets);
 			return wallets;
 	}catch(e){
