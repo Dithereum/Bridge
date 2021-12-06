@@ -58,8 +58,7 @@ async function	getAvailableAdminWallet(){
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
 				process.env.CHAIN_ID=_adminwallet[0].chainid;					
 			}else{							
-				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");
-				//tryToUnfreezeWallets();									
+				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");													
 			}		
 	}catch(e){
 			console.log("ERROR SQL>>Catch",e);
@@ -67,7 +66,6 @@ async function	getAvailableAdminWallet(){
 			con5.end();			
 	}			
 }
-
 
 ////// Unfreeze Wallets 
 function tryToUnfreezeWallets(){
@@ -412,4 +410,4 @@ async function unfreezeWallet(_chainid, _walletid){
 	}
 }
 
-tryToUnfreezeWallets()
+tryToUnfreezeWallets();
