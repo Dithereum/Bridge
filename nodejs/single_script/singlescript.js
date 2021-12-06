@@ -40,6 +40,9 @@ var DB_CONFIG = {
   		port: process.env.DB_PORT
 };
 
+
+
+
 // CHANGES DONE
 async function	getAvailableAdminWallet(){	
 	var con5 = mysql.createConnection(DB_CONFIG);
@@ -56,8 +59,7 @@ async function	getAvailableAdminWallet(){
 				process.env.CHAIN_ID=_adminwallet[0].chainid;					
 			}else{							
 				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");
-				//process.exit(1);
-				tryToUnfreezeWallets();									
+				//tryToUnfreezeWallets();									
 			}		
 	}catch(e){
 			console.log("ERROR SQL>>Catch",e);
@@ -78,19 +80,13 @@ function tryToUnfreezeWallets(){
 						(async()=>{					
 							console.log("##>> Walet ##>>",walet);
 							await gTransactionCount(walet).then((transcount)=>{
-								console.log("#> Waletid, Transaction Count >>>>>",walet.walletid, transcount);
-								console.log("#> walet.nonce, walet.chainid, walet.walletid >>>>>", walet.nonce, walet.chainid, walet.walletid);
-								if(walet.nonce < 1){
-									console.log(">>>>>>>>>");
-									console.log("@ NONCE is empty >",walet.nonce, walet.chainid, walet.walletid);
-									console.log("<<<<<<<<<");
+								console.log("#> Waletid, TransactionCount, walet.nonce, walet.chainid >>>>>",walet.walletid, transcount, walet.nonce, walet.chainid);								
+								if((parseInt(walet.nonce) <= parseInt(transcount)) || (walet.nonce === undefined) || (walet.nonce === null) ){
+									console.log(">>>>>>>>>########<<<<<<<<<<");
+									console.log(">>>>> Removing from noncetable and unfreezing for >>> walet.walletid, walet.chainid >>>", walet.walletid, walet.chainid);
 									unfreezeWallet(walet.chainid, walet.walletid);
-								}																					
-								
-								if(parseInt(walet.nonce) <= parseInt(transcount)){
-									console.log(">>>>> Removing from noncetable and unfreezing for >>> w[0].walletid, w[0].chainid, w[0].networkid, w[0].maxnonce >>>", w[0].walletid, w[0].chainid, w[0].networkid, w[0].maxnonce);
-									//remove_from_noncetable_and_ufreeze(w[0].walletid, w[0].chainid);
-								}																
+									console.log(">>>>>>>>>########<<<<<<<<<<");									
+								}
 							}).catch(console.log);
 						})();						
 					})												
@@ -181,16 +177,6 @@ async function company_bridge_send_method(_toWallet, _amt, orderid, _chainid){
 		       	 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		       	 console.log(">>>> Sending Signed Transaction >>>>> In Async Function >>>>>");
 		       	 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		       	 /*
-		       	 await bridgeweb3.eth.sendSignedTransaction('0x'+serializedTx.toString('hex')).then((receipt)=>{
-					     	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");       	  
-					     	  console.log("<<<< RECEIPT >>>>",JSON.stringify(receipt));              
-					     	  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-					     	  update_nonce_admin_table(process.env.lastnonce);					     	 
-					 }).catch(error=>{                       
-					        console.log("<<< ERR, sendsigedTransaction >>>",error);         
-					 });
-					 */
 					 try{
 					  update_nonce_admin_table(process.env.lastnonce);					 
 					  bridgeweb3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), (err, hash) => {
@@ -408,14 +394,13 @@ async function	db_select_frozenWallets(){
 	}
 }
 
-/// WORKING ON THIS >>>>> 03 DEC 2021
 async function unfreezeWallet(_chainid, _walletid){
 	console.log("IN UnfreezeWallet >>> _chainid, _walletid >>>>",_chainid, _walletid);
 	var con8 = mysql.createConnection(DB_CONFIG);
 	const query8 = util.promisify(con8.query).bind(con8);	
 	try{	
 			var _wherecond = " walletid='"+_walletid+"' AND chainid="+_chainid+" AND freezetime<(UNIX_TIMESTAMP()-600)";
-			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0 WHERE "+_wherecond;						
+			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE "+_wherecond;						
 			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
 			var wallets = await query8(update_query);
 			//console.log(">>>>> wallets >>>>", wallets);
@@ -426,3 +411,5 @@ async function unfreezeWallet(_chainid, _walletid){
 			con8.end();			
 	}
 }
+
+tryToUnfreezeWallets()
