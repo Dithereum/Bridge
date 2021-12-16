@@ -174,7 +174,7 @@ $('#assetFrom li').click(function(){
         $('#reciveName').html('BNB');
         $('#feeText').hide();
         //addNetowrk('DITH');
-        addNetowrk('BNB');
+        addNetowrk('DITH');
     }
     if(name=="trx"){
         
@@ -218,7 +218,7 @@ $('#assetFrom li').click(function(){
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png');
         $('#reciveName').html('MATIC');
         $('#feeText').hide();
-        addNetowrk('POLYGON');
+        addNetowrk('DITH');
     }
     if(name=="ht"){
         asset_Name = 'ht';
@@ -246,7 +246,7 @@ $('#assetFrom li').click(function(){
         $('#receiveTokenImg').attr('src','assets/img/heco-logo.png');
         $('#reciveName').html('HT');
         $('#feeText').hide();
-        addNetowrk('HECO');;
+        addNetowrk('DITH');;
     }
     if(name=="dusd"){
         $('#assetFromUL').html('<img class="icons" src="assets/img/tether-usdt-logo.png"> DUSD (Dithereum Network)');
@@ -257,7 +257,7 @@ $('#assetFrom li').click(function(){
         network_To = 'bsc';
         $('.tokenCheck').hide();
         $('#dusdTokencheck').show();
-        addNetowrk('BNB');
+        addNetowrk('DITH');
         $('#receiveTokenImg').attr('src','assets/img/tether-usdt-logo.png');
         $('#reciveName').html('USDT');
         //$('#feeText').html('(Fee 10 USDT)');
@@ -366,7 +366,7 @@ async function addNetowrk(network){
                     await ethereum.request({
                     method: 'wallet_addEthereumChain',
                    // params: [{ chainId: '0x18', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
-                   params: [{ chainId: '0x18', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.org/' /* ... */ }],
                     });
                     chainID = 24;
                 } catch (addError) {
@@ -393,8 +393,8 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                     method: 'wallet_addEthereumChain',
-                   // params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
-                   params: [{ chainId: '0x1', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                    params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                   //params: [{ chainId: '0x1', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
                     });
                     chainID = 1;
                 } catch (addError) {
@@ -443,18 +443,18 @@ async function addNetowrk(network){
             window.ethereum.request({method: 'eth_requestAccounts'})
             window.ethereum.request({
                 method: 'wallet_addEthereumChain',
-                params: [{chainId: '0x61', //chainId: '0x38',
+                params: [{chainId: '0x38', //testnet '0x61',
                     chainName: "BSC Mainnet",
                     nativeCurrency: {
                     name: "Binance Chain",
                     symbol: "BNB",
                     decimals: 18
                     },
-                    //rpcUrls: ['https://bsc-dataseed1.defibit.io/'],     blockExplorerUrls: ['https://bscscan.com/']
-                    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'], blockExplorerUrls: ['https://testnet.bscscan.com']
+                    rpcUrls: ['https://bsc-dataseed1.defibit.io/'],     blockExplorerUrls: ['https://bscscan.com/']
+                    //rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'], blockExplorerUrls: ['https://testnet.bscscan.com']
                 }]
             })
-            chainID = 97;
+            chainID = 56;
             checkAccount();
         }
     }
@@ -486,18 +486,18 @@ async function addNetowrk(network){
             window.ethereum.request({method: 'eth_requestAccounts'})
             window.ethereum.request({
                 method: 'wallet_addEthereumChain',
-                params: [{chainId: '0x100', //chainId: '0x80',
+                params: [{chainId: '0x80', //testnet '0x100', 
                     chainName: "Heco-Mainnet",
                     nativeCurrency: {
                     name: "Heco",
                     symbol: "HT",
                     decimals: 18
                     },
-                    // rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
-                    rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
+                    rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
+                    //rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
                 }]
             })
-            chainID = 256;
+            chainID = 128;
             checkAccount();
         }
     }
@@ -827,33 +827,33 @@ $('#btnNext').click(async function(){
    
     //dith network
     if(network_From=='dith'){
-        ethContractInstance = new myweb3.eth.Contract(ethereumABI, ethereumContract, {
+        ethContractInstance = new myweb3.eth.Contract(dithereumABI, dithereumContract, {
             from: myAccountAddress, // default from address
         });
        
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_To=='eth'){
-            usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
+            usdtContractInstance =  new myweb3.eth.Contract(ethDthABI, ethDthAddress, {
                 from: myAccountAddress, // default from address
             });
-            const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+            const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,dithereumContract).call();
            
             if(allowance<tAmount){
-                var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
+                var result = usdtContractInstance.methods.approve(dithereumContract,approveAmount).send({
                     from: myAccountAddress,
-                    to: usdtEthAddress,
+                    to: ethDthAddress,
                     gasPrice: web3GasPrice,
                     gasLimit: gasLimit,
                     value : 0,       
                 });
 
-                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
-                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
+                var data = ethContractInstance.methods.tokenIn(ethDthAddress,tokenAmount,chainID).encodeABI();
+                processTx(data,dithereumContract,web3GasPrice,gasLimit,0,DITHERSCAN_URL);
                
             }else{
-                var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
-                processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
+                var data = ethContractInstance.methods.tokenIn(ethDthAddress,tokenAmount,chainID).encodeABI();
+                processTx(data,dithereumContract,web3GasPrice,gasLimit,0,DITHERSCAN_URL);
             }
             //var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
             //processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL); 
@@ -864,10 +864,10 @@ $('#btnNext').click(async function(){
                 usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,dithereumContract).call();
                
                 if(allowance<tAmount){
-                    var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
+                    var result = usdtContractInstance.methods.approve(dithereumContract,approveAmount).send({
                         from: myAccountAddress,
                         to: usdtEthAddress,
                         gasPrice: web3GasPrice,
@@ -876,11 +876,11 @@ $('#btnNext').click(async function(){
                     });
     
                     var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                    
                 }else{
                     var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
 
                 //var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
@@ -974,26 +974,26 @@ $('#btnNext').click(async function(){
                 
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                usdtContractInstance =  new myweb3.eth.Contract(usdtBscABI, usdtBscAddress, {
+                usdtContractInstance =  new myweb3.eth.Contract(bnbDthABI, bnbDthAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,bscContract).call();
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,dithereumContract).call();
                
                 if(allowance<tAmount){
-                    var result = usdtContractInstance.methods.approve(bscContract,approveAmount).send({
+                    var result = usdtContractInstance.methods.approve(dithereumContract,approveAmount).send({
                         from: myAccountAddress,
-                        to: usdtBscAddress,
+                        to: bnbDthAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
     
-                    var data = ethContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                    var data = ethContractInstance.methods.tokenIn(bnbDthAddress,tokenAmount,chainID).encodeABI();
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,DITHERSCAN_URL);
                    
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                    var data = ethContractInstance.methods.tokenIn(bnbDthAddress,tokenAmount,chainID).encodeABI();
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,DITHERSCAN_URL);
                 }
 
                 //var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
@@ -1034,33 +1034,33 @@ $('#btnNext').click(async function(){
                     
             }
             if(asset_To=='busd'){
-                bscContractInstance = new myweb3.eth.Contract(bscABI, bscContract, {
-                    from: myAccountAddress, // default from address
-                });
+                // bscContractInstance = new myweb3.eth.Contract(bscABI, bscContract, {
+                //     from: myAccountAddress, // default from address
+                // });
                 
                
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
-                usdtContractInstance =  new myweb3.eth.Contract(busdBscABI, busdBscAddress, {
+                usdtContractInstance =  new myweb3.eth.Contract(dusddDthABI, dusdDthAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,bscContract).call();
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,dithereumContract).call();
                
                 if(allowance<tAmount){
-                    var result = usdtContractInstance.methods.approve(bscContract,approveAmount).send({
+                    var result = usdtContractInstance.methods.approve(dithereumContract,approveAmount).send({
                         from: myAccountAddress,
-                        to: busdBscAddress,
+                        to: dusdDthAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
     
-                    var data = ethContractInstance.methods.tokenIn(busdBscAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                    var data = ethContractInstance.methods.tokenIn(dusdDthAddress,tokenAmount,chainID).encodeABI();
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,DITHERSCAN_URL);
                    
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(busdBscAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,bscContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                    var data = ethContractInstance.methods.tokenIn(dusdDthAddress,tokenAmount,chainID).encodeABI();
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,DITHERSCAN_URL);
                 }
 
                 //var data = bscContractInstance.methods.tokenIn(busdBscAddress,tokenAmount,chainID).encodeABI();
@@ -1077,7 +1077,7 @@ $('#btnNext').click(async function(){
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
                     //var data = polygonContractInstance.methods.coinIn().encodeABI();
-                    usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
+                    usdtContractInstance =  new myweb3.eth.Contract(maticdDthABI, maticDthAddress, {
                         from: myAccountAddress, // default from address
                     });
                     const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
@@ -1085,17 +1085,17 @@ $('#btnNext').click(async function(){
                     if(allowance<tAmount){
                         var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
                             from: myAccountAddress,
-                            to: usdtEthAddress,
+                            to: maticDthAddress,
                             gasPrice: web3GasPrice,
                             gasLimit: gasLimit,
                             value : 0,       
                         });
         
-                        var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
+                        var data = ethContractInstance.methods.tokenIn(maticDthAddress,tokenAmount,chainID).encodeABI();
                         processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                        
                     }else{
-                        var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
+                        var data = ethContractInstance.methods.tokenIn(maticDthAddress,tokenAmount,chainID).encodeABI();
                         processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                     }
 
@@ -1113,7 +1113,7 @@ $('#btnNext').click(async function(){
                     var gasLimit = 200000;
                     const web3GasPrice = await myweb3.eth.getGasPrice();
                    // var data = hecoContractInstance.methods.coinIn().encodeABI();
-                   usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
+                   usdtContractInstance =  new myweb3.eth.Contract(htDthABI, htDthAddress, {
                     from: myAccountAddress, // default from address
                 });
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
@@ -1121,17 +1121,17 @@ $('#btnNext').click(async function(){
                 if(allowance<tAmount){
                     var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
                         from: myAccountAddress,
-                        to: usdtEthAddress,
+                        to: htDthAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
     
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(htDthAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                    
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(htDthAddress,tokenAmount,chainID).encodeABI();
                     processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                 }
 
