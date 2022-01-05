@@ -48,26 +48,30 @@ var DUSD_TOKEN_ADDRESS = "0xaE0e20478A312FAE7c9Fef6D80811C26b1Da0321";
 
 // for web3 contract object creation  
 var CHAINID_URL=[];
-//Ethereum mainnet
-CHAINID_URL[1]= 'https://mainnet.infura.io/v3/8102c6c81e12418588c89d69ac7a3f04';
-//Rinkby Ethereum testnet
+//Rinkby, HECO, Ethereum TestNet
 CHAINID_URL[4] = 'https://rinkeby.infura.io/v3/8102c6c81e12418588c89d69ac7a3f04';
 //Binance Smart chain TESTNET
 CHAINID_URL[97] = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-//Binance Smart Chain MAIN
-CHAINID_URL[56] = 'https://bsc-dataseed.binance.org/';
-//MATIC_MAIN NET 
-CHAINID_URL[137] = 'https://polygon-rpc.com';
-//MATIC TEST NET
-CHAINID_URL[80001] = 'https://testnet.matic.network';
-//HECO MAIN NET
-CHAINID_URL[128] = 'https://http-mainnet-node.huobichain.com'; 
 //HECO TEST NET 
 CHAINID_URL[256] = 'https://http-testnet.hecochain.com';
+//MATIC, DTH MAINNET
+//MATIC_MAIN NET 
+CHAINID_URL[137] = 'https://polygon-rpc.com';
 //DITHEREUM MAINNET
-CHAINID_URL[24] = 'https://node-mainnet.dithereum.org';
+CHAINID_URL[24] = 'https://node-mainnet.dithereum.io';
+
+/// BELOW NETWORKS NOT NEEDED 
+//Ethereum mainnet
+//CHAINID_URL[1]= 'https://mainnet.infura.io/v3/8102c6c81e12418588c89d69ac7a3f04';
 //DITHEREUM TESTNET
-CHAINID_URL[34] = 'https://node-testnet.dithereum.org';
+//CHAINID_URL[34] = 'https://node-testnet.dithereum.org';
+//MATIC TEST NET
+//CHAINID_URL[80001] = 'https://testnet.matic.network';
+//HECO MAIN NET
+//CHAINID_URL[128] = 'https://http-mainnet-node.huobichain.com'; 
+//Binance Smart Chain MAIN
+//CHAINID_URL[56] = 'https://bsc-dataseed.binance.org/';
+
 
 // CHANGES DONE
 async function	getAvailableAdminWallet(){	
@@ -128,9 +132,7 @@ process.env.lastnonce = 0;
 
 // DONE Changes
 getAvailableAdminWallet().then(()=>{
-		console.log(" >>>> ADMIN_WALLET:",process.env.ADMIN_WALLET);
-		console.log(" >>>> ADMIN_WALLET_PK:",process.env.ADMIN_WALLET_PK);
-		console.log(" >>>> CHAIN_ID:",process.env.CHAIN_ID);
+		console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
 		if(process.env.ADMIN_WALLET){		
 			(async()=>{
 				await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
@@ -180,7 +182,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
  
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
- 	 	  		 console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce);                    			                    				                    			                                                                  
+ 	 	  		 //console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce);                    			                    				                    			                                                                  
 		       const raw_tx = {   
 		           nonce: web3.utils.toHex(parseInt(process.env.lastnonce)),                    
 		           gasPrice: web3.utils.toHex(gasPrice),
@@ -220,7 +222,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 	 })();	
 }
 
-async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid, _chainid){
+async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid, _chainid){	  
 	  // not valid token addr	 
 	  if(_tokenaddr !== (ETH_TOKEN_ADDRESS || BNB_TOKEN_ADDRESS || MATIC_TOKEN_ADDRESS || HT_TOKEN_ADDRESS || DUSD_TOKEN_ADDRESS)){	  	
 	  	  	return 1;
@@ -229,9 +231,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
     	console.log(">>> not valid chainid >>>", _chainid);
     	return;
     }    
-    _amt = Math.floor(_amt / 1000000000); /// JUST TO TEST SOME RANDOM AMT TO MAKE SMALL	    		           
-    //let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER));
-    console.log("CHAINID_URL[_chainid]>>>>",_chainid, CHAINID_URL[_chainid]);    
+    _amt = Math.floor(_amt / 1000000000); /// JUST TO TEST SOME RANDOM AMT TO MAKE SMALL    		           
     let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(CHAINID_URL[_chainid]));		    
     web3.eth.handleRevert = true;  		    
 
@@ -257,9 +257,8 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 		           value: '0x0',
 		           data: mydata 
 		       }; 
-		       process.env.lastnonce = parseInt(process.env.lastnonce)+1;
-		       
-		       console.log("raw_tx >>>>",raw_tx);                                                                   		 									 
+		       process.env.lastnonce = parseInt(process.env.lastnonce)+1;		       
+		       //console.log("raw_tx >>>>",raw_tx);                                                                   		 									 
 		       var tx = new Tx(raw_tx, CHAIN);                            		                            		                            
 		       var privateKey = Buffer.from(process.env.ADMIN_WALLET_PK.toString(), 'hex');		                            
 				 //console.log(">>>> PrivateKey, Bridge Admin Walletpk >>>>>", privateKey, process.env.ADMIN_WALLET_PK.toString());									 											 														 																						                            
@@ -311,7 +310,8 @@ async function checkLatestBlock(){
  	 
  	 // For testing 	  	  
  	 var toblock=9668500;
- 	 var fromblock=9668200;	 
+ 	 var fromblock=9668200;	
+ 	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock); 
 	 getEventData_CoinIn(fromblock, toblock);	 
 	 getEventData_TokenIn(fromblock, toblock); 	
 }
@@ -342,7 +342,7 @@ var getwsprovider = () =>{
 
 let web3 = new Web3(getwsprovider());
 
-async function getEventData_CoinIn(_fromBlock, _toBlock){ 
+async function getEventData_CoinIn(_fromBlock, _toBlock){
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());
 	 try{				
 		 		await myinstance.getPastEvents('CoinIn',  {
@@ -357,16 +357,17 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		    			}	 				
 		 				var eventlen = events.length;
 		 				process.env.CoinInEventLen = events.length;
-		 				console.log("COIN IN >>> eventlen >>>>", eventlen);		 				
+		 				//console.log("COIN IN >>> eventlen >>>>", eventlen);		 				
 		 				
-		 				for(var i=0;i<eventlen; i++){								
-		 					var eve = events[i];
- 				         //emit CoinIn(orderID, msg.sender, msg.value)
+		 				for(var i=0;i<eventlen; i++){		
+		 					var eve = events[i];		 					
+ 				         /////emit CoinIn(orderID, msg.sender, msg.value)
 		 					var _blkNumber = eve.blockNumber;			 									
 		 					var _orderid = eve.returnValues.orderID;							
 							var _sendcoinsTo = eve.returnValues.user;
 							var _amount = eve.returnValues.value;
-							var _chainid = eve.returnValues.chainID ? eve.returnValues.chainID : '0';  
+							var _chainid = eve.returnValues.chainID ? eve.returnValues.chainID : '4';
+							//console.log(">>>>eve<<<<",eve.returnValues);  
 							//console.log(">>>>> CHAIN id, Order Id >>>>",_chainid, _orderid);							
 							if(_chainid && (parseInt(_amount))){							
 								try{
@@ -402,21 +403,25 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 				if((parseInt(process.env.CoinInEventLen) === 0) && (parseInt(process.env.TokenInEventLen) === 0)){
 		 						// UNFREEZE ROW as no events found in specified block range 
 								no_records_found_unfreeze_row()
-						}	 								 				
-		 				console.log("TOKEN IN >>> myeventlen >>>>", myeventlen);		 				
+						}	
+						console.log("================================================="); 								 				
+		 				console.log("TOKEN IN >>> myeventlen >>>>", myeventlen);		 		
+		 				console.log("=================================================");		
 		 				for(var k=0; k<myeventlen;k++){		 						 	
-		 					var myeve = myevents[k];
-		 					//console.log(">>> k, myeve >>>",k, myeve);							
+		 					var myeve = myevents[k];		 					
+		 					//console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);							
 		 					var _myblkNumber = myeve.blockNumber;					
 		 					var _myorderid = myeve.returnValues.orderID;
 							var _mytokenAddress = myeve.returnValues.tokenAddress;
 							var _mysendcoinsTo = myeve.returnValues.user;
 							var _myamount = myeve.returnValues.value;
 							var _mychainid = myeve.returnValues.chainID;
-							//console.log(">>>>>### TokenIn eventlen, k, CHAIN id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
+							//console.log(">>>>>### TokenIn eventlen, k, 	 id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
 							if(_mychainid && (parseInt(_myamount))){	
+								//console.log(">>>> Looking for >>>>", _mytokenAddress);
 								if(_mytokenAddress == (ETH_TOKEN_ADDRESS || BNB_TOKEN_ADDRESS || MATIC_TOKEN_ADDRESS || HT_TOKEN_ADDRESS || DUSD_TOKEN_ADDRESS)){						
 									try{
+										console.log("~~~~~_mytokenAddress ~~~~~",_mytokenAddress);
 										(async()=>{																																			 		
 										   var cnt = await db_select(_mychainid, _myorderid, _mysendcoinsTo, _myamount, _mytokenAddress).catch(console.log);											      											   
 										})();									   										   
