@@ -213,13 +213,14 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
           
     var mydata = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
     console.log(">>>>myData >>>>",mydata);
-    console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());    
+    console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());
+    console.log('>> with deails TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid >>>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);    
     var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()});    
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
- 	 	  		 //console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce);                    			                    				                    			                                                                  
+ 	 	  		 console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce_bridge);                    			                    				                    			                                                                  
 		       const raw_tx = {   
 		           nonce: web3.utils.toHex(parseInt(process.env.lastnonce_bridge)),                    
 		           gasPrice: web3.utils.toHex(gasPrice),
@@ -285,6 +286,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
     var mydata = await company_bridgeinstance.methods.tokenOut(_tokenaddr.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();    
 	 console.log("<><>## myData ##<><>",mydata);    
 	 console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());
+	 console.log('>> with details TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid >>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);
     var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()});    
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
