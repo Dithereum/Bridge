@@ -357,7 +357,7 @@ async function addNetowrk(network){
                 await ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 //params: [{ chainId: '0x1' }],
-                params: [{ chainId: '0x18' }],
+                params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
                 });
             } catch (switchError) {
                 // This error code indicates that the chain has not been added to MetaMask.
@@ -365,10 +365,10 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                     method: 'wallet_addEthereumChain',
-                   // params: [{ chainId: '0x18', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
-                   params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.org/' /* ... */ }],
+                    //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
+                     params: [{ chainId: '0x18', rpcUrl: 'https://node-testnet.dithereum.io/' /* ... */ }], // mainnet 
                     });
-                    chainID = 24;
+                    chainID = 34; // testnet = 34 mainnet = 24
                 } catch (addError) {
                     // handle "add" error
                 }
