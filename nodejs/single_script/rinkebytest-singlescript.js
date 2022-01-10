@@ -211,7 +211,9 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
     
     await getAvailableAdminWallet_bridge();
           
-    var mydata = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();    
+    var mydata = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
+    console.log(">>>>myData >>>>",mydata);
+    console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());    
     var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()});    
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
@@ -232,7 +234,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 		       console.log("raw_tx >>>>",raw_tx);                                                                   		 									 
 		       var tx = new Tx(raw_tx, CHAIN);                            		                            		                            
 		       var privateKey = Buffer.from(process.env.ADMIN_WALLET_PK_BRIDGE.toString(), 'hex');		                            
-				 //console.log(">>>> PrivateKey, Bridge Admin Walletpk >>>>>", privateKey, process.env.ADMIN_WALLET_PK_BRIDGE.toString());									 											 														 																						                            
+				 console.log(">>>> PrivateKey, Bridge Admin Walletpk >>>>>", privateKey, process.env.ADMIN_WALLET_PK_BRIDGE.toString());									 											 														 																						                            
 		       tx.sign(privateKey);                        
 		       var serializedTx = tx.serialize();
 		       (async()=>{
@@ -281,6 +283,8 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 	 await getAvailableAdminWallet_bridge();
 	         
     var mydata = await company_bridgeinstance.methods.tokenOut(_tokenaddr.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();    
+	 console.log("<><>## myData ##<><>",mydata);    
+	 console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());
     var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()});    
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
@@ -297,10 +301,10 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 		           data: mydata 
 		       }; 
 		       process.env.lastnonce_bridge = parseInt(process.env.lastnonce.bridge)+1;		       
-		       //console.log("raw_tx >>>>",raw_tx);                                                                   		 									 
+		       console.log("raw_tx >>>>",raw_tx);                                                                   		 									 
 		       var tx = new Tx(raw_tx, CHAIN);                            		                            		                            
 		       var privateKey = Buffer.from(process.env.ADMIN_WALLET_PK_BRIDGE.toString(), 'hex');		                            
-				 //console.log(">>>> PrivateKey, Bridge Admin Walletpk >>>>>", privateKey, process.env.ADMIN_WALLET_PK.toString());									 											 														 																						                            
+				 console.log(">>>> PrivateKey, Bridge Admin Walletpk >>>>>", privateKey, process.env.ADMIN_WALLET_PK.toString());									 											 														 																						                            
 		       tx.sign(privateKey);                        
 		       var serializedTx = tx.serialize();
 		       (async()=>{
