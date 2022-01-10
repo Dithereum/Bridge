@@ -215,7 +215,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
     console.log(">>>>myData >>>>",mydata);
     console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());
     console.log('>> with deails TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid >>>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);    
-    var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()});    
+    var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);    
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
   	 (async()=>{
@@ -287,7 +287,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 	 console.log("<><>## myData ##<><>",mydata);    
 	 console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());
 	 console.log('>> with details TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid >>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);
-    var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()});    
+    var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);    
     console.log(">>>>> REQUIRED GAS, >>> bridge_admin_wallet <<<<<",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
   	 (async()=>{
