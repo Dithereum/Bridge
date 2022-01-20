@@ -57,6 +57,9 @@ var MATIC_TOKEN_ADDRESS = "0xf2A16551D5ab32acf690548DcFaB1302224B9926";
 var HT_TOKEN_ADDRESS = "0x5277346c4534028C535A7e8660c491DEB63A2155";
 var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A";
 var USDT_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";								  
+var USDC_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
+var PAX_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
+var DAI_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 	 
 // for web3 contract object creation  
 var CHAINID_URL=[];
@@ -271,22 +274,29 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 
 async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid, _chainid){	  
 	  // not valid token addr
-	  var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
+	  var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString(), USDC_TOKEN_ADDRESS.toString(), PAX_TOKEN_ADDRESS.toString(), DAI_TOKEN_ADDRESS.toString() ];
 	  if(_ary.includes(_tokenaddr)){}else{
 	  		return 1;
 	  }	
 	  var pairedwithContract;
-	  //USDT->ETH to DUSD->DTH
-	  if(_tokenaddr === USDT_TOKEN_ADDRESS){
+	  //USDT RINKBY ETH to DUSD [DITHEREUM]
+	  if(_tokenaddr === USDT_TOKEN_ADDRESS){	  		
 			pairedwithContract = DUSD_TOKEN_ADDRESS;
 	  }
-
+	  //USDC RINKBY ETH to DUSD [DITHEREUM]  
+	  if(_tokenaddr === USDC_TOKEN_ADDRESS){	  	   
+	  		pairedwithContract = DUSD_TOKEN_ADDRESS;
+	  } 	  
+	  //PAX RINKBY ETH to DUSD [DITHEREUM]
+ 	  if(_tokenaddr === PAX_TOKEN_ADDRESS){	  	   
+	  		pairedwithContract = DUSD_TOKEN_ADDRESS;
+	  } 	  
+	  //DAI RINKBY ETH to DUSD [DITHEREUM]
+	  if(_tokenaddr === DAI_TOKEN_ADDRESS){
+	  		pairedwithContract = DAI_TOKEN_ADDRESS;
+	  } 
 	  console.log(">>>>>@@@@ pairedwithContract @@@<<<<<",pairedwithContract);
-	  /*
-	  if(_tokenaddr !== (ETH_TOKEN_ADDRESS || BNB_TOKEN_ADDRESS || MATIC_TOKEN_ADDRESS || HT_TOKEN_ADDRESS || DUSD_TOKEN_ADDRESS || USDT_TOKEN_ADDRESS)){	  	
-	  	  	return 1;
-	  }
-	  */
+
 	  if(! CHAINID_URL[_chainid]){
     	 console.log(">>> not valid chainid >>>", _chainid);
     	 return;
@@ -400,7 +410,7 @@ async function update_nonce_admin_table(newnonce, isbridge=0){
 async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
  	 var toblock =  await web3.eth.getBlockNumber();
- 	 var fromblock = toblock-5000;
+ 	 var fromblock = toblock-500;
  	 
  	 // For testing 	  	  
  	 //var toblock=9982652;
