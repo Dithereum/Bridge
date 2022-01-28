@@ -51,7 +51,8 @@ var DB_CONFIG = {
 };
 
 // TOKEN ADDRESSES -   
-var ETH_TOKEN_ADDRESS = "0xe1789cF2C86Ff424ffBf971E6A1Ddb69a2C62985";
+//var ETH_TOKEN_ADDRESS = "0xe1789cF2C86Ff424ffBf971E6A1Ddb69a2C62985";
+var ETH_TOKEN_ADDRESS = "0xaeF855F175D50D38714a366b7362ef344bA88bD0";
 var BNB_TOKEN_ADDRESS = "0x57012f5fE63a47a668b1fF9f6eF3D234A22e8C19";
 var MATIC_TOKEN_ADDRESS = "0xf2A16551D5ab32acf690548DcFaB1302224B9926";
 var HT_TOKEN_ADDRESS = "0x5277346c4534028C535A7e8660c491DEB63A2155";
@@ -104,19 +105,17 @@ async function	getAvailableAdminWallet(){
 function tryToUnfreezeWallets(){
 	/// This will remove/unfreeze maximum two wallets if present in noncetable and freezed/locked 
 	db_select_frozenWallets().then((frozenWallets)=>{		
-			   console.log("Frozen Wallet Length >>>>",frozenWallets.length);
+			   console.log(">>>>Frozen Wallet Length >>>>",frozenWallets.length);
 				if(frozenWallets.length > 0){					
 					//console.log(">>>> frozenWallets >>>>",frozenWallets[0]);								
 					frozenWallets.forEach((walet)=>{							
 						(async()=>{					
-							console.log("##>> Walet ##>>",walet);
+							console.log("#>> Walet ##>>",walet);
 							await gTransactionCount(walet).then((transcount)=>{
 								console.log("#> Waletid, TransactionCount, walet.nonce, walet.chainid >>>>>",walet.walletid, transcount, walet.nonce, walet.chainid);								
-								if((parseInt(walet.nonce) <= parseInt(transcount)) || (walet.nonce === undefined) || (walet.nonce === null) ){
-									console.log(">>>>>>>>>########<<<<<<<<<<");
+								if((parseInt(walet.nonce) <= parseInt(transcount)) || (walet.nonce === undefined) || (walet.nonce === null) ){									
 									console.log(">>>>> Removing from noncetable and unfreezing for >>> walet.walletid, walet.chainid >>>", walet.walletid, walet.chainid);
-									unfreezeWallet(walet.chainid, walet.walletid);
-									console.log(">>>>>>>>>########<<<<<<<<<<");
+									unfreezeWallet(walet.chainid, walet.walletid);									
 								}
 							}).catch(console.log);
 						})();						
@@ -173,7 +172,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3){
 var filter = {'to': CONTRACT_ADDR.toString()}
 
 const options = {
-    timeout: 30000,
+    timeout: 90000,
     reconnect: {
       auto: true,
       delay: 5000,
@@ -182,7 +181,7 @@ const options = {
     },
     clientConfig: {
       keepalive: true,
-      keepaliveInterval: 60000,
+      keepaliveInterval: 120000,
       maxReceivedFrameSize: 100000000,
       maxReceivedMessageSize: 100000000,
     },
@@ -219,15 +218,15 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
     var mydata = await company_bridgeinstance.methods.tokenOut(ETH_TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
     console.log(">>>>myData >>>>",mydata);    
     
-    var requiredGas = await company_bridgeinstance.methods.tokenOut(TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
-    requiredGas = (requiredGas > 0) ? requiredGas : 75000;    
+    var requiredGas = await company_bridgeinstance.methods.tokenOut(ETH_TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
+    requiredGas = (requiredGas > 0) ? requiredGas : 70000;    
 	 //var requiredGas = 75000; 
     console.log(">>>>>@@@@<<<<<requiredGas >>>>>@@@@<<<<<",requiredGas);
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
  	 	  		 console.log(">>>>> @@@@@ <<<<< NEW NONCE >>>>",process.env.lastnonce_bridge); 	 	  		                     			                    				                    			                                                                  
 		       const raw_tx = {   
-		           nonce: web3.utils.toHex(parseInt(process.env.lastnonce_bridge)),                    
+		           nonce: parseInt(process.env.lastnonce_bridge),                    
 		           gasPrice: web3.utils.toHex(gasPrice),
 		           gasLimit: requiredGas,
 		           from: process.env.ADMIN_WALLET_BRIDGE.toString(),
@@ -278,7 +277,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 	  if(_ary.includes(_tokenaddr)){}else{
 	  		return 1;
 	  }	
-	  var pairedwithContract;
+	  var pairedwithContract = '';
 	  //USDT RINKBY ETH to DUSD [DITHEREUM]
 	  if(_tokenaddr === USDT_TOKEN_ADDRESS){	  		
 			pairedwithContract = DUSD_TOKEN_ADDRESS;
@@ -293,9 +292,8 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 	  } 	  
 	  //DAI RINKBY ETH to DUSD [DITHEREUM]
 	  if(_tokenaddr === DAI_TOKEN_ADDRESS){
-	  		pairedwithContract = DAI_TOKEN_ADDRESS;
-	  } 
-	  console.log(">>>>>@@@@ pairedwithContract @@@<<<<<",pairedwithContract);
+	  		pairedwithContract = DUSD_TOKEN_ADDRESS;
+	  } 	  
 
 	  if(! CHAINID_URL[_chainid]){
     	 console.log(">>> not valid chainid >>>", _chainid);
@@ -303,7 +301,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
      }    
 
      let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(CHAINID_URL[BRIDGE_CHAIN]));
-     console.log(">>>> ChainID >>>",CHAINID_URL[BRIDGE_CHAIN]);		    
+     console.log(">>>>>@@@@ pairedwithContract, ChainID >>> ",pairedwithContract, CHAINID_URL[BRIDGE_CHAIN]);		    
      web3.eth.handleRevert = true; 		    
 
 	 try{
@@ -322,8 +320,8 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 		    		process.exit(1);
 		    	})    	    	
 		    }else{		    	        
-		  	 	  console.log("<<@@@>><<@@@>>With admin wallet<<@@@>><<@@@>>",process.env.ADMIN_WALLET_BRIDGE.toString());
-		        console.log('<<@@@>><<@@@>>with deails TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid<<@@@>><<@@@>>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);
+		  	 	  console.log("<<@@@>>With admin wallet<<@@@>>",process.env.ADMIN_WALLET_BRIDGE.toString());
+		        console.log('<<@@@>>with deails TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid<<@@@>>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);
 		        if((typeof process.env.lastnonce_bridge === 'undefined') || (typeof process.env.ADMIN_WALLET_BRIDGE === 'undefined')){				     
 						process.exit(1);     
 				  }     
@@ -331,46 +329,46 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
     }); 
 	 	         
     var mydata = await company_bridgeinstance.methods.tokenOut(pairedwithContract.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();    
-	 console.log(">>>>Paired with >>> pairedwithContract >>> ",pairedwithContract);	 
-	 console.log("<<@@@>><<@@@>>## myData ##<<@@@>><<@@@>>",mydata);
-	 var requiredGas = await company_bridgeinstance.methods.tokenOut(pairedwithContract, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);	 
-    requiredGas = (requiredGas > 0) ? requiredGas : 75000;    
+	 console.log("<<@@@>>##pairedwithContract, myData ##<<@@@>>",pairedwithContract, mydata);
+	 var requiredGas = await company_bridgeinstance.methods.tokenOut(pairedwithContract.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
+    requiredGas = (requiredGas > 0) ? requiredGas : 70000;    
     console.log("<<@@@>><<@@@>>REQUIRED GAS,bridge_admin_wallet<<@@@>><<@@@>>",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		
  
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
- 	 	  		 console.log("<<@@@>><<@@@>>NEW NONCE<<@@@>><<@@@>>",process.env.lastnonce_bridge);                    			                    				                    			                                                                  
+		  	    var nonc = (parseInt(process.env.lastnonce_bridge) == 0) ? 1 : parseInt(process.env.lastnonce_bridge);                      			                    				                    			                                                                  
 		       const raw_tx = {   
-		           nonce: web3.utils.toHex(parseInt(process.env.lastnonce_bridge)),                    
+		           nonce: nonc,                    
 		           gasPrice: web3.utils.toHex(gasPrice),
 		           gasLimit: requiredGas,
 		           from: process.env.ADMIN_WALLET_BRIDGE.toString(),
-		           to: DITHEREUM_CONTRACT_ADDR.toString(),                        
-		           value: '0x0',
+		           to: DITHEREUM_CONTRACT_ADDR.toString(),                     
 		           data: mydata,
 		           chainId:34		            
 		       };
 		       		       
-		      console.log("<<@@@>><<@@@>>raw_tx<<@@@>><<@@@>>",raw_tx);
+		      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
 		      try{		       		
 						bridgeweb3.eth.accounts.signTransaction(raw_tx, process.env.ADMIN_WALLET_PK_BRIDGE.toString(), function(error,result){
 							if(! error){
 								try{
-									console.log(">>>>>>>>>>>>>>>>> #### <<<<<<<<<<<<<<<<<");
+									console.log(">> Signed Transaction >>");
 									var serializedTx=result.rawTransaction;
+									console.log("Serialized Tx ::", serializedTx);
+									/*
 									bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex'))
 									.on('transactionHash',function(xhash){										
 										//out put of the transaction in form of transaction hash
-										console.log("..>>>SignedTranscationHash ==>",xhash);
-										/*										
+										console.log("..>>>SignedTranscationHash ==>",xhash);																														
 										bridgeweb3.eth.getTransactionReceipt(xhash).then((rec)=>{
-											console.log("RECEIPT >>>>",rec);
-										});
-										*/																				
+											console.log("<<< @@ RECEIPT @@ >>>",rec);
+										});																														
 									})
 									.on('error', myErr => {
 										console.log("###ERR..",myErr);
 									});
+									*/
+								  bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
 								}catch(e){
 									console.log(e);
 								}
@@ -639,12 +637,14 @@ async function unfreezeWallet(_chainid, _walletid){
 	try{	
 			var _wherecond = " walletid='"+_walletid+"' AND chainid="+_chainid+" AND freezetime<(UNIX_TIMESTAMP()-600)";
 			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE "+_wherecond;						
+			console.log("------------------------------------------");			
 			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
 			var wallets = await query8(update_query);
 			
 			var _wherecond1 = " walletid='"+_walletid+"' AND chainid="+BRIDGE_CHAIN+" AND freezetime<(UNIX_TIMESTAMP()-600)";
 			var update_query1 = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE "+_wherecond1;						
-			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query1)			
+			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query1);
+			console.log("------------------------------------------");						
 			var wallets1 = await query9(update_query1);
 			//console.log(">>>>> wallets >>>>", wallets);
 			return wallets;
@@ -685,9 +685,11 @@ async function remove_orderid_from_orders_table(myorderid, mychain){
 
 tryToUnfreezeWallets();
 
-//Every 5 mins
-var job = new CronJob('0 */5 * * * *', function() {
-   console.log('Cron running, every 5 mins');
+//Every 4 mins
+var job = new CronJob('0 */4 * * * *', function() {
+	console.log("-------------------------------------");
+   console.log('Cron running, every 4 mins');
+   console.log("-------------------------------------");
    // DONE Changes
 	getAvailableAdminWallet().then(()=>{
 			console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
