@@ -29,8 +29,7 @@ CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';
 CONTRACTS_ARY[4] = '0xB6495879f4f88D3563B52c097Cb009E286586137';
 CONTRACTS_ARY[97]="0xaF5Cb6806e883F0E06837073aCA57b98d7571ad2";
 CONTRACTS_ARY[137] = '0x07F25AcFf1F0e725Df3997b3092DC594B1d7a496';
-CONTRACTS_ARY[256] = '0xdF310a187Bb35A0B0090DC7Cb2C2F784Ccf72036';
-
+CONTRACTS_ARY[256] = "0x4a46F7EB468fC98e4c3c7D99f61c5F5E719C0b78";
 // FOR Dithereum Testnet
 var chainid = 34; // Dithereum TESTNET
 var BRIDGE_CHAIN = 4; // TESTNET Rinkeby
@@ -57,7 +56,8 @@ var ETH_TOKEN_ADDRESS = "0xaeF855F175D50D38714a366b7362ef344bA88bD0";
 var BNB_TOKEN_ADDRESS = "0xF4905930BB56F9Aeb520de0897c9283d0B3624eE";
 
 var MATIC_TOKEN_ADDRESS = "0xf2A16551D5ab32acf690548DcFaB1302224B9926";
-var HT_TOKEN_ADDRESS = "0x5277346c4534028C535A7e8660c491DEB63A2155";
+//var HT_TOKEN_ADDRESS = "0xdF310a187Bb35A0B0090DC7Cb2C2F784Ccf72036";
+var HT_TOKEN_ADDRESS = "0xF24BAecb78A87bBaa3040bAE4893163405c2EAB3"; // NEW CREATED
 var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A";
 var USDT_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";								  
 var USDC_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
@@ -308,7 +308,7 @@ async function update_nonce_admin_table(newnonce, isbridge=0){
 async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
  	 var toblock =  await web3.eth.getBlockNumber();
- 	 var fromblock = toblock-200;
+ 	 var fromblock = toblock-1500;
 	 
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock);
 	 getEventData_TokenIn(fromblock, toblock); 	
@@ -357,7 +357,7 @@ let web3 = new Web3(getwsprovider());
 async function getEventData_TokenIn(_fromBlock, _toBlock){	
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 	 
 	 //try{ 		 
-		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){    			
+		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		  
 		 				if(myevents === undefined){ 	return  }		 				
 		 				var myeventlen = myevents.length;		
 		 				process.env.TokenInEventLen = myevents.length;
@@ -541,8 +541,7 @@ var job = new CronJob('0 */2 * * * *', function() {
 					}).catch(console.log);	
 				})();	
 			}else{
-				console.log(">>> Admin Wallet not available >>>");
-				cleanOrderTable(process.env.secretText);						
+				console.log(">>> Admin Wallet not available >>>");									
 			}	
 	}).catch(console.log);  
 }, null, true, 'America/Los_Angeles');
