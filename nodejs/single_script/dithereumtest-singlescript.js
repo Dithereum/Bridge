@@ -59,7 +59,7 @@ var MATIC_TOKEN_ADDRESS = "0xf2A16551D5ab32acf690548DcFaB1302224B9926";
 //var HT_TOKEN_ADDRESS = "0xdF310a187Bb35A0B0090DC7Cb2C2F784Ccf72036";
 var HT_TOKEN_ADDRESS = "0xF24BAecb78A87bBaa3040bAE4893163405c2EAB3"; // NEW CREATED
 var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A";
-var USDT_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";								  
+var BINANCE_USDT_TOKEN_ADDRESS = "0x4ae25c3dc10e30c32bb49e08480c97b7fdee1fd1";								  
 var USDC_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 var PAX_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 var DAI_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
@@ -194,12 +194,15 @@ const options = {
 
 async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid, _chainid){	  
 	 // not valid token addr
-	 var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
+	 var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString()];
 	 if(_ary.includes(_tokenaddr)){}else{
 	 	 return 1;
 	 }
     // If chainid not coming proper from UI overwrite it!!	 
-    if(_tokenaddr === BNB_TOKEN_ADDRESS.toString()){    	
+    if(_tokenaddr === BNB_TOKEN_ADDRESS.toString()){
+    	 _chainid = 97;
+    }
+    if(_tokenaddr === DUSD_TOKEN_ADDRESS.toString()){    	
     	 _chainid = 97;    	  
     } 
     console.log(">>>>> Working on chain id >>>> ",_chainid);
@@ -234,11 +237,21 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 				  }     
 		    } 
     }); 
-
-	 var mydata = await company_bridgeinstance.methods.coinOut(_toWallet.toString(), _amt.toString(), orderid.toString()).encodeABI();    
-	 var requiredGas = await company_bridgeinstance.methods.coinOut(_toWallet.toString(), _amt.toString(), orderid.toString()).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE }).catch(console.log);
-    requiredGas = (requiredGas > 0) ? requiredGas : 70000;    
-    console.log("<<@@@>><<@@@>>REQUIRED GAS,bridge_admin_wallet<<@@@>><<@@@>>",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());     		   
+    console.log(">>>>>>!!!!!!!!!!!!!!!!!!!!!!!!~~~~~~~~~~~~~~~~~~~~~~~~",_chainid);  
+    if(_tokenaddr === DUSD_TOKEN_ADDRESS.toString()){   	
+    		console.log(">>>>>>@@@@@!~~~~"); 
+    		var mydata = await company_bridgeinstance.methods.tokenOut(BINANCE_USDT_TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
+    		console.log(">>>> TokenOut DUSD - USDT, myData >>>>",mydata);
+   		var requiredGas = await company_bridgeinstance.methods.tokenOut(BINANCE_USDT_TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
+	   	requiredGas = (requiredGas > 0) ? (requiredGas+10000) : 75000;
+    		console.log("<<@@@>><<@@@>>REQUIRED GAS,bridge_admin_wallet<<@@@>><<@@@>>",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());    
+    }else{
+    	   console.log("<<<<>>>>>@@@@@!~~~~");
+	 		var mydata = await company_bridgeinstance.methods.coinOut(_toWallet.toString(), _amt.toString(), orderid.toString()).encodeABI();    
+	 		var requiredGas = await company_bridgeinstance.methods.coinOut(_toWallet.toString(), _amt.toString(), orderid.toString()).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE }).catch(console.log);
+    		requiredGas = (requiredGas > 0) ? (requiredGas+10000) : 75000;    
+    		console.log("<<@@@>><<@@@>>REQUIRED GAS,bridge_admin_wallet<<@@@>><<@@@>>",requiredGas, process.env.ADMIN_WALLET_BRIDGE.toString());    
+    }     		   
     
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
@@ -355,9 +368,13 @@ let web3 = new Web3(getwsprovider());
 
 // TokenIn -> coinOut
 async function getEventData_TokenIn(_fromBlock, _toBlock){	
-	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 	 
+	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());
+	 //const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, '0xdF310a187Bb35A0B0090DC7Cb2C2F784Ccf72036');	 	 
 	 //try{ 		 
-		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		  
+		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
+		 		  //await myinstance.getPastEvents({ fromBlock: 1346342, toBlock: 1346342 },function(error,myevents){		
+		 		  	   console.log("EVENTS >>>>",myevents);
+		 		  	   console.log("<<<< error >>>>",error);  
 		 				if(myevents === undefined){ 	return  }		 				
 		 				var myeventlen = myevents.length;		
 		 				process.env.TokenInEventLen = myevents.length;
@@ -383,9 +400,8 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 							//console.log(">>>>>### TokenIn eventlen, k, 	 id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
 							if(_mychainid && (parseInt(_myamount))){
 								console.log("!!!!!! tokenAddress >>>>>", _mytokenAddress);
-								var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
-								if(_ary.includes(_mytokenAddress)){									 
-								//if(_mytokenAddress == (ETH_TOKEN_ADDRESS || BNB_TOKEN_ADDRESS || MATIC_TOKEN_ADDRESS || HT_TOKEN_ADDRESS || DUSD_TOKEN_ADDRESS || USDT_TOKEN_ADDRESS)){								
+								var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString()];
+								if(_ary.includes(_mytokenAddress)){								 
 									console.log("<<<<@>>>> Looking for ---->>>>", _mytokenAddress);						
 									try{
 										console.log("~~~~~TokenIn EVENT >>>>_mytokenAddress ~~~~~",_mytokenAddress);
