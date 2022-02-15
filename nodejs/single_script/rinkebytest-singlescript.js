@@ -61,7 +61,7 @@ var USDT_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 var USDC_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 var PAX_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 var DAI_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
-	 
+	  
 // for web3 contract object creation  
 var CHAINID_URL=[];
 //Rinkby, HECO, Ethereum TestNet
@@ -239,6 +239,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 		       console.log("raw_tx >>>>",raw_tx);
 		       
 		       	try{		       		
+		       	   set_ordersTable(parseInt(_chainid), orderid.toString());		 
 						bridgeweb3.eth.accounts.signTransaction(raw_tx, process.env.ADMIN_WALLET_PK_BRIDGE.toString(), function(error,result){
 							if(! error){
 								try{
@@ -273,7 +274,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 
 async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid, _chainid){	  
 	  // not valid token addr
-	  var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString(), USDC_TOKEN_ADDRESS.toString(), PAX_TOKEN_ADDRESS.toString(), DAI_TOKEN_ADDRESS.toString() ];
+	  var _ary = [DAI_TOKEN_ADDRESS.toString(), PAX_TOKEN_ADDRESS.toString(), USDC_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
 	  if(_ary.includes(_tokenaddr)){}else{
 	  		return 1;
 	  }	
@@ -305,8 +306,6 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
      web3.eth.handleRevert = true; 		    
 
 	 try{
-	 		//console.log(">>>>>Calling Contract>>>> CONTRACTS_ARY[_chainid]>>>>",CONTRACTS_ARY[_chainid]);
-    		//var company_bridgeinstance = new bridgeweb3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACTS_ARY[_chainid].toString());
     		var company_bridgeinstance = new bridgeweb3.eth.Contract(CONTRACT_ADDR_ABI, DITHEREUM_CONTRACT_ADDR.toString());		    	
     }catch(e){
 			console.log(" >>>>> EEEEE >>>>",e);		    
@@ -315,19 +314,19 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 	 await getAvailableAdminWallet_bridge(bridgeweb3).then(()=>{
 		    if(typeof process.env.ADMIN_WALLET_BRIDGE === 'undefined'){
 		    	console.log("<<@@@>><<@@@>>No admin wallet bridge available,Removing orderid from orders_table<<@@@>><<@@@>>");
-		    	remove_orderid_from_orders_table(orderid, _chainid).then(()=>{
+		    	remove_orderid_from_orders_table(_chainid).then(()=>{
 		    		setTimeout(()=>{},1000);
 		    		process.exit(1);
 		    	})    	    	
 		    }else{		    	        
 		  	 	  console.log("<<@@@>>With admin wallet<<@@@>>",process.env.ADMIN_WALLET_BRIDGE.toString());
-		        console.log('<<@@@>>with deails TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid<<@@@>>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);
+		        console.log('<<@@@>>with deails TOKEN_ADDRESS, _toWallet, _amt, _chainid<<@@@>>', TOKEN_ADDRESS, _toWallet, _amt, _chainid);
 		        if((typeof process.env.lastnonce_bridge === 'undefined') || (typeof process.env.ADMIN_WALLET_BRIDGE === 'undefined')){				     
 						process.exit(1);     
 				  }     
 		    } 
     }); 
-	 	         
+	 _amt = _amt/100;  // JUST TO TEST- MAKING AMT SMALL	         
     var mydata = await company_bridgeinstance.methods.tokenOut(pairedwithContract.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();    
 	 console.log("<<@@@>>##pairedwithContract, myData ##<<@@@>>",pairedwithContract, mydata);
 	 var requiredGas = await company_bridgeinstance.methods.tokenOut(pairedwithContract.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
@@ -348,7 +347,8 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 		       };
 		       		       
 		      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
-		      try{		       		
+		      try{	
+		      		set_ordersTable(parseInt(_chainid), orderid.toString());		 	       		
 						bridgeweb3.eth.accounts.signTransaction(raw_tx, process.env.ADMIN_WALLET_PK_BRIDGE.toString(), function(error,result){
 							if(! error){
 								try{
@@ -435,6 +435,20 @@ async function freeze_wallet(){
 	}
 }
 
+function set_ordersTable(chainid, orderid){
+	var con9 = mysql.createConnection(DB_CONFIG);
+	const query9 = util.promisify(con9.query).bind(con9);	
+	try{
+			var _wherestr = " orderid="+orderid+" AND chainid="+chainid; 			
+			var update_query = "UPDATE contract_orders SET transactionSent=1 WHERE "+_wherestr;
+			console.log(">>>> Query >>>> Update Query [SET ORDERS_TABLE] >>>>", update_query);		
+			query9(update_query).catch(console.log);		
+	}catch(e){
+			console.error("ERROR SQL>>Catch",e);
+	}finally{
+			con9.end();			
+	}
+}
 
 /// SET THIS FOR EACH CHAIN 
 var getwsprovider = () =>{  
@@ -459,7 +473,8 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		 				var eventlen = events.length;
 		 				process.env.CoinInEventLen = events.length;
 		 				console.log("COIN IN >>> eventlen >>>>", eventlen);		 				
-		 				
+		 				var secretText = Math.random(23439, 5654624);	
+		 				process.env.secretText = secretText.toString();	
 		 				for(var i=0;i<eventlen; i++){		
 		 					var eve = events[i];		 					
  				         /////emit CoinIn(orderID, msg.sender, msg.value)
@@ -472,8 +487,8 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 							console.log(">>>>>CoinIn >> CHAIN id, Order Id >>>>",_chainid, _orderid);							
 							if(_chainid && (parseInt(_amount))){							
 								try{
-									(async()=>{																																			 		
-									   var cnt = await db_select_coinin(_chainid, _orderid, _sendcoinsTo, _amount).catch(console.log);											      											   
+									(async()=>{																		 		
+									   var cnt = await db_select_coinin(_chainid, _orderid, _sendcoinsTo, _amount, secretText).catch(console.log);											      											   
 									})();									   										   
 								}catch(e){
 									console.log(">>>>>Catch >>>>",e);									
@@ -507,7 +522,9 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 						}	
 						console.log("================================================="); 								 				
 		 				console.log("TOKEN IN >>> myeventlen >>>>", myeventlen);		 		
-		 				console.log("=================================================");		
+		 				console.log("=================================================");	
+		 				var secretText = Math.random(23439, 5654624);	
+		 				process.env.secretText = secretText.toString();		
 		 				for(var k=0; k<myeventlen;k++){		 						 	
 		 					var myeve = myevents[k];		 					
 		 					//console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);							
@@ -520,14 +537,13 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 							//console.log(">>>>>### TokenIn eventlen, k, 	 id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
 							if(_mychainid && (parseInt(_myamount))){
 								console.log("!!!!!! tokenAddress >>>>>", _mytokenAddress);
-								var _ary = [ETH_TOKEN_ADDRESS.toString(), BNB_TOKEN_ADDRESS.toString(), MATIC_TOKEN_ADDRESS.toString(), HT_TOKEN_ADDRESS.toString(), DUSD_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
-								if(_ary.includes(_mytokenAddress)){									 
-								//if(_mytokenAddress == (ETH_TOKEN_ADDRESS || BNB_TOKEN_ADDRESS || MATIC_TOKEN_ADDRESS || HT_TOKEN_ADDRESS || DUSD_TOKEN_ADDRESS || USDT_TOKEN_ADDRESS)){								
+								var _ary = [DAI_TOKEN_ADDRESS.toString(), PAX_TOKEN_ADDRESS.toString(), USDC_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
+								if(_ary.includes(_mytokenAddress)){							 
 									console.log("<<<<@>>>> Looking for ---->>>>", _mytokenAddress);						
 									try{
 										console.log("~~~~~TokenIn EVENT >>>>_mytokenAddress ~~~~~",_mytokenAddress);
 										(async()=>{																																			 		
-										   var cnt = await db_select(_mychainid, _myorderid, _mysendcoinsTo, _myamount, _mytokenAddress).catch(console.log);											      											   
+										   var cnt = await db_select(_mychainid, _myorderid, _mysendcoinsTo, _myamount, _mytokenAddress, secretText).catch(console.log);											      											   
 										})();									   										   
 									}catch(e){
 										console.log(">>>>>Catch >>>>",e);									
@@ -561,7 +577,7 @@ async function no_records_found_unfreeze_row(){
 }
 
 // Changes Done
-async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress){	
+async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress, secretText){	
 	var con6 = mysql.createConnection(DB_CONFIG);
 	const query = util.promisify(con6.query).bind(con6);
 	const insertquery = util.promisify(con6.query).bind(con6);	
@@ -571,7 +587,7 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress){
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);			
 			if(parseInt(records[0].rec) < 1){
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`) VALUES ("+chainid+","+orderid+")";		
+				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method(mytokenAddress, sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -585,7 +601,7 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress){
 	}			
 }
 
-async function	db_select_coinin(chainid, orderid, sendcoinsTo, amount){	
+async function	db_select_coinin(chainid, orderid, sendcoinsTo, amount, secretText){	
 	var con6 = mysql.createConnection(DB_CONFIG);
 	const query = util.promisify(con6.query).bind(con6);
 	const insertquery = util.promisify(con6.query).bind(con6);	
@@ -595,9 +611,9 @@ async function	db_select_coinin(chainid, orderid, sendcoinsTo, amount){
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);			
 			if(parseInt(records[0].rec) < 1){
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`) VALUES ("+chainid+","+orderid+")";		
+				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";	
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
-				await insertquery(insert_query).catch(console.log);				
+				await insertquery(insert_query).catch(console.log);		
 				var z = await bridge_sendmethod(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
 			}else{
 				console.log(">>> Skipping already in database, orderid, chainid ",orderid, chainid);
@@ -669,11 +685,11 @@ async function update_nonce(mychain, mywalletid, mynonce){
 	}
 }
 
-async function remove_orderid_from_orders_table(myorderid, mychain){
+async function remove_orderid_from_orders_table(mychain){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{		
-		var delete_query = "delete from `contract_orders` where `orderid`="+myorderid+" AND `chainid`=34";
+ 		var delete_query = "Delete from `contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`=34";		
 		console.log("<<< Query >>>",delete_query);		
 		return myquery(delete_query).catch(console.log);		
 	}catch(e){
