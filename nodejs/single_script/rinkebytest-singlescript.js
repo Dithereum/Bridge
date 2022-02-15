@@ -25,9 +25,6 @@ var TOKEN_ADDRESS = "0x232A1fD8742a606238B53B7babA5fEe5835f3c97";
 var CONTRACTS_ARY=[];
 CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';
 CONTRACTS_ARY[4] = '0xd3a6358920aAE3DA2aDD4B9dBA4059799f89fa48';
-CONTRACTS_ARY[97] = '0xF4905930BB56F9Aeb520de0897c9283d0B3624eE';
-CONTRACTS_ARY[137] = '0x07F25AcFf1F0e725Df3997b3092DC594B1d7a496';
-CONTRACTS_ARY[256] = '0xdF310a187Bb35A0B0090DC7Cb2C2F784Ccf72036';
 
 // FOR RINKEBY 
 var chainid = 4; // rinkeby
@@ -50,12 +47,8 @@ var DB_CONFIG = {
   		port: process.env.DB_PORT
 };
 
-// TOKEN ADDRESSES -   
-//var ETH_TOKEN_ADDRESS = "0xe1789cF2C86Ff424ffBf971E6A1Ddb69a2C62985";
+// TOKEN ADDRESSES -  
 var ETH_TOKEN_ADDRESS = "0xaeF855F175D50D38714a366b7362ef344bA88bD0";
-var BNB_TOKEN_ADDRESS = "0x57012f5fE63a47a668b1fF9f6eF3D234A22e8C19";
-var MATIC_TOKEN_ADDRESS = "0xf2A16551D5ab32acf690548DcFaB1302224B9926";
-var HT_TOKEN_ADDRESS = "0x5277346c4534028C535A7e8660c491DEB63A2155";
 var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A";
 var USDT_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";								  
 var USDC_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
@@ -64,16 +57,8 @@ var DAI_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 	  
 // for web3 contract object creation  
 var CHAINID_URL=[];
-//Rinkby, HECO, Ethereum TestNet
 CHAINID_URL[4] = 'https://rinkeby.infura.io/v3/8102c6c81e12418588c89d69ac7a3f04';
-//Binance Smart chain TESTNET
-CHAINID_URL[97] = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-//HECO TEST NET 
-CHAINID_URL[256] = 'https://http-testnet.hecochain.com';
-//DITHEREUM TESTNET
 CHAINID_URL[34] = 'https://node-testnet.dithereum.io';
-//MATIC_MAIN NET 
-CHAINID_URL[137] = 'https://polygon-rpc.com';
 
 
 // CHANGES DONE
@@ -355,20 +340,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 									console.log(">> Signed Transaction >>");
 									var serializedTx=result.rawTransaction;
 									console.log("Serialized Tx ::", serializedTx);
-									/*
-									bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex'))
-									.on('transactionHash',function(xhash){										
-										//out put of the transaction in form of transaction hash
-										console.log("..>>>SignedTranscationHash ==>",xhash);																														
-										bridgeweb3.eth.getTransactionReceipt(xhash).then((rec)=>{
-											console.log("<<< @@ RECEIPT @@ >>>",rec);
-										});																														
-									})
-									.on('error', myErr => {
-										console.log("###ERR..",myErr);
-									});
-									*/
-								  bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
+								   bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
 								}catch(e){
 									console.log(e);
 								}
@@ -646,23 +618,14 @@ async function	db_select_frozenWallets(){
 
 async function unfreezeWallet(_chainid, _walletid){
 	console.log("IN UnfreezeWallet function >>> _chainid, _walletid >>>>",_chainid, _walletid);
-	var con8 = mysql.createConnection(DB_CONFIG);
-	var con9 = mysql.createConnection(DB_CONFIG);
+	var con8 = mysql.createConnection(DB_CONFIG);	
 	const query8 = util.promisify(con8.query).bind(con8);	
-	const query9 = util.promisify(con9.query).bind(con9);	
 	try{	
-			var _wherecond = " walletid='"+_walletid+"' AND chainid="+_chainid+" AND freezetime<(UNIX_TIMESTAMP()-600)";
+			var _wherecond = " walletid='"+_walletid+"' AND chainid IN (34,4,97,137,256,80001) AND freezetime<(UNIX_TIMESTAMP()-600)";
 			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE "+_wherecond;						
 			console.log("------------------------------------------");			
 			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
 			var wallets = await query8(update_query);
-			
-			var _wherecond1 = " walletid='"+_walletid+"' AND chainid="+BRIDGE_CHAIN+" AND freezetime<(UNIX_TIMESTAMP()-600)";
-			var update_query1 = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE "+_wherecond1;						
-			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query1);
-			console.log("------------------------------------------");						
-			var wallets1 = await query9(update_query1);
-			//console.log(">>>>> wallets >>>>", wallets);
 			return wallets;
 	}catch(e){
 			console.error("ERROR SQL>>Catch",e);
