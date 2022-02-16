@@ -59,9 +59,9 @@ async function	getAvailableAdminWallet(){
 			var _mywherecondition = " isFrozen=0 AND chainid="+chainid+" AND freezetime<(UNIX_TIMESTAMP()-600) limit 1";
 			var select_wallet_query = "SELECT * FROM "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_mywherecondition;
 			console.log(">>>> Query <<<<#", select_wallet_query);			
-			var _adminwallet = await query5(select_wallet_query).catch(console.log);			
-			console.log("<<<< Available Wallet >>>> ", _adminwallet[0]);			
+			var _adminwallet = await query5(select_wallet_query).catch(console.log);
 			if(_adminwallet[0]){
+				console.log("<<<< Available Wallet >>>> ", _adminwallet[0].walletid);
 				process.env.ADMIN_WALLET=_adminwallet[0].walletid;
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
 				process.env.CHAIN_ID=_adminwallet[0].chainid;
@@ -480,8 +480,8 @@ let web3 = new Web3(getwsprovider());
 // CoinIn -> TokenOut
 async function getEventData_CoinIn(_fromBlock, _toBlock){	
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 
-		 		  //await myinstance.getPastEvents('CoinIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
-		 		  await myinstance.getPastEvents('CoinIn', { fromBlock: 16602308, toBlock: 16602312 }, function(error,myevents){
+		 		  await myinstance.getPastEvents('CoinIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
+		 		  //await myinstance.getPastEvents('CoinIn', { fromBlock: 16602308, toBlock: 16602312 }, function(error,myevents){
 		 		  	   console.log("EVENTS >>>>", myevents);
 		 				if(myevents === undefined){ 	return  }		 				
 		 				var myeventlen = myevents.length;		
@@ -521,8 +521,8 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 // TokenIn -> TokenOut
 async function getEventData_TokenIn(_fromBlock, _toBlock){	
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 
-		 		  //await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
-		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: 15218120, toBlock: 15218125 }, function(error,myevents){
+		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
+		 		  //await myinstance.getPastEvents('TokenIn', { fromBlock: 15218120, toBlock: 15218125 }, function(error,myevents){
 		 		  	   console.log("EVENTS >>>>", myevents);
 		 				if(myevents === undefined){ 	return  }		 				
 		 				var myeventlen = myevents.length;		
