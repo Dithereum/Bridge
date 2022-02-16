@@ -1,12 +1,4 @@
 #!/usr/bin/nodejs
-/*
-CREATE TABLE
-    contract_orders (
-        chainid BIGINT,
-        orderid BIGINT,        
-);
-*/
-
 var mysql = require('mysql');
 const util = require('util');
 require('dotenv').config();
@@ -69,9 +61,9 @@ async function	getAvailableAdminWallet(){
 			var _mywherecondition = " isFrozen=0 AND chainid="+chainid+" AND freezetime<(UNIX_TIMESTAMP()-600) limit 1";
 			var select_wallet_query = "SELECT * FROM "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_mywherecondition;
 			console.log(">>>> Query <<<<#", select_wallet_query);			
-			var _adminwallet = await query5(select_wallet_query).catch(console.log);			
-			console.log("<<<< Available Wallet >>>> ", _adminwallet[0]);			
+			var _adminwallet = await query5(select_wallet_query).catch(console.log);	
 			if(_adminwallet[0]){
+				console.log("<<<< Available Wallet >>>> ", _adminwallet[0].walletid);
 				process.env.ADMIN_WALLET=_adminwallet[0].walletid;
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
 				process.env.CHAIN_ID=_adminwallet[0].chainid;
@@ -376,8 +368,8 @@ async function checkLatestBlock(){
  	 var fromblock = toblock-500;
  	 
  	 // For testing 	  	  
- 	 var toblock=10172788;
- 	 var fromblock=10172288;	
+ 	 //var toblock=10172788;
+ 	 //var fromblock=10172288;	
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock); 
 	 getEventData_CoinIn(fromblock, toblock);	 
 	 getEventData_TokenIn(fromblock, toblock); 	
