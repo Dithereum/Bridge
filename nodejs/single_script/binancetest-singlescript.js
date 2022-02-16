@@ -283,7 +283,8 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 									});						
 									var nextnonce = nonc+1;
 									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce); })();								
+									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce); })();
+																	
 								}catch(e){
 									console.log("##### :::: ERR0R :::: ######",e);
 							}                                                                                                        
@@ -705,11 +706,13 @@ async function update_nonce(mychain, mywalletid, mynonce){
 		x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
 		var nextn = parseInt(x2['lastnonce'])+1;
 		process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });
-		console.log(">@>@>@>@> process.env.ADMIN_WALLET_BRIDGE_34 <@<@<@<@<", process.env.ADMIN_WALLET_BRIDGE_34);				
+		//console.log(">@>@>@>@> process.env.ADMIN_WALLET_BRIDGE_34 <@<@<@<@<", process.env.ADMIN_WALLET_BRIDGE_34);				
 	   //---------------------	
 		var _wherestr = " walletid='"+mywalletid+"' AND chainid="+mychain; 			
 		var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET nonce="+mynonce+" WHERE "+_wherestr;
-		myquery(update_query).catch(console.log);	
+		setTimeout(()=>{
+			return myquery(update_query).catch(console.log);
+		}, 1000);	
 	}catch(e){
 		console.error("ERROR IN SQL UPDATE NONCE >>",e);	
 	}finally{
