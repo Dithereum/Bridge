@@ -107,7 +107,7 @@ async function gTransactionCount(mywallet){
 process.env.lastnonce = 0;
 
 /// FOR BRIDGE - 
-async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){	
+async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 	var con5 = mysql.createConnection(DB_CONFIG);
 	const query5 = util.promisify(con5.query).bind(con5);
 	try{
@@ -433,6 +433,8 @@ async function checkLatestBlock(){
  	 var toblock =  await web3.eth.getBlockNumber();
  	 var fromblock = toblock-1500;
 	 
+	 toblock= 16801468;
+	 fromblock= 16799968;
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock);
 	 getEventData_TokenIn(fromblock, toblock); 
 	 getEventData_CoinIn(fromblock, toblock); 	
@@ -696,6 +698,12 @@ async function update_nonce(mychain, mywalletid, mynonce){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{
+	   //--------------------- 16 FEB 2022		
+		x2 = {};
+		x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
+		var nextn = parseInt(x2['lastnonce'])+1;
+		process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });				
+	   //---------------------	
 		var _wherestr = " walletid='"+mywalletid+"' AND chainid="+mychain; 			
 		var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET nonce="+mynonce+" WHERE "+_wherestr;
 		myquery(update_query).catch(console.log);	
