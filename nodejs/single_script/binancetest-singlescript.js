@@ -702,7 +702,8 @@ async function update_nonce(mychain, mywalletid, mynonce){
 		x2 = {};
 		x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
 		var nextn = parseInt(x2['lastnonce'])+1;
-		process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });				
+		process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });
+		console.log(">@>@>@>@> process.env.ADMIN_WALLET_BRIDGE_34 <@<@<@<@<", process.env.ADMIN_WALLET_BRIDGE_34);				
 	   //---------------------	
 		var _wherestr = " walletid='"+mywalletid+"' AND chainid="+mychain; 			
 		var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET nonce="+mynonce+" WHERE "+_wherestr;
