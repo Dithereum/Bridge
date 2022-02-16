@@ -260,7 +260,8 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));
 					  	    console.log(">>>>web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])>>>>", JSON.stringify(web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])));					  	             			                    				                    			                                                                  
 					       const raw_tx = {   
-					           nonce: web3.utils.toHex(nonc),                    
+					           //nonce: web3.utils.toHex(nonc),
+					           nonce: nonc,                    
 					           gasPrice: web3.utils.toHex(gasPrice),
 					           gasLimit: requiredGas,
 					           from: JSON.parse(_envobj)['walletid'].toString(),
@@ -282,7 +283,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 									});						
 									var nextnonce = nonc+1;
 									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);								
+									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce); })();								
 								}catch(e){
 									console.log("##### :::: ERR0R :::: ######",e);
 							}                                                                                                        
@@ -396,7 +397,8 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));
 					  	    console.log(">>>>web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])>>>>", JSON.stringify(web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])));					  	             			                    				                    			                                                                  
 					       const raw_tx = {   
-					           nonce: web3.utils.toHex(nonc),                    
+					           //nonce: web3.utils.toHex(nonc),
+					           nonce: nonc,                    
 					           gasPrice: web3.utils.toHex(gasPrice),
 					           gasLimit: requiredGas,
 					           from: JSON.parse(_envobj)['walletid'].toString(),
@@ -418,7 +420,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 									});						
 									var nextnonce = nonc+1;
 									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);								
+									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);})();								
 								}catch(e){
 									console.log("##### :::: ERR0R :::: ######",e);
 							}                                                                                                        
@@ -433,8 +435,8 @@ async function checkLatestBlock(){
  	 var toblock =  await web3.eth.getBlockNumber();
  	 var fromblock = toblock-1500;
 	 
-	 toblock= 16801468;
-	 fromblock= 16799968;
+	 toblock= 16807000;
+	 fromblock= 16804000;
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock);
 	 getEventData_TokenIn(fromblock, toblock); 
 	 getEventData_CoinIn(fromblock, toblock); 	
