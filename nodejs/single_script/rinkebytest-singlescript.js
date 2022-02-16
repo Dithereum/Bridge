@@ -199,13 +199,12 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 				  }     
 		    } 
     });        
-    setTimeout(()=>{}, 4000);  
+    setTimeout(()=>{}, 4000);
     var mydata = await company_bridgeinstance.methods.tokenOut(ETH_TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
     console.log(">>>>myData >>>>",mydata);    
     
-    var requiredGas = await company_bridgeinstance.methods.tokenOut(ETH_TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
-    requiredGas = (requiredGas > 0) ? requiredGas : 70000;    
-	 //var requiredGas = 75000; 
+    var requiredGas = await company_bridgeinstance.methods.tokenOut(ETH_TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).estimateGas({from: process.env.ADMIN_WALLET_BRIDGE.toString()}).catch(console.log);
+    requiredGas = (requiredGas > 0) ? requiredGas : 75000;
     console.log(">>>>>@@@@<<<<<requiredGas >>>>>@@@@<<<<<",requiredGas);
   	 (async()=>{
 		  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{
@@ -224,32 +223,26 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 		       console.log("raw_tx >>>>",raw_tx);
 		       
 		       	try{		       		
-		       	   set_ordersTable(parseInt(_chainid), orderid.toString());		 
+		       	   set_ordersTable(parseInt(_chainid), orderid.toString());	
+		       	   console.log("Here >>>>",process.env.ADMIN_WALLET_PK_BRIDGE.toString());	 
 						bridgeweb3.eth.accounts.signTransaction(raw_tx, process.env.ADMIN_WALLET_PK_BRIDGE.toString(), function(error,result){
 							if(! error){
-								try{
-									console.log(">>>>>>>>>>>>>>>>> #### <<<<<<<<<<<<<<<<<");
+								try{									
 									var serializedTx=result.rawTransaction;
 									bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex'))
-									.on('transactionHash',function(xhash){										
-										//out put of the transaction in form of transaction hash
+									.on('transactionHash',function(xhash){
 										console.log(".....SignedTranscationHash ==> ",xhash);
-										/*
-										bridgeweb3.eth.getTransactionReceipt(xhash).then((rec)=>{
-											console.log("RECEIPT >>>>",rec);
-										});
-										*/										
 									})
 									.on('error', myErr => {
 										console.log("###ERR..",myErr);
 									});
 								}catch(e){
-									console.log(e);
+									console.log('<= Error =>',e);
 								}
 							}
 						});
-						var nextnonce = parseInt(process.env.lastnonce_bridge)+1;
-						update_nonce(34, process.env.ADMIN_WALLET_BRIDGE.toString(), nextnonce);								
+						process.env.lastnonce_bridge = parseInt(process.env.lastnonce_bridge)+1;
+						update_nonce(34, process.env.ADMIN_WALLET_BRIDGE.toString(), process.env.lastnonce_bridge);								
 					}catch(e){
 						console.log("##### :::: ERR0R :::: ######",e);
 					}	                                                                                                                         
@@ -346,8 +339,8 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 								}
 							}
 						});
-						var nextnonce = parseInt(process.env.lastnonce_bridge)+1;
-						update_nonce(34, process.env.ADMIN_WALLET_BRIDGE.toString(), nextnonce);								
+						process.env.lastnonce_bridge = parseInt(process.env.lastnonce_bridge)+1;
+						update_nonce(34, process.env.ADMIN_WALLET_BRIDGE.toString(), process.env.lastnonce_bridge);								
 					}catch(e){
 						console.log("##### :::: ERR0R :::: ######",e);
 					}                                                                                                        
@@ -383,8 +376,8 @@ async function checkLatestBlock(){
  	 var fromblock = toblock-500;
  	 
  	 // For testing 	  	  
- 	 //var toblock=9982652;
- 	 //var fromblock=9980652;	
+ 	 var toblock=10172788;
+ 	 var fromblock=10172288;	
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock); 
 	 getEventData_CoinIn(fromblock, toblock);	 
 	 getEventData_TokenIn(fromblock, toblock); 	
