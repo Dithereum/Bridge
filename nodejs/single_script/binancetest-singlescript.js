@@ -201,7 +201,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 			console.log(" >>>>> EEEEE >>>>",e);		    
     }
 
- 	////////	 	 
+ 	////////
 	 await getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
 	 	   var _envobj = {};	 
 	 	   console.log("~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~");			
@@ -271,20 +271,27 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 					       };		       		       
 					      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
 					      try{
-					      	   set_ordersTable(parseInt(_chainid), orderid.toString());		       		
-									bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
+					      	   set_ordersTable(parseInt(_chainid), orderid.toString());
+  									var nextnonce = nonc+1;
+									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
+									//--------------------- 16 FEB 2022		
+									var x2 = {};
+									x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
+									var nextn = parseInt(x2['lastnonce'])+1;
+									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });						
+								   //---------------------																												
+									await bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
 										if(! error){
 											try{												
 												var serializedTx=result.rawTransaction;
 												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);
-												bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);											   
+												(async() =>{ 
+													await bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
+												})();									   
 											}catch(e){ 	console.log(e); }
 										}
 									});						
-									var nextnonce = nonc+1;
-									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce); })();
-																	
+									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce); })(); 																						
 								}catch(e){
 									console.log("##### :::: ERR0R :::: ######",e);
 							}                                                                                                        
@@ -322,7 +329,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 			console.log(" >>>>> EEEEE >>>>",e);		    
     }
 
- 	////////	 	 
+ 	////////
 	 await getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
 	 	   var _envobj = {};	 
 	 	   console.log("~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~");			
@@ -409,19 +416,27 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 					       };		       		       
 					      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
 					      try{
-					      	   set_ordersTable(parseInt(_chainid), orderid.toString());		       		
-									bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
+					      	   set_ordersTable(parseInt(_chainid), orderid.toString());
+  									var nextnonce = nonc+1;
+									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
+									//--------------------- 16 FEB 2022		
+									var x2 = {};
+									x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
+									var nextn = parseInt(x2['lastnonce'])+1;
+									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });						
+								   //---------------------
+										       		
+									await bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
 										if(! error){
 											try{												
 												var serializedTx=result.rawTransaction;
 												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);
-												bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);											   
+												(async()=>{ await bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log); })();											   
 											}catch(e){ 	console.log(e); }
 										}
-									});						
-									var nextnonce = nonc+1;
-									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);})();								
+									});
+									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);})();						
+								 //																		
 								}catch(e){
 									console.log("##### :::: ERR0R :::: ######",e);
 							}                                                                                                        
@@ -701,18 +716,9 @@ async function update_nonce(mychain, mywalletid, mynonce){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{
-	   //--------------------- 16 FEB 2022		
-		x2 = {};
-		x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
-		var nextn = parseInt(x2['lastnonce'])+1;
-		process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });
-		//console.log(">@>@>@>@> process.env.ADMIN_WALLET_BRIDGE_34 <@<@<@<@<", process.env.ADMIN_WALLET_BRIDGE_34);				
-	   //---------------------	
 		var _wherestr = " walletid='"+mywalletid+"' AND chainid="+mychain; 			
 		var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET nonce="+mynonce+" WHERE "+_wherestr;
-		setTimeout(()=>{
-			return myquery(update_query).catch(console.log);
-		}, 1000);	
+		return myquery(update_query).catch(console.log);	
 	}catch(e){
 		console.error("ERROR IN SQL UPDATE NONCE >>",e);	
 	}finally{
