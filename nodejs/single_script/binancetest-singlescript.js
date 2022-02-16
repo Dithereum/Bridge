@@ -500,7 +500,7 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		 				for(var k=0; k<myeventlen;k++){		 						 	
 		 					var myeve = myevents[k];		 					
 		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		 				   console.log("Event Dtaila ::: >>>",myeve, myeve.event, myeve.blockNumber);
+		 				   console.log("Event Details ::: >>>",myeve, myeve.event, myeve.blockNumber);
 		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		 				   //console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);
 		 					var _myorderid = myeve.returnValues.orderID;
@@ -729,13 +729,33 @@ async function remove_orderid_from_orders_table(mychain){
 	}
 }
 
-tryToUnfreezeWallets();
+async function unfreezeLockedWallets(){
+	var con = mysql.createConnection(DB_CONFIG);	
+	const query = util.promisify(con.query).bind(con);	
+	try{	
+		var _wherecond = " chainid IN (34,4,97,137,256,80001) AND freezetime<(UNIX_TIMESTAMP()-600)";
+		var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE  "+_wherecond;						
+		console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
+		return await query(update_query);
+	}catch(e){
+		console.error("ERROR SQL>>Catch",e);
+	}finally{
+		con.end();			
+	}
+}
 
-//Every 2 mins
-var job = new CronJob('0 */2 * * * *', function() {
+(async()=>{
+	tryToUnfreezeWallets();
+})();
+
+//Every 3 mins
+var job = new CronJob('0 */3 * * * *', function() {
 	console.log("-------------------------------------");
-   console.log('Cron running, every 2 mins');
+   console.log('Cron running, every 3 mins');
    console.log("-------------------------------------");
+   (async() =>{ 
+   	await unfreezeLockedWallets();
+   })();
    // DONE Changes
 	getAvailableAdminWallet().then(()=>{
 			console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
