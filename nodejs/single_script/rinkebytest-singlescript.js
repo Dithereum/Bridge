@@ -224,7 +224,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 		       
 		       	try{		       		
 		       	   set_ordersTable(parseInt(_chainid), orderid.toString());	
-		       	   console.log("Here >>>>",process.env.ADMIN_WALLET_PK_BRIDGE.toString());	 
+		       	   console.log("Here >>>>");	 
 						bridgeweb3.eth.accounts.signTransaction(raw_tx, process.env.ADMIN_WALLET_PK_BRIDGE.toString(), function(error,result){
 							if(! error){
 								try{									
