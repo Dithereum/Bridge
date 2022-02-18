@@ -1,4 +1,4 @@
-pragma solidity 0.8.9; 
+pragma solidity 0.8.12; 
 
 
 //SPDX-License-Identifier: UNLICENSED
@@ -99,13 +99,10 @@ contract DthEthBridge is owned {
     }
     
     function coinOut(address user, uint256 amount, uint256 _orderID) external onlySigner returns(bool){
-        if(address(this).balance >= amount){
+        
             payable(user).transfer(amount);
             emit CoinOut(_orderID, user, amount);
-        }
-        else{
-            emit CoinOutFailed(_orderID, user, amount);
-        }
+        
         return true;
     }
     
@@ -120,13 +117,10 @@ contract DthEthBridge is owned {
     
     function tokenOut(address tokenAddress, address user, uint256 tokenAmount, uint256 _orderID, uint256 chainID) external onlySigner returns(bool){
         
-        if(ERC20Essential(tokenAddress).balanceOf(address(this)) >= tokenAmount){
+        
             ERC20Essential(tokenAddress).transfer(user, tokenAmount);
             emit TokenOut(_orderID, tokenAddress, user, tokenAmount, chainID);
-        }
-        else{
-            emit TokenOutFailed(_orderID, tokenAddress, user, tokenAmount, chainID);
-        }
+        
         return true;
     }
 
