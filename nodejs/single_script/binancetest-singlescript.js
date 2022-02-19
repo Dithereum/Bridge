@@ -17,7 +17,7 @@ var CONTRACT_ADDR_ABI = JSON.parse(JSON.stringify(
 ));
   
 var CONTRACTS_ARY=[];
-CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';	  // Dithereum TEstnet
+CONTRACTS_ARY[34] = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';	  // Dithereum TEstnet
 								
 // For Binance TestNet
 var chainid = 97; // Binance TESTNET
@@ -41,8 +41,8 @@ var DB_CONFIG = {
 };
 
 // TOKEN ADDRESSES -
-var BNB_TOKEN_ADDRESS = "0xF4905930BB56F9Aeb520de0897c9283d0B3624eE"; // ON DITHEREUM BRIDGE
-var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A"; // ON DITHEREUM BRIDGE
+var BNB_TOKEN_ADDRESS = "0x3D5d1a4E519335A692388A26DCc78E4dec991dFA"; // ON DITHEREUM BRIDGE
+var DUSD_TOKEN_ADDRESS = "0x4CA21032F6C89f9ec65F517e6dcce226714992D4"; // ON DITHEREUM BRIDGE
 var SEARCH_FOR_USDT = "0xaAaa63808Ee6cF416285f4958Fd6907033b20a33";  // HYP TOKEN BY HITES SIR ON BINANCE NETWORK- USED TO TEST
 var SEARCH_FOR_BUSD = "0xaAaa63808Ee6cF416285f4958Fd6907033b20a33";  // HYP TOKEN BY HITES SIR ON BINANCE NETWORK- USED TO TEST
 	 
@@ -131,7 +131,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 				console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
 
 				// Working here  03 FEB 2022
-				await bridgeweb3.eth.getTransactionCount(_xobj['walletid']).then((z)=>{						
+				await bridgeweb3.eth.getTransactionCount(_xobj['walletid'], "pending").then((z)=>{						
 				   console.log(">>>>>>_xobj['walletid'] >>>>>",_xobj['walletid']);	
 				   console.log(">>>>z>>>>",z);
 					var nonce1 = (parseInt(_xobj['lastnonce']) > parseInt(z)) ? parseInt(_xobj['lastnonce']) : parseInt(z);  																			
@@ -185,9 +185,11 @@ const options = {
     },
 };
 
-async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chainid){    
-	 if(! CHAINID_URL[_chainid]){
-     	console.log(">>> not valid chainid >>>", _chainid);
+async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chainid){
+	console.log("---------------------------------------------");
+	console.log(">>> In company_bridge_send_method_coinin >>>>");
+	console.log("---------------------------------------------");    
+	 if(! CHAINID_URL[_chainid]){ console.log(">>> not valid chainid >>>", _chainid);
       return;
     }    
 
@@ -197,68 +199,49 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
      
 	 try{	 		
     		var company_bridgeinstance = new bridgeweb3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACTS_ARY[_chainid].toString());    				    	
-    }catch(e){
-			console.log(" >>>>> EEEEE >>>>",e);		    
-    }
+    }catch(e){ console.log(" >>>>> EEEEE >>>>",e); }
 
  	////////
-	 await getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
+	getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
 	 	   var _envobj = {};	 
 	 	   console.log("~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~");			
 			if( parseInt(_chainid) == 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_34; }					
 			console.log("_envobj >>>>>",_envobj);
 					
-			if( 
-				(! _envobj)
-			){
-				//console.log("Restarting >>>>");				
-		    	remove_orderid_from_orders_table(_chainid).then(()=>{
-		    		setTimeout(()=>{
-						process.exit(1);		    		
-		    		},120000);
-		    	})  	  
-			} 
-			
+			if( (! _envobj) ){				
+		    	remove_orderid_from_orders_table(_chainid).then(()=>{ setTimeout(()=>{ process.exit(1); },120000);	});  	  
+			}			
 			console.log("~~~~~>>>>>>", _envobj,  JSON.parse(_envobj)['walletid']); 	 		 
-		    if(typeof(JSON.parse(_envobj)['walletid']) == "undefined"){
+		   if(typeof(JSON.parse(_envobj)['walletid']) == "undefined"){
 		    	console.log("<<@@@>@@@>>No admin wallet bridge available,Removing orderid from orders_table<<@@@@@@>>");
-		    	remove_orderid_from_orders_table(_chainid).then(()=>{
-		    		setTimeout(()=>{
-						process.exit(1);		    		
-		    		},120000);
-		    	})  	    	
+		    	remove_orderid_from_orders_table(_chainid).then(()=>{	setTimeout(()=>{ process.exit(1); },120000);	});  	    	
 		    }else{
 		    	  var _envobj;      
-				  if(_chainid === 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_34; }
-					
+				  if(_chainid === 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_34; }					
 				  console.log(">! walletid, _chainid, walletid !<", _envobj, _chainid, JSON.parse(_envobj)['walletid']);					
 				  console.log(">JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']<",JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']);
 					
-				  if(! _envobj){					
-						job.start();  
-				  } 	 	 	   
+				  if(! _envobj){ process.exit(1); } 	 	 	   
 		        if((typeof JSON.parse(_envobj)['lastnonce'] === 'undefined') || (typeof JSON.parse(_envobj)['walletid'] === 'undefined')){				     
 						process.exit(1);     
 				  }
-				  
-				 console.log(">>>>>>!!!!!!!!!!!!!!!!!!!!!!!!~~~~~~~~~~~~~~~~~~~~~~~~",_chainid, JSON.parse(_envobj)['walletid']);
-	    		 var mydata = '';
-	    		 var requiredGas = 0;  
-	    		 _amt = _amt/1000; // JUST FOR TESTING SMALL AMOUNT AS NOT ENOUGH COINS/TOKENS TO TEST			    
+	    		  var mydata = '';
+	    		  var requiredGas = 0;  
+	    		  _amt = _amt/1000; // JUST FOR TESTING SMALL AMOUNT AS NOT ENOUGH COINS/TOKENS TO TEST			    
 			    (async()=>{ 
 				 	mydata = await company_bridgeinstance.methods.tokenOut(BNB_TOKEN_ADDRESS.toString(), _toWallet.toString(), _amt.toString(), orderid.toString(), _chainid.toString()).encodeABI();
 				 	requiredGas = await company_bridgeinstance.methods.tokenOut(BNB_TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid).estimateGas({from: JSON.parse(_envobj)['walletid'].toString() }).catch(console.log);
 				 	console.log(">>>> TokenOut BNB Token >> myData >>>>",mydata);
 			    })();
-			    console.log("ReEqueried Gas >>> ", requiredGas);
 				 requiredGas = (requiredGas > 0) ? (requiredGas+1000) : 100000;
 			    console.log("<<@@@>><<@@@>>REQUIRED GAS, bridge_admin_wallet<<@@@>><<@@@>>",requiredGas, JSON.parse(_envobj)['walletid']);    
 			    
-			    (async()=>{
-					  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{				  			
-					  	    var nonc = (parseInt(JSON.parse(_envobj)['lastnonce']) == 0) ? 1 : JSON.parse(_envobj)['lastnonce'];					  	    
-					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));
-					  	    console.log(">>>>web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])>>>>", JSON.stringify(web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])));					  	             			                    				                    			                                                                  
+			    //(async()=>{
+				  bridgeweb3.eth.getGasPrice().then(gasPrice=>{
+				  			 var x3 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);													  			
+					  	    var nonc;
+					  	    if(parseInt(x3['lastnonce']) == 0){ nonc = 0;}
+					  	    else{ nonc = x3['lastnonce']; }		  	             			                    				                    			                                                                  
 					       const raw_tx = {   
 					           //nonce: web3.utils.toHex(nonc),
 					           nonce: nonc,                    
@@ -272,31 +255,26 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 					      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
 					      try{
 					      	   set_ordersTable(parseInt(_chainid), orderid.toString());
-  									var nextnonce = nonc+1;
-									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									//--------------------- 16 FEB 2022		
-									var x2 = {};
-									x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
-									var nextn = parseInt(x2['lastnonce'])+1;
-									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });						
-								   //---------------------																												
-									await bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
+									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString());
+									//--------------------- 16 FEB 2022
+									var x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);									
+									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nonc+1 });
+															
+								   //---------------------
+										bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
 										if(! error){
 											try{												
 												var serializedTx=result.rawTransaction;
-												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);
-												(async() =>{ 
-													await bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
-												})();									   
+												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);										 
+												bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
+												update_nonce(_chainid, x2['walletid'].toString(), nonc+1);
 											}catch(e){ 	console.log(e); }
 										}
-									});						
-									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce); })(); 																						
-								}catch(e){
-									console.log("##### :::: ERR0R :::: ######",e);
-							}                                                                                                        
+									  });
+									  setTimeout(()=>{},25000);					  																					
+							}catch(e){  console.log("##### :::: ERR0R :::: ######",e);	}                                                                                                        
 					  }) 
-				 })();			    			             
+				 //})();			    			             
 		    } 
     }); 
 }
@@ -330,7 +308,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
     }
 
  	////////
-	 await getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
+	 getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
 	 	   var _envobj = {};	 
 	 	   console.log("~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~");			
 			if( parseInt(_chainid) == 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_34; }					
@@ -399,11 +377,14 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 			    		console.log("<@@@---REQUIRED GAS, bridge_admin_wallet ----@@@>",requiredGas, JSON.parse(_envobj)['walletid']);    
 			    }
 				 ///////			    
-			    (async()=>{
-					  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{				  			
-					  	    var nonc = (parseInt(JSON.parse(_envobj)['lastnonce']) == 0) ? 1 : JSON.parse(_envobj)['lastnonce'];					  	    
-					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));
-					  	    console.log(">>>>web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])>>>>", JSON.stringify(web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])));					  	             			                    				                    			                                                                  
+			    //(async()=>{
+					    bridgeweb3.eth.getGasPrice().then(gasPrice=>{
+					    	 var x3 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);				  			
+					  	    var nonc;
+					  	    if(parseInt(x3['lastnonce']) == 0){	nonc = 0;} 
+					  	    else{
+					  	    	nonc = x3['lastnonce'];
+					  	    }				  	             			                    				                    			                                                                  
 					       const raw_tx = {   
 					           //nonce: web3.utils.toHex(nonc),
 					           nonce: nonc,                    
@@ -417,31 +398,28 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 					      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
 					      try{
 					      	   set_ordersTable(parseInt(_chainid), orderid.toString());
-  									var nextnonce = nonc+1;
-									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);
-									//--------------------- 16 FEB 2022		
-									var x2 = {};
-									x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);
-									var nextn = parseInt(x2['lastnonce'])+1;
-									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nextn });						
+									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nonc);
+									//--------------------- 16 FEB 2022
+									var x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);									
+									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nonc+1 });									
 								   //---------------------
-										       		
-									await bridgeweb3.eth.accounts.signTransaction(raw_tx, JSON.parse(_envobj)['walletpk'].toString(), function(error,result){
-										if(! error){
-											try{												
-												var serializedTx=result.rawTransaction;
-												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);
-												(async()=>{ await bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log); })();											   
-											}catch(e){ 	console.log(e); }
-										}
+									bridgeweb3.eth.accounts.signTransaction(raw_tx, x2['walletpk'].toString(), function(error,result){
+											if(! error){
+												try{												
+													var serializedTx=result.rawTransaction;
+													console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);
+													bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
+													update_nonce(_chainid, x2['walletid'].toString(), nonc+1);																														   
+												}catch(e){ 	console.log(e); }
+											}
 									});
-									(async()=>{ await update_nonce(_chainid, JSON.parse(_envobj)['walletid'].toString(), nextnonce);})();						
+									setTimeout(()=>{},25000);									
 								 //																		
 								}catch(e){
 									console.log("##### :::: ERR0R :::: ######",e);
 							}                                                                                                        
 					  }) 
-				 })();			    			             
+				 //})();			    			             
 		    } 
     }); 
 }
