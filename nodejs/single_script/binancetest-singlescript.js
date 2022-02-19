@@ -166,6 +166,67 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 			con5.end();			
 	}			
 }
+////// NEWLY ADDED FOR TOKEN_IN 
+async function	getAvailableAdminWallet_bridge_fortokenin(bridgeweb3, _chainid){
+	var con5 = mysql.createConnection(DB_CONFIG);
+	const query5 = util.promisify(con5.query).bind(con5);
+	try{
+		   var _xobj = {};
+			var _mywherecondition = " isFrozen=0 AND chainid="+_chainid+" AND freezetime<(UNIX_TIMESTAMP()-600) limit 1";
+			var select_wallet_query = "SELECT * FROM "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_mywherecondition;
+			console.log(">>>> Bridge Query >>>>", select_wallet_query);			
+			var _adminwallet = await query5(select_wallet_query).catch(console.log);			
+			console.log("<<<< Bridge Available Wallet >>>> ", _adminwallet[0]);			
+			if(_adminwallet[0]){
+				var Objx = JSON.stringify({ "walletid": _adminwallet[0].walletid, "walletpk": _adminwallet[0].walletpk, "chainid": _adminwallet[0].chainid, "lastnonce": _adminwallet[0].nonce });			
+
+				if(parseInt(_chainid) == 34){	
+					console.log(">>Fetching wallets from db ..Objx, _chainid >>>>", Objx, _chainid);			
+					process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34 = Objx;
+					_xobj = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34);
+				}
+				
+				console.log(">>>>>>> _xobj['walletid'], _xobj['walletpk']", _xobj['walletid'], _xobj['walletpk']);				
+				console.log(">>>>>>> _xobj['chainid'], _xobj['lastnonce'] <<<<<<<<",_xobj['chainid'], _xobj['lastnonce']);				
+				console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
+
+				// Working here  03 FEB 2022
+				await bridgeweb3.eth.getTransactionCount(_xobj['walletid'], "pending").then((z)=>{						
+				   console.log(">>>>>>_xobj['walletid'] >>>>>",_xobj['walletid']);	
+				   console.log(">>>>z>>>>",z);
+					var nonce1 = (parseInt(_xobj['lastnonce']) > parseInt(z)) ? parseInt(_xobj['lastnonce']) : parseInt(z);  																			
+					console.log("--->>>>>> _xobj --->>>>>",_xobj, _xobj['chainid']);
+				   var Objx2 = JSON.stringify({ "walletid": _xobj['walletid'], "walletpk": _xobj['walletpk'], "chainid": _xobj['chainid'], "lastnonce": nonce1 });
+				   console.log("###### Objx2 <<<<<",Objx2);				   
+					//var _xobj = {};
+					if(_xobj['chainid'] === 34){				
+						process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34 = Objx2;
+						_xobj = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34);
+					}
+
+					var _wherestr = " walletid='"+_xobj['walletid']+"' AND chainid="+_xobj['chainid']; 			
+					var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=1, freezetime=UNIX_TIMESTAMP() WHERE "+_wherestr;
+					console.log(">>>> Bridge Query >>>> Update Query >>>>", update_query);		
+					query5(update_query).catch(console.log);	
+				}).catch(console.log);	
+				///					
+			}else{							
+				console.log(">$$$< NoTe >$$$<:::::::: No Admin wallet available >$$$<");
+				//// NEWLY ADDED
+				remove_orderid_from_orders_table(_chainid).then(()=>{
+		    		setTimeout(()=>{
+						process.exit(1);		    		
+		    		},100000);
+		    	});
+				////																	
+			}		
+	}catch(e){
+			console.error("ERROR SQL>>Catch",e);
+	}finally{
+			con5.end();			
+	}			
+}
+///// END
 
 var filter = {'to': CONTRACT_ADDR.toString()}
 
@@ -240,7 +301,8 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 				  bridgeweb3.eth.getGasPrice().then(gasPrice=>{
 				  			 var x3 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);													  			
 					  	    var nonc;
-					  	    if(parseInt(x3['lastnonce']) == 0){ nonc = 0;}
+					  	    if(x3['lastnonce']==null){ nonc = 0;}
+					  	    else if(parseInt(x3['lastnonce']) == 0){ nonc = 0;}
 					  	    else{ nonc = x3['lastnonce']; }		  	             			                    				                    			                                                                  
 					       const raw_tx = {   
 					           //nonce: web3.utils.toHex(nonc),
@@ -308,10 +370,10 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
     }
 
  	////////
-	 getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
+	 getAvailableAdminWallet_bridge_fortokenin(bridgeweb3, _chainid).then(()=>{
 	 	   var _envobj = {};	 
 	 	   console.log("~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~");			
-			if( parseInt(_chainid) == 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_34; }					
+			if( parseInt(_chainid) == 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34; }					
 			console.log("_envobj >>>>>",_envobj);
 					
 			if( 
@@ -325,7 +387,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 		    	})  	  
 			} 
 			
-			console.log("~~~~~>>>>>>", _envobj,  JSON.parse(_envobj)['walletid']); 	 		 
+			 console.log("~~~~~>>>>>>", _envobj,  JSON.parse(_envobj)['walletid']); 	 		 
 		    if(typeof(JSON.parse(_envobj)['walletid']) == "undefined"){
 		    	console.log("<<@@@>@@@>>No admin wallet bridge available,Removing orderid from orders_table<<@@@@@@>>");
 		    	remove_orderid_from_orders_table(_chainid).then(()=>{
@@ -336,7 +398,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 		    }else{	    	
 		    	   //////
 		    	   var _envobj;      
-					if(_chainid === 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_34; }					
+					if(_chainid === 34){ _envobj = process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34; }					
 					console.log(">! walletid, _chainid, walletid !<", _envobj, _chainid, JSON.parse(_envobj)['walletid']);					
 					console.log(">JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']<",JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']);									
 				  	////////	 
@@ -379,9 +441,10 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 				 ///////			    
 			    //(async()=>{
 					    bridgeweb3.eth.getGasPrice().then(gasPrice=>{
-					    	 var x3 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);				  			
+					    	 var x3 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34);				  			
 					  	    var nonc;
-					  	    if(parseInt(x3['lastnonce']) == 0){	nonc = 0;} 
+					  	    if(x3['lastnonce']==null){ nonc = 0;}
+					  	    else if(parseInt(x3['lastnonce']) == 0){ nonc = 0;} 
 					  	    else{
 					  	    	nonc = x3['lastnonce'];
 					  	    }				  	             			                    				                    			                                                                  
@@ -398,10 +461,9 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 					      console.log(">>>> RAW TX [raw_tx] >>>>",raw_tx);
 					      try{
 					      	   set_ordersTable(parseInt(_chainid), orderid.toString());
-									console.log(">>> Updating nonce >>>", _chainid, JSON.parse(_envobj)['walletid'].toString(), nonc);
 									//--------------------- 16 FEB 2022
-									var x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_34);									
-									process.env.ADMIN_WALLET_BRIDGE_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nonc+1 });									
+									var x2 = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34);									
+									process.env.ADMIN_WALLET_BRIDGE_FORTOKENIN_34 = JSON.stringify({ "walletid": x2['walletid'], "walletpk":x2['walletpk'], "chainid": x2['chainid'], "lastnonce": nonc+1 });									
 								   //---------------------
 									bridgeweb3.eth.accounts.signTransaction(raw_tx, x2['walletpk'].toString(), function(error,result){
 											if(! error){
@@ -428,9 +490,12 @@ async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
  	 var toblock =  await web3.eth.getBlockNumber();
  	 var fromblock = toblock-1500;
-	 
-	 toblock= 16807000;
-	 fromblock= 16804000;
+	 // TESTED Coinin 
+	 //toblock= 16807000;
+	 //fromblock= 16804000;
+	 // TESTED TokenIn
+	 toblock= 15219625;
+	 fromblock= 15216124;
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock);
 	 getEventData_TokenIn(fromblock, toblock); 
 	 getEventData_CoinIn(fromblock, toblock); 	
