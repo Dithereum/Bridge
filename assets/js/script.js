@@ -178,17 +178,33 @@ $('#assetFrom li').click(function(){
     }
     if(name=="trx"){
         
-        $('#networkFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX');
+        $('#assetFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX (TRON Network)');
         $('#assetTo li').addClass("disabled2");
-        $('#assetToUl').html('<img class="icons" src="assets/img/eth-icon.svg"> DITH');
+        $('#assetToUl').html('<img class="icons" src="assets/img/tron-logo.png"> TRX (Dithereum Network)');
         asset_Name = 'trx';
         asset_To = 'dith';
         network_From = 'trx';
         network_To = 'dith';
         $('.tokenCheck').hide();
         $('#trxTokencheck').show();
-        $('#receiveTokenImg').attr('src','assets/img/eth-icon.svg');
-        $('#reciveName').html('DITH');
+        $('#receiveTokenImg').attr('src','assets/img/tron-logo.png');
+        $('#reciveName').html('TRX');
+        $('#feeText').hide();
+        addNetowrk('TRX');
+    }
+    if(name=="dtrx"){
+        
+        $('#assetFromUL').html('<img class="icons" src="assets/img/tron-logo.png"> TRX (Dithereum Network)');
+        $('#assetTo li').addClass("disabled2");
+        $('#assetToUl').html('<img class="icons" src="assets/img/tron-logo.png"> TRX (TRON Network)');
+        asset_Name = 'dtrx';
+        asset_To = 'trx';
+        network_From = 'dith';
+        network_To = 'trx';
+        $('.tokenCheck').hide();
+        $('#dtrxTokencheck').show();
+        $('#receiveTokenImg').attr('src','assets/img/tron-logo.png');
+        $('#reciveName').html('TRX');
         $('#feeText').hide();
         addNetowrk('TRX');
     }
@@ -670,6 +686,13 @@ $('#btnNext').click(async function(){
             }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' DUSD (Dithereum Network) to ' +  tokenAmount +' USDT (Binance Network)';
         }
+        if(asset_Name=='dtrx'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' TRX (Dithereum Network) to ' +  tokenAmount +' TRX (TRON Network)';
+        }
         
     }
     
@@ -712,6 +735,15 @@ $('#btnNext').click(async function(){
                 return false;
             }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' HT (Heco Network) to ' +  tokenAmount +' HT (Dithereum Network)';
+        }
+    }
+    if(network_From=='trx'){
+        if(asset_Name=='trx'){
+            if(tokenAmount<10){
+                alertify.alert("Warning","Minimum Amount is 10");
+                return false;
+            }
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' TRX (TRON Network) to ' +  tokenAmount +' TRX (Dithereum Network)';
         }
     }
 
@@ -1139,7 +1171,18 @@ $('#btnNext').click(async function(){
                   //  processTx(data,hecoContract,web3GasPrice,gasLimit,0,HECOSCAN_URL);
                 }
             }
-        
+            if(network_To=='trx'){
+                if(asset_To=='trx'){
+                    let result = await tronContractInstance.coinIn().send({
+                        feeLimit: 50000000,
+                        callValue: tokenAmount,
+                        from: global.userAddress
+                    });
+                        alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
+                        'You can check transaction here, ' +
+                        '<a target="_blank" href="'+TRONSCAN_URL+result+'"><b>click here</b></a>');
+                }
+            }
     }
     //bsc network
     if(network_From=='bsc'){
@@ -1224,22 +1267,21 @@ $('#btnNext').click(async function(){
     }
     //trx network
     if(network_From=='trx'){
-     
-        var contractInfo = await tronWeb.trx.getContract('0xb90aebe21b54391429204e0d9d8d8df6884d8580');
+        var contractInfo = await tronWeb.trx.getContract(tronContract);
         tronContractInstance = await tronWeb.contract(contractInfo.abi.entrys,tronContract);
         //tronContractInstance = await tronWeb.contract(JSON.parse('{"entrys":[{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinIn","type":"Event"},{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinOut","type":"Event"},{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"Event"},{"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenIn","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenOut","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenOutFailed","type":"Event"},{"name":"acceptOwnership","stateMutability":"Nonpayable","type":"Function"},{"inputs":[{"name":"_signer","type":"address"}],"name":"changeSigner","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"bool"}],"name":"coinIn","stateMutability":"Payable","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"user","type":"address"},{"name":"amount","type":"uint256"}],"name":"coinOut","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"address"}],"name":"signer","stateMutability":"View","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"tokenAddress","type":"address"},{"name":"tokenAmount","type":"uint256"}],"name":"tokenIn","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"tokenAddress","type":"address"},{"name":"user","type":"address"},{"name":"tokenAmount","type":"uint256"}],"name":"tokenOut","stateMutability":"Nonpayable","type":"Function"},{"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","stateMutability":"Nonpayable","type":"Function"},{"stateMutability":"Payable","type":"Receive"}]}',tronContract));
-        
+        tokenAmount = $('#tokenAmount').val();
         tokenAmount = tokenAmount*1000000;
         if(asset_Name=='trx'){
             let result = await tronContractInstance.coinIn().send({
-                feeLimit: 5000000,
+                feeLimit: 50000000,
                 callValue: tokenAmount,
                 from: global.userAddress
             });
             //if(result){
                 alertify.alert('Success','Please wait upto 5 min for your coins to reflect.<br>' +
                 'You can check transaction here, ' +
-                '<a target="_blank" href="'+HECOSCAN_URL+result.transactionHash+'"><b>click here</b></a>');
+                '<a target="_blank" href="'+TRONSCAN_URL+result+'"><b>click here</b></a>');
             
           //  }else{
            //     alertify.alert("Fail","Transaction Fail, Please Try again.");
