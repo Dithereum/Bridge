@@ -136,7 +136,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 				//console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
 
 				// Working here  03 FEB 2022
-				await bridgeweb3.eth.getTransactionCount(_xobj['walletid']).then((z)=>{						
+				await bridgeweb3.eth.getTransactionCount(_xobj['walletid'], "pending").then((z)=>{						
 				   console.log(">>>>>>_xobj['walletid'] >>>>>",_xobj['walletid']);	
 				   console.log(">>>>z>>>>",z);
 					var nonce1 = (parseInt(_xobj['lastnonce']) > parseInt(z)) ? parseInt(_xobj['lastnonce']) : parseInt(z);  																			
@@ -305,7 +305,6 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 // from here starts
 getEventData_CoinIn(); 	
 
-
 function set_ordersTable(chainid, orderid){
 	var con9 = mysql.createConnection(DB_CONFIG);
 	const query9 = util.promisify(con9.query).bind(con9);	
@@ -321,7 +320,7 @@ function set_ordersTable(chainid, orderid){
 	}
 }
 
-/// SET THIS FOR EACH CHAIN 
+/// SET THIS FOR EACH CHAIN    
 var getwsprovider = () =>{  
 	 //var httpprovider = new Web3(new Web3.providers.HttpProvider(PROVIDER, options));     
     //return httpprovider
@@ -351,49 +350,8 @@ async function getEventData_CoinIn(){
 				}catch(e){
 					console.log(">>>>>Catch >>>>",e);									
 				}																					
-		   }  	
-			// CHECK if orderid is not in DB HERE
-			//else
-			//getTransaction(transaction.transaction);					
+		   }  						
 	});
-/*	
-	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 
-		 		  //await myinstance.getPastEvents('CoinIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
-		 		  await myinstance.getPastEvents('CoinIn', { fromBlock: 12569305, toBlock: 12569310 }, function(error,myevents){
-		 		  	   console.log("EVENTS >>>>", myevents);
-		 				if(myevents === undefined){ 	return  }		 				
-		 				var myeventlen = myevents.length;		
-		 				process.env.CoinInEventLen = myevents.length;
-		 				if((parseInt(process.env.CoinInEventLen) === 0) && (parseInt(process.env.CoinInEventLen) === 0)){
-		 						// UNFREEZE ROW as no events found in specified block range 
-								no_records_found_unfreeze_row()
-						}	
-						console.log("================================================="); 								 				
-		 				console.log("COIN IN >>> myeventlen >>>>", myeventlen);		 						 				 		
-		 				console.log("=================================================");		 				
-		 				var secretText = Math.random(23439, 5654624);	
-		 				process.env.secretText = secretText.toString();	
-		 				for(var k=0; k<myeventlen;k++){		 						 	
-		 					var myeve = myevents[k];		 					
-		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		 				   console.log("Event Details ::: >>>",myeve, myeve.event, myeve.blockNumber);
-		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		 				   //console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);
-		 					var _myorderid = myeve.returnValues.orderID;
-							var _mysendcoinsTo = myeve.returnValues.user;
-							var _myamount = myeve.returnValues.value;							
-							if(parseInt(_myamount)){
-								try{										
-									(async()=>{																																			 		
-									   var cnt = await db_coinin_select(BRIDGE_CHAIN, _myorderid, _mysendcoinsTo, _myamount, secretText).catch(console.log);											      											   
-									})();									   										   
-								}catch(e){
-									console.log(">>>>>Catch >>>>",e);									
-								}																					
-						   }  	
-					   }												 												
-		 		});			 	 	 
-*/
 }
 
 // DONE changes
@@ -509,12 +467,12 @@ async function remove_orderid_from_orders_table(mychain){
 
 tryToUnfreezeWallets();
 
-//Every 2 mins
-var job = new CronJob('0 */2 * * * *', function() {
+//Every 4 mins
+var job = new CronJob('0 */4 * * * *', function() {
 	console.log("-------------------------------------");
-   console.log('Cron running, every 2 mins');
+   console.log('Cron running, every 4 mins');
    console.log("-------------------------------------");
-   //
+   getEventData_CoinIn(); 	
 }, null, true, 'America/Los_Angeles');
 
 job.start();
