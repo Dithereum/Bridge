@@ -294,7 +294,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 											}catch(e){ 	console.log(e); }
 										}
 									  });
-									  setTimeout(()=>{},25000);					  																					
+									  setTimeout(()=>{},120000);					  																					
 							}catch(e){  console.log("##### :::: ERR0R :::: ######",e);	}
 					////  End                                                                                                      
 				})	    			             
@@ -303,7 +303,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 }
 
 // from here starts
-getEventData_CoinIn(); 	
+//getEventData_CoinIn(); 	
 
 function set_ordersTable(chainid, orderid){
 	var con9 = mysql.createConnection(DB_CONFIG);
@@ -467,10 +467,10 @@ async function remove_orderid_from_orders_table(mychain){
 
 tryToUnfreezeWallets();
 
-//Every 4 mins
-var job = new CronJob('0 */4 * * * *', function() {
-	console.log("-------------------------------------");
-   console.log('Cron running, every 4 mins');
+//Every 5 mins
+var job = new CronJob('0 */5 * * * *', function() {
+   console.log("-------------------------------------");
+   console.log('Cron running, every 5 mins');
    console.log("-------------------------------------");
    getEventData_CoinIn(); 	
 }, null, true, 'America/Los_Angeles');
