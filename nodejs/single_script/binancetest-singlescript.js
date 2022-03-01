@@ -8,6 +8,8 @@ var Tx = require('ethereumjs-tx').Transaction;
 var Contract = require('web3-eth-contract');
 var CronJob = require('cron').CronJob;
 
+process.env.BINANCE_CONTRACT_ORDERS_TABLE = "binance_contract_orders";
+
 // Binance Provider
 var PROVIDER = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 var CONTRACT_ADDR = '0xaF5Cb6806e883F0E06837073aCA57b98d7571ad2';
@@ -86,7 +88,8 @@ function tryToUnfreezeWallets(){
 						(async()=>{					
 							console.log("#>> Walet ##>>",walet);
 							await gTransactionCount(walet).then((transcount)=>{
-								console.log("#> Waletid, TransactionCount, walet.nonce, walet.chainid >>>>>",walet.walletid, transcount, walet.nonce, walet.chainid);								
+					
+							console.log("#> Waletid, TransactionCount, walet.nonce, walet.chainid >>>>>",walet.walletid, transcount, walet.nonce, walet.chainid);								
 								if((parseInt(walet.nonce) <= parseInt(transcount)) || (walet.nonce === undefined) || (walet.nonce === null) ){									
 									console.log(">>>>> Removing from noncetable and unfreezing for >>> walet.walletid, walet.chainid >>>", walet.walletid, walet.chainid);
 									unfreezeWallet(walet.chainid, walet.walletid);									
@@ -327,7 +330,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 										if(! error){
 											try{												
 												var serializedTx=result.rawTransaction;
-												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);										 
+												console.log("<<->> Signed <<@>> Transaction -->> Serialized Tx ::", serializedTx);										 
 												bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);
 												update_nonce(_chainid, x2['walletid'].toString(), nonc+1);
 											}catch(e){ 	console.log(e); }
@@ -414,7 +417,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 				 console.log(">>>>>>!!!!!!!!!!!!!!!!!!!!!!!!~~~~~~~~~~~~~~~~~~~~~~~~",_chainid, JSON.parse(_envobj)['walletid']);
 	    		 var mydata = '';
 	    		 var requiredGas = 0;  
-	    		 _amt = _amt/1000; // JUST FOR TESTING SMALL AMOUNT AS NOT ENOUGH COINS/TOKENS TO TEST
+	    		 _amt = _amt/1000000; // JUST FOR TESTING SMALL AMOUNT AS NOT ENOUGH COINS/TOKENS TO TEST
 	    		 
 			    if(_tokenaddr === SEARCH_FOR_USDT.toString()){   	
 			    		console.log(">>>>>>@@@@@!~~~~");
@@ -523,7 +526,7 @@ function set_ordersTable(chainid, orderid){
 	const query9 = util.promisify(con9.query).bind(con9);	
 	try{
 			var _wherestr = " orderid="+orderid+" AND chainid="+chainid; 			
-			var update_query = "UPDATE contract_orders SET transactionSent=1 WHERE "+_wherestr;
+			var update_query = "UPDATE binance_contract_orders SET transactionSent=1 WHERE "+_wherestr;
 			console.log(">>>> Query >>>> Update Query [SET ORDERS_TABLE] >>>>", update_query);		
 			query9(update_query).catch(console.log);		
 	}catch(e){
@@ -602,7 +605,7 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 				for(var k=0; k<myeventlen;k++){		 						 	
 		 					var myeve = myevents[k];		 					
 		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		 				   console.log("Event Dtaila ::: >>>",myeve, myeve.event, myeve.blockNumber);
+		 				   console.log("Event Details ::: >>>",myeve, myeve.event, myeve.blockNumber);
 		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");		 				   
 		 				   //console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);
 		 					var _myblkNumber = myeve.blockNumber;					
@@ -669,12 +672,12 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress, 
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.BINANCE_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);
 			console.log(">>>>>> records <<<<<<",records);			
 			if(parseInt(records[0].rec) < 1){				
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
+				var insert_query = "INSERT INTO "+process.env.BINANCE_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method(mytokenAddress, sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -696,12 +699,12 @@ async function	db_coinin_select(chainid, orderid, sendcoinsTo, amount, secretTex
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.BINANCE_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);
 			console.log(">>>>>> records <<<<<<",records);			
 			if(parseInt(records[0].rec) < 1){				
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
+				var insert_query = "INSERT INTO "+process.env.BINANCE_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method_coinin(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -773,7 +776,7 @@ async function remove_orderid_from_orders_table(mychain){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{
-		var delete_query = "Delete from `contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
+		var delete_query = "Delete from `binance_contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
 		console.log("<<< Query >>>",delete_query);
 		return myquery(delete_query).catch(console.log);		
 	}catch(e){
