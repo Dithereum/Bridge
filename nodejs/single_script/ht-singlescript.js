@@ -101,7 +101,7 @@ function tryToUnfreezeWallets(){
 async function gTransactionCount(mywallet){		
 		console.log(">>>>>> mywallet.walletid, mywallet.chainid  >>>>", mywallet.walletid, mywallet.chainid);		
 		let myweb3 = new Web3(new Web3.providers.HttpProvider(PROVIDER));			
-		return await myweb3.eth.getTransactionCount(mywallet.walletid).catch(console.log);		
+		return await myweb3.eth.getTransactionCount(mywallet.walletid, "pending").catch(console.log);		
 }
 
 process.env.lastnonce = 0;
@@ -257,8 +257,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 			    (async()=>{
 					  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{				  			
 					  	    var nonc = (parseInt(JSON.parse(_envobj)['lastnonce']) == 0) ? 1 : JSON.parse(_envobj)['lastnonce'];					  	    
-					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));
-					  	    console.log(">>>>web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])>>>>", JSON.stringify(web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])));					  	             			                    				                    			                                                                  
+					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));					  	    					  	             			                    				                    			                                                                  
 					       const raw_tx = {   
 					           nonce: web3.utils.toHex(nonc),                    
 					           gasPrice: web3.utils.toHex(gasPrice),
@@ -504,7 +503,7 @@ var job = new CronJob('0 */2 * * * *', function() {
 			console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
 			if(process.env.ADMIN_WALLET){		
 				(async()=>{
-					await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
+					await web3.eth.getTransactionCount(process.env.ADMIN_WALLET, "pending").then((z)=>{				
 						process.env.lastnonce = parseInt(z);
 						freeze_wallet();	
 					}).catch(console.log);	
