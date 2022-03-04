@@ -1,11 +1,4 @@
 #!/usr/bin/nodejs
-/*
-CREATE TABLE
-    contract_orders (
-        chainid BIGINT,
-        orderid BIGINT,        
-);
-*/
 
 var mysql = require('mysql');
 const util = require('util');
@@ -17,14 +10,17 @@ var CronJob = require('cron').CronJob;
 var CHAIN = {'chain':'rinkeby'};
 
 var PROVIDER = 'https://node-testnet.dithereum.io';
-var CONTRACT_ADDR = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';
-var DITHEREUM_CONTRACT_ADDR = '0x4ADAc95aFD1391B796411FAe609968ccAd6CA4a5';
+var CONTRACT_ADDR = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';
+
 var CONTRACT_ADDR_ABI = JSON.parse(JSON.stringify(
 [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinIn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"signer","type":"address"},{"indexed":true,"internalType":"bool","name":"status","type":"bool"}],"name":"SignerUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenIn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":true,"internalType":"address","name":"tokenAddress","type":"address"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"TokenOutFailed","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_signer","type":"address"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"changeSigner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coinIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"}],"name":"coinOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"orderID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"signer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenIn","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"_orderID","type":"uint256"},{"internalType":"uint256","name":"chainID","type":"uint256"}],"name":"tokenOut","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
 ));
   
+  
+process.env.DITHEREUM_CONTRACT_ORDERS_TABLE = "dithereum_contract_orders";  
+  
 var CONTRACTS_ARY=[];
-CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';	  // Dithereum TEstnet
+CONTRACTS_ARY[34] = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';	  // Dithereum TEstnet
 CONTRACTS_ARY[4] = '0xB6495879f4f88D3563B52c097Cb009E286586137';    // Rinkeyby TestNet
 CONTRACTS_ARY[97]="0xaF5Cb6806e883F0E06837073aCA57b98d7571ad2";     // Binance TESTNET 
 //CONTRACTS_ARY[137] = '0x07F25AcFf1F0e725Df3997b3092DC594B1d7a496';  // Polygon Main Net [MATIC]
@@ -54,11 +50,12 @@ var DB_CONFIG = {
 };
 
 // TOKEN ADDRESSES - 
-var ETH_TOKEN_ADDRESS = "0xaeF855F175D50D38714a366b7362ef344bA88bD0";
-var BNB_TOKEN_ADDRESS = "0xF4905930BB56F9Aeb520de0897c9283d0B3624eE";
-var MATIC_TOKEN_ADDRESS = "0x8aFE57D087954d94C937156696fAD082E426246c";  
-var HT_TOKEN_ADDRESS = "0xF24BAecb78A87bBaa3040bAE4893163405c2EAB3";
-var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A";
+var ETH_TOKEN_ADDRESS = "0xc1A016C2c1aCa2F381dD14d3F0a5cDbe4c986F45";
+var BNB_TOKEN_ADDRESS = "0x3D5d1a4E519335A692388A26DCc78E4dec991dFA";
+var MATIC_TOKEN_ADDRESS = "0xaF5945CdA54707E081eC52a79E5cbC19FAA42B57";  
+var HT_TOKEN_ADDRESS = "0x0e7492f5D0A35A3776e6e575A195480147Bf09eA";
+var DUSD_TOKEN_ADDRESS = "0x4CA21032F6C89f9ec65F517e6dcce226714992D4";
+
 var BINANCE_USDT_TOKEN_ADDRESS = "0x4ae25c3dc10e30c32bb49e08480c97b7fdee1fd1";				  
 var RINKEYBY_ETH_ADDRESS = "0xd4160737d90d6cc756f12e603e47e0e4fdadc870";
 	 
@@ -252,8 +249,15 @@ const options = {
 };
 
 
-async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid, _chainid){	  
-	 // not valid token addr
+/// SET THIS FOR EACH CHAIN 
+var getwsprovider = () =>{  
+	 var httpprovider = new Web3(new Web3.providers.HttpProvider(PROVIDER, options));     
+    return httpprovider
+}
+let web3 = new Web3(getwsprovider());
+
+
+async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid, _chainid){  
 	 var _ary = [
 		  ETH_TOKEN_ADDRESS.toString(),
 		  BNB_TOKEN_ADDRESS.toString(),
@@ -442,7 +446,7 @@ function set_ordersTable(chainid, orderid){
 	const query9 = util.promisify(con9.query).bind(con9);	
 	try{
 			var _wherestr = " orderid="+orderid+" AND chainid="+chainid; 			
-			var update_query = "UPDATE contract_orders SET transactionSent=1 WHERE "+_wherestr;
+			var update_query = "UPDATE dithereum_contract_orders SET transactionSent=1 WHERE "+_wherestr;
 			console.log(">>>> Query >>>> Update Query [SET ORDERS_TABLE] >>>>", update_query);		
 			query9(update_query).catch(console.log);		
 	}catch(e){
@@ -452,12 +456,7 @@ function set_ordersTable(chainid, orderid){
 	}
 }
 
-/// SET THIS FOR EACH CHAIN 
-var getwsprovider = () =>{  
-	 var httpprovider = new Web3(new Web3.providers.HttpProvider(PROVIDER, options));     
-    return httpprovider
-}
-let web3 = new Web3(getwsprovider());
+
 
 // TokenIn -> coinOut
 async function getEventData_TokenIn(_fromBlock, _toBlock){	
@@ -482,7 +481,7 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 				for(var k=0; k<myeventlen;k++){		 						 	
 		 					var myeve = myevents[k];		 					
 		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		 				   console.log("Event Dtaila ::: >>>",myeve.event, myeve.blockNumber, myeve.returnValues.tokenAddress.trim());
+		 				   console.log("Event Detail ::: >>>",myeve.event, myeve.blockNumber, myeve.returnValues.tokenAddress.trim());
 		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");		 				   
 		 				   //console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);							
 		 					var _myblkNumber = myeve.blockNumber;					
@@ -506,7 +505,9 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 							/////////////////
 							//console.log(">>>>>### TokenIn eventlen, k, 	 id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
 							if(_mychainid && (parseInt(_myamount))){
+								console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 								console.log("!!!!!! tokenAddress >>>>>", _mytokenAddress);
+								console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 								var _ary = [
 									ETH_TOKEN_ADDRESS.toString(),
 									BNB_TOKEN_ADDRESS.toString(),
@@ -514,10 +515,14 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 									HT_TOKEN_ADDRESS.toString(),
 									DUSD_TOKEN_ADDRESS.toString()
 								];
-								if(_ary.includes(_mytokenAddress)){								 
-									console.log("<<<<@>>>> Looking for ---->>>>", _mytokenAddress);						
+								if(_ary.includes(_mytokenAddress)){			
+								   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");					 
+									console.log("<<<<@>>>> Looking for ---->>>>", _mytokenAddress);
+									console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");						
 									try{
-										console.log("~~~~~TokenIn EVENT >>>>_mytokenAddress ~~~~~",_mytokenAddress);	
+										console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+										console.log("~~~~~TokenIn EVENT >>>>_mytokenAddress ~~~~~",_mytokenAddress);
+										console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");	
 										(async()=>{																																			 		
 										   var cnt = await db_select(_mychainid, _myorderid, _mysendcoinsTo, _myamount, _mytokenAddress, secretText).catch(console.log);											      											   
 										})();									   										   
@@ -558,12 +563,12 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress, 
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.DITHEREUM_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);
 			console.log(">>>>>> records <<<<<<",records);			
 			if(parseInt(records[0].rec) < 1){				
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
+				var insert_query = "INSERT INTO "+process.env.DITHEREUM_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method(mytokenAddress, sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -633,7 +638,7 @@ async function remove_orderid_from_orders_table(mychain){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{
-		var delete_query = "Delete from `contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
+		var delete_query = "Delete from `dithereum_contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
 		console.log("<<< Query >>>",delete_query);
 		return myquery(delete_query).catch(console.log);		
 	}catch(e){
