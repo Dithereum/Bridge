@@ -8,6 +8,8 @@ var Tx = require('ethereumjs-tx').Transaction;
 var Contract = require('web3-eth-contract');
 var CronJob = require('cron').CronJob;
 
+process.env.HECO_CONTRACT_ORDERS_TABLE = "heco_contract_orders";
+
 // Heco Provider
 var PROVIDER = 'https://http-testnet.hecochain.com';
 var CONTRACT_ADDR = '0x4a46F7EB468fC98e4c3c7D99f61c5F5E719C0b78';
@@ -17,7 +19,7 @@ var CONTRACT_ADDR_ABI = JSON.parse(JSON.stringify(
 ));
   
 var CONTRACTS_ARY=[];
-CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';	  // Dithereum Testnet
+CONTRACTS_ARY[34] = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';	  // Dithereum Testnet
 								
 // For Heco TestNet
 var chainid = 256; // Heco TESTNET
@@ -41,7 +43,7 @@ var DB_CONFIG = {
 };
 
 // TOKEN ADDRESSES -
-var HT_TOKEN_ADDRESS = "0xdF310a187Bb35A0B0090DC7Cb2C2F784Ccf72036"; // ON DITHEREUM BRIDGE
+var HT_TOKEN_ADDRESS = "0x0e7492f5D0A35A3776e6e575A195480147Bf09eA"; // ON DITHEREUM BRIDGE
 	 
 // for web3 contract object creation  
 var CHAINID_URL=[];
@@ -57,8 +59,9 @@ async function	getAvailableAdminWallet(){
 			var select_wallet_query = "SELECT * FROM "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_mywherecondition;
 			console.log(">>>> Query <<<<#", select_wallet_query);			
 			var _adminwallet = await query5(select_wallet_query).catch(console.log);			
-			console.log("<<<< Available Wallet >>>> ", _adminwallet[0]);			
+						
 			if(_adminwallet[0]){
+				console.log("<<<< Available Wallet >>>> ", _adminwallet[0]);
 				process.env.ADMIN_WALLET=_adminwallet[0].walletid;
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
 				process.env.CHAIN_ID=_adminwallet[0].chainid;
@@ -128,7 +131,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 				console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
 
 				// Working here  03 FEB 2022
-				await bridgeweb3.eth.getTransactionCount(_xobj['walletid']).then((z)=>{						
+				await bridgeweb3.eth.getTransactionCount(_xobj['walletid'], "pending").then((z)=>{						
 				   console.log(">>>>>>_xobj['walletid'] >>>>>",_xobj['walletid']);	
 				   console.log(">>>>z>>>>",z);
 					var nonce1 = (parseInt(_xobj['lastnonce']) > parseInt(z)) ? parseInt(_xobj['lastnonce']) : parseInt(z);  																			
@@ -321,7 +324,7 @@ function set_ordersTable(chainid, orderid){
 	const query9 = util.promisify(con9.query).bind(con9);	
 	try{
 			var _wherestr = " orderid="+orderid+" AND chainid="+chainid; 			
-			var update_query = "UPDATE contract_orders SET transactionSent=1 WHERE "+_wherestr;
+			var update_query = "UPDATE heco_contract_orders SET transactionSent=1 WHERE "+_wherestr;
 			console.log(">>>> Query >>>> Update Query [SET ORDERS_TABLE] >>>>", update_query);		
 			query9(update_query).catch(console.log);		
 	}catch(e){
@@ -403,12 +406,12 @@ async function	db_coinin_select(chainid, orderid, sendcoinsTo, amount, secretTex
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.HECO_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);
 			console.log(">>>>>> records <<<<<<",records);			
 			if(parseInt(records[0].rec) < 1){				
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
+				var insert_query = "INSERT INTO "+process.env.HECO_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method_coinin(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -479,7 +482,7 @@ async function remove_orderid_from_orders_table(mychain){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{
-		var delete_query = "Delete from `contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
+		var delete_query = "Delete from `heco_contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
 		console.log("<<< Query >>>",delete_query);
 		return myquery(delete_query).catch(console.log);		
 	}catch(e){
