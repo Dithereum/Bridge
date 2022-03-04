@@ -10,13 +10,12 @@ var CHAIN = {'chain':'rinkeby'};
 
 var INFURA_PROVIDER = "https://rinkeby.infura.io/v3/8102c6c81e12418588c89d69ac7a3f04";
 var CONTRACT_ADDR = '0xB6495879f4f88D3563B52c097Cb009E286586137';
-var DITHEREUM_CONTRACT_ADDR = '0x4ADAc95aFD1391B796411FAe609968ccAd6CA4a5';
-var CONTRACT_ADDR_ABI = JSON.parse(process.env.BRIDGE_ABI);
-var TOKEN_ADDRESS = "0x232A1fD8742a606238B53B7babA5fEe5835f3c97";  
 
-var CONTRACTS_ARY=[];
-CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';
-CONTRACTS_ARY[4] = '0xd3a6358920aAE3DA2aDD4B9dBA4059799f89fa48';
+var DITHEREUM_CONTRACT_ADDR = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';
+var CONTRACT_ADDR_ABI = JSON.parse(process.env.BRIDGE_ABI);
+
+
+process.env.RINKEBY_CONTRACT_ORDERS_TABLE = "rinkeby_contract_orders";
 
 // FOR RINKEBY 
 var chainid = 4; // rinkeby
@@ -39,9 +38,11 @@ var DB_CONFIG = {
   		port: process.env.DB_PORT
 };
 
-// TOKEN ADDRESSES -  
-var ETH_TOKEN_ADDRESS = "0xaeF855F175D50D38714a366b7362ef344bA88bD0";
-var DUSD_TOKEN_ADDRESS = "0xE82E083195012A69deBce378fFA014b9721D780A";
+// TOKEN ADDRESSES -  Dithereum Token TESTNET
+var ETH_TOKEN_ADDRESS = "0xc1A016C2c1aCa2F381dD14d3F0a5cDbe4c986F45";
+var DUSD_TOKEN_ADDRESS = "0x4CA21032F6C89f9ec65F517e6dcce226714992D4";
+
+//RINKEBY NETOWORK TOKENS 
 var USDT_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";								  
 var USDC_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
 var PAX_TOKEN_ADDRESS = "0xd4160737D90d6cC756f12E603e47e0E4FDADC870";
@@ -104,7 +105,7 @@ function tryToUnfreezeWallets(){
 async function gTransactionCount(mywallet){		
 		console.log(">>>>>> mywallet.walletid, mywallet.chainid  >>>>", mywallet.walletid, mywallet.chainid);		
 		let myweb3 = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER));			
-		return await myweb3.eth.getTransactionCount(mywallet.walletid).catch(console.log);		
+		return await myweb3.eth.getTransactionCount(mywallet.walletid, "pending").catch(console.log);		
 }
 
 process.env.lastnonce = 0;
@@ -126,7 +127,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3){
 				process.env.LAST_DB_NONCE_BRIDGE=_adminwallet[0].nonce;
 				console.log(">>>>>~~~~~process.env.LAST_DB_NONCE_BRIDGE>>>>>",process.env.LAST_DB_NONCE_BRIDGE);			
 				///
-				await bridgeweb3.eth.getTransactionCount(process.env.ADMIN_WALLET_BRIDGE).then((z)=>{	
+				await bridgeweb3.eth.getTransactionCount(process.env.ADMIN_WALLET_BRIDGE, "pending").then((z)=>{	
 					process.env.lastnonce_bridge = (parseInt(process.env.LAST_DB_NONCE_BRIDGE) > parseInt(z)) ? parseInt(process.env.LAST_DB_NONCE_BRIDGE) : parseInt(z);
 					console.log(">>~~~<< process.env.LAST_DB_NONCE_BRIDGE >>~~~<<",process.env.LAST_DB_NONCE_BRIDGE);			    			
 					//process.env.lastnonce_bridge = parseInt(z);
@@ -164,6 +165,17 @@ const options = {
     },
 };
 
+
+/// SET THIS FOR EACH CHAIN 
+var getwsprovider = () =>{  
+	 var httpprovider = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER, options));     
+    return httpprovider
+}
+let web3 = new Web3(getwsprovider());
+
+
+
+
 // When coinIn -> tokenOut
 async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 	 let bridgeweb3 = new Web3(new Web3.providers.HttpProvider(CHAINID_URL[BRIDGE_CHAIN].toString()));	 
@@ -184,8 +196,7 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 		    		process.exit(1);
 		    	})    	    	
 		    }else{		    	        
-		  	 	  console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());
-		        console.log('>> with deails TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid >>>', TOKEN_ADDRESS, _toWallet, _amt, orderid, _chainid);
+		  	 	  console.log(">>>With admin wallet >>>",process.env.ADMIN_WALLET_BRIDGE.toString());		        
 		        if((typeof process.env.lastnonce_bridge === 'undefined') || (typeof process.env.ADMIN_WALLET_BRIDGE === 'undefined')){				     
 						process.exit(1);     
 				  }     
@@ -249,6 +260,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 	  		return 1;
 	  }	
 	  var pairedwithContract = '';
+	  
 	  //USDT RINKBY ETH to DUSD [DITHEREUM]
 	  if(_tokenaddr === USDT_TOKEN_ADDRESS){	  		
 			pairedwithContract = DUSD_TOKEN_ADDRESS;
@@ -289,8 +301,7 @@ async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid,
 		    		process.exit(1);
 		    	})    	    	
 		    }else{		    	        
-		  	 	  console.log("<<@@@>>With admin wallet<<@@@>>",process.env.ADMIN_WALLET_BRIDGE.toString());
-		        console.log('<<@@@>>with deails TOKEN_ADDRESS, _toWallet, _amt, _chainid<<@@@>>', TOKEN_ADDRESS, _toWallet, _amt, _chainid);
+		  	 	  console.log("<<@@@>>With admin wallet<<@@@>>",process.env.ADMIN_WALLET_BRIDGE.toString());		        
 		        if((typeof process.env.lastnonce_bridge === 'undefined') || (typeof process.env.ADMIN_WALLET_BRIDGE === 'undefined')){				     
 						process.exit(1);     
 				  }     
@@ -364,12 +375,12 @@ async function update_nonce_admin_table(newnonce, isbridge=0){
 
 async function checkLatestBlock(){
 	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
- 	 var toblock =  await web3.eth.getBlockNumber();
+ 	 var toblock =  await web3.eth.getBlockNumber().catch(console.log);
  	 var fromblock = toblock-500;
  	 
  	 // For testing 	  	  
- 	 //var toblock=10172788;
- 	 //var fromblock=10172288;	
+ 	 var toblock=10268897;
+ 	 var fromblock=10268894;	
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock); 
 	 getEventData_CoinIn(fromblock, toblock);	 
 	 getEventData_TokenIn(fromblock, toblock); 	
@@ -397,7 +408,7 @@ function set_ordersTable(chainid, orderid){
 	const query9 = util.promisify(con9.query).bind(con9);	
 	try{
 			var _wherestr = " orderid="+orderid+" AND chainid="+chainid; 			
-			var update_query = "UPDATE contract_orders SET transactionSent=1 WHERE "+_wherestr;
+			var update_query = "UPDATE rinkeby_contract_orders SET transactionSent=1 WHERE "+_wherestr;
 			console.log(">>>> Query >>>> Update Query [SET ORDERS_TABLE] >>>>", update_query);		
 			query9(update_query).catch(console.log);		
 	}catch(e){
@@ -407,12 +418,7 @@ function set_ordersTable(chainid, orderid){
 	}
 }
 
-/// SET THIS FOR EACH CHAIN 
-var getwsprovider = () =>{  
-	 var httpprovider = new Web3(new Web3.providers.HttpProvider(INFURA_PROVIDER, options));     
-    return httpprovider
-}
-let web3 = new Web3(getwsprovider());
+
 
 async function getEventData_CoinIn(_fromBlock, _toBlock){
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());
@@ -540,11 +546,11 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress, 
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.RINKEBY_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);			
 			if(parseInt(records[0].rec) < 1){
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";
+				var insert_query = "INSERT INTO "+process.env.RINKEBY_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method(mytokenAddress, sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -564,11 +570,11 @@ async function	db_select_coinin(chainid, orderid, sendcoinsTo, amount, secretTex
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.RINKEBY_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);			
 			if(parseInt(records[0].rec) < 1){
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";	
+				var insert_query = "INSERT INTO "+process.env.RINKEBY_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";	
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);		
 				var z = await bridge_sendmethod(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -637,7 +643,7 @@ async function remove_orderid_from_orders_table(mychain){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{		
- 		var delete_query = "Delete from `contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`=34";		
+ 		var delete_query = "Delete from `rinkeby_contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`=34";		
 		console.log("<<< Query >>>",delete_query);		
 		return myquery(delete_query).catch(console.log);		
 	}catch(e){
@@ -654,12 +660,14 @@ var job = new CronJob('0 */4 * * * *', function() {
 	console.log("-------------------------------------");
    console.log('Cron running, every 4 mins');
    console.log("-------------------------------------");
-   // DONE Changes
+   // DONE Changes   
 	getAvailableAdminWallet().then(()=>{
 			console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
-			if(process.env.ADMIN_WALLET){		
+			if(process.env.ADMIN_WALLET){
+				console.log("--------------------------------------------");		
 				(async()=>{
-					await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
+					console.log("============================================");					
+					await web3.eth.getTransactionCount(process.env.ADMIN_WALLET, "pending").then((z)=>{				
 						process.env.lastnonce = parseInt(z);
 						freeze_wallet();	
 					}).catch(console.log);	
