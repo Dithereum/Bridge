@@ -8,6 +8,8 @@ var Tx = require('ethereumjs-tx').Transaction;
 var Contract = require('web3-eth-contract');
 var CronJob = require('cron').CronJob;
 
+process.env.POLYGON_CONTRACT_ORDERS_TABLE = "polygon_contract_orders";
+
 // Polygon Provider
 var PROVIDER = 'https://polygon-rpc.com';
 var CONTRACT_ADDR = '0x75287F2e834c390d9D5A83e9F4b60Ca6B1930c6b';
@@ -17,7 +19,7 @@ var CONTRACT_ADDR_ABI = JSON.parse(JSON.stringify(
 ));
   
 var CONTRACTS_ARY=[];
-CONTRACTS_ARY[34] = '0xA577f051Ab5e5Bc30fFB9D981841a0e4691dDcDB';	  // Dithereum TEstnet
+CONTRACTS_ARY[34] = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';	  // Dithereum TEstnet
 								
 // For Polygon TestNet
 var chainid = 137; // Polygon TESTNET
@@ -41,7 +43,7 @@ var DB_CONFIG = {
 };
 
 // TOKEN ADDRESSES -
-var MATIC_TOKEN_ADDRESS = "0x07F25AcFf1F0e725Df3997b3092DC594B1d7a496"; // ON DITHEREUM BRIDGE
+var MATIC_TOKEN_ADDRESS = "0xaF5945CdA54707E081eC52a79E5cbC19FAA42B57"; // ON DITHEREUM BRIDGE
 	 
 // for web3 contract object creation  
 var CHAINID_URL=[];
@@ -98,7 +100,7 @@ function tryToUnfreezeWallets(){
 async function gTransactionCount(mywallet){		
 		console.log(">>>>>> mywallet.walletid, mywallet.chainid  >>>>", mywallet.walletid, mywallet.chainid);		
 		let myweb3 = new Web3(new Web3.providers.HttpProvider(PROVIDER));			
-		return await myweb3.eth.getTransactionCount(mywallet.walletid).catch(console.log);		
+		return await myweb3.eth.getTransactionCount(mywallet.walletid, "pending").catch(console.log);		
 }
 
 process.env.lastnonce = 0;
@@ -128,7 +130,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 				console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
 
 				// Working here  03 FEB 2022
-				await bridgeweb3.eth.getTransactionCount(_xobj['walletid']).then((z)=>{						
+				await bridgeweb3.eth.getTransactionCount(_xobj['walletid'], "pending").then((z)=>{						
 				   console.log(">>>>>>_xobj['walletid'] >>>>>",_xobj['walletid']);	
 				   console.log(">>>>z>>>>",z);
 					var nonce1 = (parseInt(_xobj['lastnonce']) > parseInt(z)) ? parseInt(_xobj['lastnonce']) : parseInt(z);  																			
@@ -254,8 +256,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 			    (async()=>{
 					  await bridgeweb3.eth.getGasPrice().then(gasPrice=>{				  			
 					  	    var nonc = (parseInt(JSON.parse(_envobj)['lastnonce']) == 0) ? 1 : JSON.parse(_envobj)['lastnonce'];					  	    
-					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));
-					  	    console.log(">>>>web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])>>>>", JSON.stringify(web3.eth.getTransactionCount(JSON.parse(_envobj)['walletid'])));					  	             			                    				                    			                                                                  
+					  	    console.log(">>>>>parseInt(JSON.parse(_envobj)['lastnonce'])...",parseInt(JSON.parse(_envobj)['lastnonce']));					  	    					  	             			                    				                    			                                                                  
 					       const raw_tx = {   
 					           nonce: web3.utils.toHex(nonc),                    
 					           gasPrice: web3.utils.toHex(gasPrice),
@@ -321,7 +322,7 @@ function set_ordersTable(chainid, orderid){
 	const query9 = util.promisify(con9.query).bind(con9);	
 	try{
 			var _wherestr = " orderid="+orderid+" AND chainid="+chainid; 			
-			var update_query = "UPDATE contract_orders SET transactionSent=1 WHERE "+_wherestr;
+			var update_query = "UPDATE polygon_contract_orders SET transactionSent=1 WHERE "+_wherestr;
 			console.log(">>>> Query >>>> Update Query [SET ORDERS_TABLE] >>>>", update_query);		
 			query9(update_query).catch(console.log);		
 	}catch(e){
@@ -403,12 +404,12 @@ async function	db_coinin_select(chainid, orderid, sendcoinsTo, amount, secretTex
 	const insertquery = util.promisify(con6.query).bind(con6);	
 	try{
 			var _whereclause = " where chainid="+parseInt(chainid)+" AND orderid="+parseInt(orderid);
-			var select_query = "SELECT count(orderid) as rec FROM "+process.env.CONTRACT_ORDERS_TABLE+" "+_whereclause;
+			var select_query = "SELECT count(orderid) as rec FROM "+process.env.POLYGON_CONTRACT_ORDERS_TABLE+" "+_whereclause;
 			console.log(">>>>>> select_query >>>>>",select_query);			
 			var records = await query(select_query).catch(console.log);
 			console.log(">>>>>> records <<<<<<",records);			
 			if(parseInt(records[0].rec) < 1){				
-				var insert_query = "INSERT INTO "+process.env.CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
+				var insert_query = "INSERT INTO "+process.env.POLYGON_CONTRACT_ORDERS_TABLE+" (`chainid`,`orderid`,`transactionSent`,`secretText`) VALUES ("+chainid+","+orderid+",0,"+secretText+")";		
 				console.log(">>> Inserting record, orderid, chainid >>>",orderid, chainid);
 				await insertquery(insert_query).catch(console.log);				
 				var z = await company_bridge_send_method_coinin(sendcoinsTo, amount, orderid, chainid).catch(console.log);				
@@ -479,7 +480,7 @@ async function remove_orderid_from_orders_table(mychain){
 	var mycon = mysql.createConnection(DB_CONFIG);
 	const myquery = util.promisify(mycon.query).bind(mycon);
 	try{
-		var delete_query = "Delete from `contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
+		var delete_query = "Delete from `polygon_contract_orders` where `transactionSent`=0 AND `secretText`='"+process.env.secretText+"' AND `chainid`="+mychain;
 		console.log("<<< Query >>>",delete_query);
 		return myquery(delete_query).catch(console.log);		
 	}catch(e){
@@ -501,7 +502,7 @@ var job = new CronJob('0 */2 * * * *', function() {
 			console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
 			if(process.env.ADMIN_WALLET){		
 				(async()=>{
-					await web3.eth.getTransactionCount(process.env.ADMIN_WALLET).then((z)=>{				
+					await web3.eth.getTransactionCount(process.env.ADMIN_WALLET, "pending").then((z)=>{				
 						process.env.lastnonce = parseInt(z);
 						freeze_wallet();	
 					}).catch(console.log);	
