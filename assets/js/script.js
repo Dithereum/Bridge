@@ -1115,7 +1115,7 @@ $('#btnNext').click(async function(){
                     const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
                    
                     if(allowance<tAmount){
-                        var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
+                        var result = usdtContractInstance.methods.approve(dithereumContract,approveAmount).send({
                             from: myAccountAddress,
                             to: maticDthAddress,
                             gasPrice: web3GasPrice,
@@ -1124,11 +1124,11 @@ $('#btnNext').click(async function(){
                         });
         
                         var data = ethContractInstance.methods.tokenIn(maticDthAddress,tokenAmount,chainID).encodeABI();
-                        processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                        processTx(data,dithereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                        
                     }else{
                         var data = ethContractInstance.methods.tokenIn(maticDthAddress,tokenAmount,chainID).encodeABI();
-                        processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                        processTx(data,dithereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                     }
 
                     //var data = polygonContractInstance.methods.tokenIn(polygonContract,tokenAmount,chainID).encodeABI();
@@ -1160,11 +1160,11 @@ $('#btnNext').click(async function(){
                     });
     
                     var data = ethContractInstance.methods.tokenIn(htDthAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                    
                 }else{
                     var data = ethContractInstance.methods.tokenIn(htDthAddress,tokenAmount,chainID).encodeABI();
-                    processTx(data,ethereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
+                    processTx(data,dithereumContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);
                 }
 
                  //  var data = hecoContractInstance.methods.tokenIn(hecoContract,tokenAmount,chainID).encodeABI();
