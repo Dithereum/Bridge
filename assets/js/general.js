@@ -60,5 +60,5 @@ const ETHERSCAN_URL = 'https://etherscan.io/tx/';
 const BSCSCAN_URL = 'https://bscscan.com/tx/';
 const POLYSCAN_URL = 'https://polygonscan.com/tx/';
 const HECOSCAN_URL = 'https://hecoinfo.com/tx/';
-const DITHERSCAN_URL = 'https://explorer.dithereum.org/transaction.html?tx=';
+const DITHERSCAN_URL = 'https://testnet.dthscan.io/tx/';
 const TRONSCAN_URL = 'https://shasta.tronscan.io/#/transaction/';
