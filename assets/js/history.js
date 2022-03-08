@@ -13,10 +13,9 @@ var global = {
 if(window.ethereum){
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (isMobile && window.ethereum.isMetaMask==true){
-            var myweb3 = new Web3("https://mainnet.infura.io/v3/API_KEY");
+         var myweb3 = new Web3("https://mainnet.infura.io/v3/API_KEY");
      }else{
-         const oldProvider = web3.currentProvider; // keep a reference to metamask provider
-         var myweb3 = new Web3(oldProvider);
+         var myweb3 = new Web3(window.ethereum);
      }
      
      ethereum.on('accountsChanged', handleAccountsChanged);
@@ -29,14 +28,14 @@ if(window.ethereum){
        }
     }
 }else{
-        var myweb3 = new Web3( Web3.givenProvider || "https://mainnet.infura.io/v3/API_KEY");
-        const oldProvider = myweb3.currentProvider; // keep a reference to metamask provider
-        var myweb3 = new Web3(oldProvider);
+       // var myweb3 = new Web3( Web3.givenProvider || "https://mainnet.infura.io/v3/API_KEY");
+       // const oldProvider = myweb3.currentProvider; // keep a reference to metamask provider
+        var myweb3 = new Web3(window.ethereum);
 }
 
 async function checkAccount() {
     if (window.ethereum) {
-        myweb3.eth.getAccounts((err, accounts) => {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     
             if (accounts == null || accounts.length == 0) {
                 console.log("NO ACCOUNT CONNECTED");
@@ -50,7 +49,7 @@ async function checkAccount() {
                 $('#connectWallet1').hide();
                 $('#walletAddress').html(myAccountAddress);
             }
-        });
+    
         
         var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile && window.ethereum.isMetaMask==true){
@@ -75,39 +74,59 @@ $('document').ready(async function(){
     setTimeout(getHistory, 500);
 });
 async function getHistory(){
-    const fetchResponse =  await fetch('https://gitabc.tronexpert.io/api.php');
+    const fetchResponse =  await fetch('https://api.dithereum.io/history?user='+myAccountAddress);
     const edata = await fetchResponse.json();  
     console.log(edata); 
-    if(edata.result == true){
+    if(edata.result == 'success'){
         const txData = edata.data;
         txData.forEach(element => {
             console.log(element);
             const status = element.status;
-            const amount = element.amount;
-            const amount_recived = element.amount_recived;
-            var fee = element.fee;
-            const orderid = element.orderid;
-            const from_network = element.from_network;
-            const to_network = element.to_network;
+            const amount = element.fromAmount;
+            const amount_recived = element.toAmount;
+            var fee = element.txnFee;
+            const orderID = element.orderID;
+            const fromChain = element.fromChain;
+            const toChain = element.fromChain;
+            const toCurrency = element.toCurrency;
+            const fromCurrency = element.fromCurrency;
+            const fromTxnHash = element.fromTxnHash;
+            const userWallet = element.userWallet;
+            var to_network = "";
+            var from_network = "";
             var statusIcon = '';
-            if(status == 'completed'){
+            if(status == 'Completed'){
                 statusIcon = '<th scope="row"><span class="text-success" data-toggle="tooltip" data-placement="top" title="Completed"><i class="fa fa-check-circle" aria-hidden="true"></i></span></th>';
             }
-            if(status == 'progress'){
+            if(status == 'Pending'){
                 statusIcon = '<th scope="row"><span class="text-info" data-toggle="tooltip" data-placement="top" title="Progress"><i class="fa fa-spinner" aria-hidden="true"></i></span></th>';
             }
-            if(status == 'cancel'){
+            if(status == 'Cancel'){
                 statusIcon = '<th scope="row"><span class="text-danger" data-toggle="tooltip" data-placement="top" title="Cancel"><i class="fa fa-times" aria-hidden="true"></i></span></th>';
             }
             if(fee==0){
                 fee = fee + ' 100% Discount';
             }
+            if(fromChain==1){  from_network= "ETH"; }
+            if(fromChain==24){ from_network="DTH";  }
+            if(fromChain==56){ from_network = "BSC";} 
+            if(fromChain==128){ from_network = "Huobi"; }  
+            if(fromChain==137){ from_network = "Polygon"; } 
+
+            if(toChain==1){  to_network= "ETH"; }
+            if(toChain==24){ to_network="DTH";  }
+            if(toChain==56){ to_network = "BSC";} 
+            if(toChain==128){ to_network = "Huobi"; }  
+            if(toChain==137){ to_network = "Polygon"; } 
+
             $('#historyTable').append('<tr> '+ statusIcon+
-                                        '<td> <div>  <div class="coin-price">  '+amount+'  </div>  <div class="address">'+from_network+'</span></div>   </div> </td>'+
-                                        '<td> <div>  <div class="coin-price">  '+amount_recived+'  </div>  <div class="address">'+to_network+'</span></div>   </div> </td>'+
+                                        '<td> <div>  <div class="coin-price">  '+amount+' '+ fromCurrency + '   </div>  <div class="address">'+getUserAddress(userWallet)+' ('+from_network+')</span></div>   </div> </td>'+
+                                        '<td> <div>  <div class="coin-price">  '+amount_recived+' '+ toCurrency + '  </div>  <div class="address">'+getUserAddress(userWallet)+' ('+to_network+')</span></div>   </div> </td>'+
                                         '<td> <div>  <div class="coin-price">  '+fee +' </div> </div> </td>'+
-                                        '<td> <div>  <div class="address">'+orderid+'</div> </div> </td> </tr>');
+                                        '<td> <div>  <div class="address">'+orderID+'</div> </div> </td> </tr>');
         });
+    }else{
+        $('#historyTable').html('<tr><td colspan="5">No Records Found.</td></tr>');
     }
 }
 //get short user address
