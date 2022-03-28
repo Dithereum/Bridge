@@ -253,7 +253,9 @@ async function bridge_sendmethod(_toWallet, _amt, orderid, _chainid){
 	 })();	
 }
 
-async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid, _chainid){	  
+async function company_bridge_send_method( _tokenaddr ,_toWallet, _amt, orderid, _chainid){	
+	  // ForceSet
+ 	  _chainid = BRIDGE_CHAIN;	  
 	  // not valid token addr
 	  var _ary = [DAI_TOKEN_ADDRESS.toString(), PAX_TOKEN_ADDRESS.toString(), USDC_TOKEN_ADDRESS.toString(), USDT_TOKEN_ADDRESS.toString()];
 	  if(_ary.includes(_tokenaddr)){}else{
