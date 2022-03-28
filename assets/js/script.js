@@ -375,6 +375,7 @@ async function addNetowrk(network){
                 //params: [{ chainId: '0x1' }],
                 params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
                 });
+		   chainID = 34; // testnet = 34 mainnet = 24
             } catch (switchError) {
                 // This error code indicates that the chain has not been added to MetaMask.
                 if (switchError.code === 4902) {
@@ -403,6 +404,7 @@ async function addNetowrk(network){
                 //params: [{ chainId: '0x1' }],
                 params: [{ chainId: '0x1' }],
                 });
+		    chainID = 1;
             } catch (switchError) {
                 // This error code indicates that the chain has not been added to MetaMask.
                 if (switchError.code === 4902) {
