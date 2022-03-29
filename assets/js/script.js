@@ -1150,10 +1150,10 @@ $('#btnNext').click(async function(){
                    usdtContractInstance =  new myweb3.eth.Contract(htDthABI, htDthAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumContract).call();
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,dithereumContract).call();
                
                 if(allowance<tAmount){
-                    var result = usdtContractInstance.methods.approve(ethereumContract,approveAmount).send({
+                    var result = usdtContractInstance.methods.approve(dithereumContract,approveAmount).send({
                         from: myAccountAddress,
                         to: htDthAddress,
                         gasPrice: web3GasPrice,
