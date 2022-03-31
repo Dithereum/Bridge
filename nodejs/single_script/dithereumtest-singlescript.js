@@ -398,7 +398,7 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 											try{												
 												var serializedTx=result.rawTransaction;
 												console.log("-->> Signed Transaction -->> Serialized Tx ::", serializedTx);
-												bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log);											   
+												bridgeweb3.eth.sendSignedTransaction(serializedTx.toString('hex')).on('receipt', console.log).on('error', console.log);											   
 											}catch(e){ 	console.log(e); }
 										}
 									});						
