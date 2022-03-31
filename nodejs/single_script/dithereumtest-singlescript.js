@@ -22,9 +22,8 @@ process.env.DITHEREUM_CONTRACT_ORDERS_TABLE = "dithereum_contract_orders";
 var CONTRACTS_ARY=[];
 CONTRACTS_ARY[34] = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';	  // Dithereum TEstnet
 CONTRACTS_ARY[4] = '0xB6495879f4f88D3563B52c097Cb009E286586137';    // Rinkeyby TestNet
-CONTRACTS_ARY[97]="0xaF5Cb6806e883F0E06837073aCA57b98d7571ad2";     // Binance TESTNET 
-//CONTRACTS_ARY[137] = '0x07F25AcFf1F0e725Df3997b3092DC594B1d7a496';  // Polygon Main Net [MATIC]
-CONTRACTS_ARY[137] = '0x75287F2e834c390d9D5A83e9F4b60Ca6B1930c6b'; // Polygon Main Net [Matic] , I deployed  
+CONTRACTS_ARY[97]="0xaF5Cb6806e883F0E06837073aCA57b98d7571ad2";     // Binance TESTNET
+CONTRACTS_ARY[137] = '0x4a6b64361e7b0ff7E97cB9BEbfb396EA9bA5d793'; // Polygon Main Net [Matic]  
 CONTRACTS_ARY[256] = "0x4a46F7EB468fC98e4c3c7D99f61c5F5E719C0b78";  // Hecco TEstnet
 CONTRACTS_ARY[80001] = "0x1037e14E9DeaFbF941729826D431DDb9680A095E"; // POLYGON MATIC TESTNET
 								
@@ -461,10 +460,7 @@ function set_ordersTable(chainid, orderid){
 // TokenIn -> coinOut
 async function getEventData_TokenIn(_fromBlock, _toBlock){	
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 
-		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){		 		  	
-		 		  //await myinstance.getPastEvents({ fromBlock: 1373260, toBlock: 1373262 },function(error,myevents){
-		 		  //await myinstance.getPastEvents('TokenIn', { fromBlock: 1471222, toBlock: 1471229 },function(error,myevents){		
-		 		  //await myinstance.getPastEvents({ fromBlock: 1526686, toBlock: 1526687 },function(error,myevents){
+		 		  await myinstance.getPastEvents('TokenIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){	 		  	
 		 		  	   //console.log("EVENTS >>>>",myevents);		 		  	     	   
 		 				if(myevents === undefined){ 	return  }		 				
 		 				var myeventlen = myevents.length;		
@@ -501,6 +497,9 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 							if(_mytokenAddress === MATIC_TOKEN_ADDRESS.toString()){
 								 //_mychainid = 80001;
 								 _mychainid = 137;
+							}
+							if(_mytokenAddress === HT_TOKEN_ADDRESS.toString()){
+								_mychainid = 256;
 							}
 							/////////////////
 							//console.log(">>>>>### TokenIn eventlen, k, 	 id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
