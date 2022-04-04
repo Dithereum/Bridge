@@ -8,6 +8,7 @@ var Tx = require('ethereumjs-tx').Transaction;
 var Contract = require('web3-eth-contract');
 var CronJob = require('cron').CronJob;
 var CHAIN = {'chain':'rinkeby'};
+const BigNumber = require('bignumber.js');
 
 var PROVIDER = 'https://node-testnet.dithereum.io';
 var CONTRACT_ADDR = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';
@@ -26,6 +27,14 @@ CONTRACTS_ARY[97]="0xaF5Cb6806e883F0E06837073aCA57b98d7571ad2";     // Binance T
 CONTRACTS_ARY[137] = '0x4a6b64361e7b0ff7E97cB9BEbfb396EA9bA5d793'; // Polygon Main Net [Matic]  
 CONTRACTS_ARY[256] = "0x4a46F7EB468fC98e4c3c7D99f61c5F5E719C0b78";  // Hecco TEstnet
 CONTRACTS_ARY[80001] = "0x1037e14E9DeaFbF941729826D431DDb9680A095E"; // POLYGON MATIC TESTNET
+
+////  MIN AMOUNT -> BRIDGE UI
+const MIN_BNB = 20000000000000000;
+const MIN_DUSD = 10000000000000000000;
+const MIN_MATIC = 10000000000000000000;
+const MIN_HT = 1000000000000000000;
+const MIN_ETH = 2500000000000000; 	
+
 								
 // FOR Dithereum Testnet
 var chainid = 34; // Dithereum TESTNET
@@ -84,7 +93,7 @@ async function	getAvailableAdminWallet(){
 			var select_wallet_query = "SELECT * FROM "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_mywherecondition;
 			console.log(">>>> Query <<<<#", select_wallet_query);			
 			var _adminwallet = await query5(select_wallet_query).catch(console.log);			
-			console.log("<<<< Available Wallet >>>> ", _adminwallet[0]);			
+			console.log("<<<< Available Wallet >>>> ", _adminwallet[0].walletid, _adminwallet[0].chainid);			
 			if(_adminwallet[0]){
 				process.env.ADMIN_WALLET=_adminwallet[0].walletid;
 				process.env.ADMIN_WALLET_PK=_adminwallet[0].walletpk;
@@ -93,7 +102,7 @@ async function	getAvailableAdminWallet(){
 				console.log(">>>>> NOTE:::::::: No Admin wallet available >>>>");																	
 			}		
 	}catch(e){
-			console.error("ERROR SQL>>Catch",e);
+			console.error(">>ErrOr SQL>>Catch",e);
 	}finally{
 			con5.end();			
 	}			
@@ -141,7 +150,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 			var select_wallet_query = "SELECT * FROM "+process.env.NONCE_ADMIN_TABLE+" WHERE "+_mywherecondition;
 			console.log(">>>> Bridge Query >>>>", select_wallet_query);			
 			var _adminwallet = await query5(select_wallet_query).catch(console.log);			
-			console.log("<<<< Bridge Available Wallet >>>> ", _adminwallet[0]);			
+			console.log("<<<< Bridge Available Wallet >>>> ", _adminwallet[0].walletid, _adminwallet[0].chainid);			
 			if(_adminwallet[0]){
 				var Objx = JSON.stringify({ "walletid": _adminwallet[0].walletid, "walletpk": _adminwallet[0].walletpk, "chainid": _adminwallet[0].chainid, "lastnonce": _adminwallet[0].nonce });			
 
@@ -172,20 +181,20 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 				}		
 				
 				console.log(">>>>>>> _xobj['walletid'] <<<<<<<<",_xobj['walletid']);
-				console.log(">>>>>>> _xobj['walletpk'] <<<<<<<<",_xobj['walletpk']);
+				//console.log(">>>>>>> _xobj['walletpk'] <<<<<<<<",_xobj['walletpk']);
 				console.log(">>>>>>> _xobj['chainid'] <<<<<<<<",_xobj['chainid']);
 				console.log(">>>>>>> _xobj['lastnonce'] <<<<<<<<",_xobj['lastnonce']);			
-				console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
+				//console.log("~~~~~~~ _xobj >>>", JSON.stringify(_xobj));				
 
 				// Working here  03 FEB 2022
 				await bridgeweb3.eth.getTransactionCount(_xobj['walletid']).then((z)=>{						
 				   console.log(">>>>>>_xobj['walletid'] >>>>>",_xobj['walletid']);	
 				   console.log(">>>>z>>>>",z);
 					var nonce1 = (parseInt(_xobj['lastnonce']) > parseInt(z)) ? parseInt(_xobj['lastnonce']) : parseInt(z);  																			
-					console.log("--->>>>>> _xobj --->>>>>",_xobj, _xobj['chainid']);
+					console.log("--->>>>>> _xobj --->>>>>",_xobj['walletid'], _xobj['chainid']);
 				   var Objx2 = JSON.stringify({ "walletid": _xobj['walletid'], "walletpk": _xobj['walletpk'], "chainid": _xobj['chainid'], "lastnonce": nonce1 });
-				   console.log("###### Objx2 <<<<<",Objx2);				   
-					//var _xobj = {};
+				   //console.log("###### Objx2 <<<<<",Objx2);
+				   console.log(">>>preparing wallet object >>>> got transaction count [ nonce ] >>>");
 					if(_xobj['chainid'] === 4){				
 						process.env.ADMIN_WALLET_BRIDGE_4 = Objx2;
 						_xobj = JSON.parse(process.env.ADMIN_WALLET_BRIDGE_4);
@@ -223,7 +232,7 @@ async function	getAvailableAdminWallet_bridge(bridgeweb3, _chainid){
 				////																	
 			}		
 	}catch(e){
-			console.error("ERROR SQL>>Catch",e);
+			console.error("<<-ERROR SQL->>Catch",e);
 	}finally{
 			con5.end();			
 	}			
@@ -298,14 +307,14 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
  	////////	 	 
 	 await getAvailableAdminWallet_bridge(bridgeweb3, _chainid).then(()=>{
 	 	   var _envobj = {};	 
-	 	   console.log("~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~");
+	 	   console.log("~~~~~~~~~~~~~~~~~~~~~ GET AvailableAdminWallet ~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	 	   if( parseInt(_chainid) == 4){ _envobj = process.env.ADMIN_WALLET_BRIDGE_4; }			
 			if( parseInt(_chainid) == 97){ _envobj = process.env.ADMIN_WALLET_BRIDGE_97; }						
 			if( parseInt(_chainid) == 80001){ _envobj = process.env.ADMIN_WALLET_BRIDGE_80001; }				
 			if( parseInt(_chainid) == 137){ _envobj = process.env.ADMIN_WALLET_BRIDGE_137; }	
 			if( parseInt(_chainid) == 256){ _envobj = process.env.ADMIN_WALLET_BRIDGE_256; }
-			console.log("_envobj >>>>>",_envobj);
-					
+			//console.log("_envobj >>>>>",_envobj);
+			console.log(">>> Getting available wallet  >>>", JSON.parse(_envobj)['walletid']);		
 			if( 
 				(! _envobj)
 			){
@@ -317,7 +326,8 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 		    	})  	  
 			} 
 			
-			console.log("~~~~~>>>>>>", _envobj,  JSON.parse(_envobj)['walletid']); 	 		 
+			//console.log("~~~~~>>>>>>", _envobj,  JSON.parse(_envobj)['walletid']);
+			console.log(">>>>>>>>>>> walletid >>>>>>>>>>", JSON.parse(_envobj)['walletid']); 	 		 
 		    if(typeof(JSON.parse(_envobj)['walletid']) == "undefined"){
 		    	console.log("<<@@@>@@@>>No admin wallet bridge available,Removing orderid from orders_table<<@@@@@@>>");
 		    	remove_orderid_from_orders_table(_chainid).then(()=>{
@@ -338,8 +348,9 @@ async function company_bridge_send_method( _tokenaddr, _toWallet, _amt, orderid,
 						console.log("process.env.ADMIN_WALLET_BRIDGE_137::",process.env.ADMIN_WALLET_BRIDGE_137); 
 					}	
 					if(_chainid === 256){ _envobj = process.env.ADMIN_WALLET_BRIDGE_256; }
-					console.log(">! walletid, _chainid, walletid !<", _envobj, _chainid, JSON.parse(_envobj)['walletid']);					
-					console.log(">JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']<",JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']);
+					//console.log(">! walletid, _chainid, walletid !<", _envobj, _chainid, JSON.parse(_envobj)['walletid']);
+					console.log(">! _chainid, walletid !<", _chainid, JSON.parse(_envobj)['walletid']);					
+					//console.log(">JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']<",JSON.parse(_envobj)['walletpk'], JSON.parse(_envobj)['chainid'], JSON.parse(_envobj)['lastnonce']);
 									
 				  	////////	 
 				   if(						 
@@ -420,7 +431,8 @@ async function checkLatestBlock(){
  	 var fromblock = toblock-1500;
 	 
  	 console.log(">>TESTING FOR>>toblock>>,fromblock>>",toblock, fromblock);
-	 getEventData_TokenIn(fromblock, toblock); 	
+	 //getEventData_TokenIn(fromblock, toblock);
+	 getEventData_TokenIn(621872,621873); 	
 }
 
 // cHANGES DONE
@@ -434,7 +446,7 @@ async function freeze_wallet(){
 			await query8(update_query).catch(console.log);			
 			checkLatestBlock();		
 	}catch(e){
-			console.error("ERROR SQL>>Catch",e);
+			console.error("<-ERROR SQL->Catch",e);
 	}finally{
 			con8.end();			
 	}
@@ -476,34 +488,44 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 		 				process.env.secretText = secretText.toString();	
 		 				for(var k=0; k<myeventlen;k++){		 						 	
 		 					var myeve = myevents[k];		 					
-		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		 				   console.log("Event Detail ::: >>>",myeve.event, myeve.blockNumber, myeve.returnValues.tokenAddress.trim());
-		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");		 				   
+		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");		 				   
 		 				   //console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);							
 		 					var _myblkNumber = myeve.blockNumber;					
 		 					var _myorderid = myeve.returnValues.orderID;
 							var _mytokenAddress = myeve.returnValues.tokenAddress.trim();
 							var _mysendcoinsTo = myeve.returnValues.user;
 							var _myamount = myeve.returnValues.value;
-							var _mychainid = myeve.returnValues.chainID;
-							//////////////////
+							var _mychainid = myeve.returnValues.chainID;							
+							//////////////////							
+							var _check = false;
+						 
 						   // If chainid not coming proper from UI overwrite it!!	 
-						   if(_mytokenAddress === BNB_TOKEN_ADDRESS.toString()){
+						   if((_mytokenAddress === BNB_TOKEN_ADDRESS.toString()) && (! BigNumber(_myamount).lt(MIN_BNB))) {
 						    	_mychainid = 97;
+						    	_check = true;
 						   }
-						   if(_mytokenAddress === DUSD_TOKEN_ADDRESS.toString()){    	
-						    	_mychainid = 97;    	  
+						   if((_mytokenAddress === DUSD_TOKEN_ADDRESS.toString()) && (! BigNumber(_myamount).lt(MIN_DUSD))){    	
+						    	_mychainid = 97;
+						    	_check = true;    	  
 						   } 
-							if(_mytokenAddress === MATIC_TOKEN_ADDRESS.toString()){
+							if((_mytokenAddress === MATIC_TOKEN_ADDRESS.toString()) && (! BigNumber(_myamount).lt(MIN_MATIC))){
 								 //_mychainid = 80001;
 								 _mychainid = 137;
+								 _check = true;
 							}
-							if(_mytokenAddress === HT_TOKEN_ADDRESS.toString()){
+							if((_mytokenAddress === HT_TOKEN_ADDRESS.toString()) && (! BigNumber(_myamount).lt(MIN_HT))){
 								_mychainid = 256;
+								_check = true;
 							}
+							if((_mytokenAddress === ETH_TOKEN_ADDRESS.toString()) && (! BigNumber(_myamount).lt(MIN_ETH))){								
+								_check = true;
+								_mychainid = 4;
+							}														
 							/////////////////
-							//console.log(">>>>>### TokenIn eventlen, k, 	 id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
-							if(_mychainid && (parseInt(_myamount))){
+							//console.log(">>>>>### TokenIn eventlen, k, id, Order Id >>>>",myeventlen, k, _mychainid, _myorderid);
+							if((_mychainid) && (parseInt(_myamount)) && (_check)){
 								console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 								console.log("!!!!!! tokenAddress >>>>>", _mytokenAddress);
 								console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -521,10 +543,10 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 									try{
 										console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 										console.log("~~~~~TokenIn EVENT >>>>_mytokenAddress ~~~~~",_mytokenAddress);
-										console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");	
+										console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");								
 										(async()=>{																																			 		
 										   var cnt = await db_select(_mychainid, _myorderid, _mysendcoinsTo, _myamount, _mytokenAddress, secretText).catch(console.log);											      											   
-										})();									   										   
+										})();																   										   
 									}catch(e){
 										console.log(">>>>>Catch >>>>",e);									
 									}																
@@ -532,7 +554,7 @@ async function getEventData_TokenIn(_fromBlock, _toBlock){
 									console.log(">>>> not matched !!");
 								}
 							}else{
-								console.log(">>> TOKENIN >>>> In for loop, _orderid, _chainid,  _amount, i >>>>", _myorderid, _chainid, _amount, i);						
+								console.log(">>> TOKENIN >>>> In for loop, _orderid, _mychainid,  _myamount, k >>>>", _myorderid, _mychainid, _myamount, k);						
 							}							
 						}													 												
 		 		});			 	 	 
@@ -549,7 +571,7 @@ async function no_records_found_unfreeze_row(){
 			console.log(">>>>> UNFREEZE QUERY >>>>>", unfreeze_query);			
 			await query(unfreeze_query).catch(console.log);		
 	}catch(e){
-			console.error("ERROR SQL>>Catch",e);
+			console.error(">>ERROR SQL>>Catch>>",e);
 	}finally{
 			con6.end();			
 	}	
@@ -576,7 +598,7 @@ async function	db_select(chainid, orderid, sendcoinsTo, amount, mytokenAddress, 
 				return 1;	
 			}
 	}catch(e){
-			console.error("ERROR SQL>>Catch",e);
+			console.error(">>ERROR SQL>>Catch>>",e);
 	}finally{
 			con6.end();			
 	}			
@@ -594,7 +616,7 @@ async function	db_select_frozenWallets(){
 			//console.log(">>>>> wallets >>>>", wallets);
 			return wallets;
 	}catch(e){
-			console.error("ERROR SQL>>Catch",e);
+			console.error("<<ERROR SQL>>Catch>>",e);
 	}finally{
 			con.end();			
 	}
@@ -607,10 +629,11 @@ async function unfreezeWallet(_chainid, _walletid){
 	try{	
 			var _wherecond = " walletid='"+_walletid+"' AND chainid IN (34,4,97,137,256,80001) AND freezetime<(UNIX_TIMESTAMP()-600)";
 			var update_query = "UPDATE "+process.env.NONCE_ADMIN_TABLE+" SET isFrozen=0,freezetime=0,nonce=NULL WHERE "+_wherecond;						
-			console.log("------------------------------------------");			
-			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query)			
+			console.log("--------------------------------------------");			
+			console.log(">>UNFREEZING...., UPDATE QUERY<<", update_query);						
 			var wallets = await query8(update_query);
 			//console.log(">>>>> wallets >>>>", wallets);
+			console.log("--------------------------------------------");
 			return wallets;
 	}catch(e){
 			console.error("ERROR SQL>>Catch",e);
@@ -651,9 +674,9 @@ tryToUnfreezeWallets();
 
 //Every 2 mins
 var job = new CronJob('0 */2 * * * *', function() {
-	console.log("-------------------------------------");
-   console.log('Cron running, every 2 mins');
-   console.log("-------------------------------------");
+	console.log("------------------------------------------------------");
+   console.log('CRON RUNNING, every 2 mins >> [DithereumTestNet-SingleScript]');
+   console.log("------------------------------------------------------");
    // DONE Changes
 	getAvailableAdminWallet().then(()=>{
 			console.log(" >>>> ADMIN_WALLET:, >>>> CHAIN_ID:",process.env.ADMIN_WALLET, process.env.CHAIN_ID);				
@@ -665,7 +688,7 @@ var job = new CronJob('0 */2 * * * *', function() {
 					}).catch(console.log);	
 				})();	
 			}else{
-				console.log(">>> Admin Wallet not available >>>");		
+				console.log(">>> Admin Wallets not available >>>");		
 				process.exit(1);							
 			}	
 	}).catch(console.log);  
