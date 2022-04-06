@@ -20,10 +20,15 @@ var CONTRACT_ADDR_ABI = JSON.parse(JSON.stringify(
   
 var CONTRACTS_ARY=[];
 CONTRACTS_ARY[34] = '0x14B55b5Bfa8D442760Fd3e31678F38eF61cDab87';	  // Dithereum TEstnet
+						
+const BigNumber = require('bignumber.js');
 								
 // For Polygon TestNet
 var chainid = 137; // Polygon TESTNET
 var BRIDGE_CHAIN = 34; // Dithereum TestNet
+
+//// MIN AMOUNT -> BRIDGE UI
+const MIN_MATIC = 10000000000000000000;
 
 // ORDERS
 var myorderID = [...Array(90000).keys()].toString().split(',');
@@ -291,8 +296,7 @@ async function company_bridge_send_method_coinin(_toWallet, _amt, orderid, _chai
 }
     										  
 
-async function checkLatestBlock(){
-	 //######  UNCOMMENT BELOW LINE FOR 100 BLOCKS  ######//
+async function checkLatestBlock(){	 
  	 var toblock =  await web3.eth.getBlockNumber();
  	 var fromblock = toblock-1500;
 	 
@@ -340,11 +344,11 @@ var getwsprovider = () =>{
 let web3 = new Web3(getwsprovider());
 
 // CoinIn -> TokenOut
-async function getEventData_CoinIn(_fromBlock, _toBlock){	
+async function getEventData_CoinIn(_fromBlock, _toBlock){
 	 const myinstance = new web3.eth.Contract(CONTRACT_ADDR_ABI, CONTRACT_ADDR.toString());	 
-		 		  //await myinstance.getPastEvents('CoinIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
-		 		  await myinstance.getPastEvents('CoinIn', { fromBlock: 24813380, toBlock: 24813390 }, function(error,myevents){
-		 		  	   console.log("EVENTS >>>>", myevents);
+		 		  await myinstance.getPastEvents('CoinIn', { fromBlock: _fromBlock, toBlock: _toBlock },function(error,myevents){
+		 		  //await myinstance.getPastEvents('CoinIn', { fromBlock: 26563028, toBlock: 26563028 }, function(error,myevents){
+		 		  	   console.log("EVENTS >>>>", myevents.blockNumber);
 		 				if(myevents === undefined){ 	return  }		 				
 		 				var myeventlen = myevents.length;		
 		 				process.env.CoinInEventLen = myevents.length;
@@ -360,20 +364,25 @@ async function getEventData_CoinIn(_fromBlock, _toBlock){
 		 				for(var k=0; k<myeventlen;k++){		 						 	
 		 					var myeve = myevents[k];		 					
 		 					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		 				   console.log("Event Details ::: >>>",myeve, myeve.event, myeve.blockNumber);
+		 				   //console.log("Event Details ::: >>>",myeve, myeve.event, myeve.blockNumber);
+		 				   console.log("Event Details ::: >>>", myeve.event, myeve.blockNumber);
 		 				   console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		 				   //console.log("~~~~~~~~~~~~~~~~~~~>>> k, myeve >>>",k, myeve);
 		 					var _myorderid = myeve.returnValues.orderID;
 							var _mysendcoinsTo = myeve.returnValues.user;
-							var _myamount = myeve.returnValues.value;							
-							if(parseInt(_myamount)){
+							var _myamount = myeve.returnValues.value;
+														
+							if(! BigNumber(_myamount).lt(MIN_MATIC)){
+								console.log(">>>> in minimum amount check condition >>>>");								
 								try{										
 									(async()=>{																																			 		
 									   var cnt = await db_coinin_select(BRIDGE_CHAIN, _myorderid, _mysendcoinsTo, _myamount, secretText).catch(console.log);											      											   
 									})();									   										   
 								}catch(e){
 									console.log(">>>>>Catch >>>>",e);									
-								}																					
+								}																												
+						   }else{
+						   	console.log(">>> Amount is too small / Skipping >>>");
 						   }  	
 					   }												 												
 		 		});			 	 	 
