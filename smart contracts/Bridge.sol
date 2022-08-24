@@ -1,8 +1,7 @@
-pragma solidity 0.8.12; 
+pragma solidity 0.8.16; 
 
 
-//SPDX-License-Identifier: UNLICENSED
-
+//SPDX-License-Identifier: MIT
 
 
 interface ERC20Essential 
@@ -15,6 +14,13 @@ interface ERC20Essential
 }
 
 
+//USDT contract in Ethereum does not follow ERC20 standard so it needs different interface
+interface usdtContract
+{
+    function transferFrom(address _from, address _to, uint256 _amount) external;
+}
+
+
 
 
 //*******************************************************************//
@@ -22,7 +28,7 @@ interface ERC20Essential
 //*******************************************************************//
 contract owned
 {
-    address internal owner;
+    address public owner;
     address internal newOwner;
     mapping(address => bool) public signer;
 
@@ -71,7 +77,7 @@ contract owned
 //---------------------        MAIN CODE STARTS HERE     ---------------------//
 //****************************************************************************//
     
-contract DthEthBridge is owned {
+contract Bridge is owned {
     
     uint256 public orderID;
     
@@ -109,22 +115,23 @@ contract DthEthBridge is owned {
     
     function tokenIn(address tokenAddress, uint256 tokenAmount, uint256 chainID) external returns(bool){
         orderID++;
-        ERC20Essential(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+        if(tokenAddress == address(0xdAC17F958D2ee523a2206206994597C13D831ec7)){
+            //There should be different interface for the USDT Ethereum contract
+            usdtContract(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+        }else{
+            ERC20Essential(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+        }
         emit TokenIn(orderID, tokenAddress, msg.sender, tokenAmount, chainID);
         return true;
     }
     
     
     function tokenOut(address tokenAddress, address user, uint256 tokenAmount, uint256 _orderID, uint256 chainID) external onlySigner returns(bool){
-        
-        
+       
             ERC20Essential(tokenAddress).transfer(user, tokenAmount);
             emit TokenOut(_orderID, tokenAddress, user, tokenAmount, chainID);
         
         return true;
     }
-
-   
-
 
 }
