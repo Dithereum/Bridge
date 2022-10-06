@@ -454,28 +454,55 @@ async function addNetowrk(network){
     //Dithereum Network
     if(network=='DITH'){
         if(window.ethereum) {
-            try {
-                await ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                //params: [{ chainId: '0x1' }],
-                params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
-                });
-		   chainID = 34; // testnet = 34 mainnet = 24
-            } catch (switchError) {
-                // This error code indicates that the chain has not been added to MetaMask.
-                if (switchError.code === 4902) {
+            if(SITE_MODE=="PROD"){
                 try {
                     await ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
-                     params: [{ chainId: '0x18', rpcUrl: 'https://node-testnet.dithereum.io/' /* ... */ }], // mainnet 
+                    method: 'wallet_switchEthereumChain',
+                    //params: [{ chainId: '0x1' }],
+                    params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
                     });
                     chainID = 34; // testnet = 34 mainnet = 24
-                } catch (addError) {
-                    // handle "add" error
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
+                        params: [{ chainId: '0x18', rpcUrl: 'https://node-testnet.dithereum.io/' /* ... */ }], // mainnet 
+                        });
+                        chainID = 34; // testnet = 34 mainnet = 24
+                    } catch (addError) {
+                        // handle "add" error
+                    }
+                    }
+                    // handle other "switch" errors
                 }
+            }
+            if(SITE_MODE=="DEV"){
+                try {
+                    await ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    //params: [{ chainId: '0x1' }],
+                    params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
+                    });
+                    chainID = 34; // testnet = 34 mainnet = 24
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
+                        params: [{ chainId: '0x18', rpcUrl: 'https://node-testnet.dithereum.io/' /* ... */ }], // mainnet 
+                        });
+                        chainID = 34; // testnet = 34 mainnet = 24
+                    } catch (addError) {
+                        // handle "add" error
+                    }
+                    }
+                    // handle other "switch" errors
                 }
-                // handle other "switch" errors
             }
         }
 
@@ -483,29 +510,53 @@ async function addNetowrk(network){
     //Ethereum Network
     if(network=='ETH'){
         if(window.ethereum) {
-            try {
-                await ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                //params: [{ chainId: '0x1' }],
-                params: [{ chainId: '0x1' }],
-                });
-		    chainID = 1;
-            } catch (switchError) {
-                // This error code indicates that the chain has not been added to MetaMask.
-                if (switchError.code === 4902) {
+            if(SITE_MODE=="PROD"){
                 try {
                     await ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
-                   //params: [{ chainId: '0x1', rpcUrl: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x1' }],
                     });
-                    chainID = 1;
-                } catch (addError) {
-                    // handle "add" error
+                chainID = 1;
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],                       
+                        });
+                        chainID = 1;
+                    } catch (addError) {
+                        // handle "add" error
+                    }
+                    }
+                    // handle other "switch" errors
                 }
-                }
-                // handle other "switch" errors
             }
+            if(SITE_MODE=="DEV"){
+                try {
+                    await ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x5' }],
+                    });
+                chainID = 5;
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{ chainId: '0x5', rpcUrl: 'https://goerli.infura.io/v3/' /* ... */ }],blockExplorerUrls: ['https://goerli.etherscan.io'],
+                        });
+                        chainID = 5;
+                    } catch (addError) {
+                        // handle "add" error
+                    }
+                    }
+                    // handle other "switch" errors
+                }
+            }
+            
         }
 
     }
@@ -541,31 +592,60 @@ async function addNetowrk(network){
     }
    //BNB Network
    if(network=='BNB'){
-    if(window.ethereum) {
-        try {
-            await ethereum.request({
-                method: 'wallet_switchEthereumChain',                
-                params: [{ chainId: '0x38' }], //testnet '0x61',mainnet 0x38
-            });
-            chainID = 56;
-        } catch (switchError) {
-            // This error code indicates that the chain has not been added to MetaMask.
-            if (switchError.code === 4902) {
-            try {
-                await ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{ chainId: '0x38', rpcUrl: 'https://bsc-dataseed1.defibit.io/' /* ... */ }],   blockExplorerUrls: ['https://bscscan.com/']                  
-                });
-                chainID = 56;
-                checkAccount();
-            } catch (addError) {
-                // handle "add" error
+        if(SITE_MODE=="PROD"){
+            if(window.ethereum) {
+                try {
+                    await ethereum.request({
+                        method: 'wallet_switchEthereumChain',                
+                        params: [{ chainId: '0x38' }], //testnet '0x61',mainnet 0x38
+                    });
+                    chainID = 56;
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{ chainId: '0x38', rpcUrl: 'https://bsc-dataseed1.defibit.io/' /* ... */ }],   blockExplorerUrls: ['https://bscscan.com/']                  
+                        });
+                        chainID = 56;
+                        checkAccount();
+                    } catch (addError) {
+                        // handle "add" error
+                    }
+                    }
+                    // handle other "switch" errors
+                }
             }
+        }
+        if(SITE_MODE=="DEV"){
+            if(window.ethereum) {
+                try {
+                    await ethereum.request({
+                        method: 'wallet_switchEthereumChain',                
+                        params: [{ chainId: '0x61' }], //testnet '0x61',mainnet 0x38
+                    });
+                    chainID = 97;
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                    try {
+                        await ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{ chainId: '0x61', rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545' /* ... */ }],   blockExplorerUrls: ['https://testnet.bscscan.com']                  
+                        });
+                        chainID = 97;
+                        checkAccount();
+                    } catch (addError) {
+                        // handle "add" error
+                    }
+                    }
+                    // handle other "switch" errors
+                }
             }
-            // handle other "switch" errors
         }
     }
-  }
+  
     //Polygon Network
     if(network=='POLYGON'){
         if(window.ethereum) {
