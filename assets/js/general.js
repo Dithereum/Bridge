@@ -57,15 +57,19 @@ const tronBridgeContract = 'TANjEAzJo3tw2dWwvQUBFR8xm7jr6AtA4W';
 const usdtTronAddress = 'TMuvKWYsFsWSRi3mDoUFFVfS6V2E9CHf4g'; //'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
 
 //transaction url of chains
-const ETHERSCAN_URL = 'https://etherscan.io/tx/';
-const BSCSCAN_URL = 'https://bscscan.com/tx/';
+const ETHERSCAN_URL = 'https://goerli.etherscan.io/tx/';//'https://etherscan.io/tx/';
+const BSCSCAN_URL = 'https://testnet.bscscan.com/tx/'; // 'https://bscscan.com/tx/';
 const POLYSCAN_URL = 'https://polygonscan.com/tx/';
 const HECOSCAN_URL = 'https://hecoinfo.com/tx/';
 const CUSTOM_SCAN_URL = 'https://testnet.dthscan.io/tx/';
 const TRONSCAN_URL = 'https://shasta.tronscan.io/#/transaction/';
-
+//network name to change 
 const NETWORK_NAME = 'Dithereum';
+//network name to use in js code
 const CUSTOM_NETWORK = 'dith';
+//site environment to use development or production
+const SITE_MODE = 'DEV'; //values can be DEV or PROD : DEV = testnet , PROD = mainnet
+
 const CUSTOM_ICON = 'assets/img/dth-logo.png';
 const ETH_ICON = 'assets/img/eth-icon.svg';
 const BNB_ICON = 'assets/img/bnb-logo.png';
