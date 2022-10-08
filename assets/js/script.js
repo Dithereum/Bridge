@@ -995,6 +995,12 @@ $('#btnNext').click(async function(){
                 usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
                     from: myAccountAddress, // default from address
                 });
+                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+                const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
+                if(tokenAmount>balanceOf){
+                    alertify.alert("Warning!","Please Try Again or contact support");
+                    return false;
+                }
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumBridgeContract).call();
                
                 if(allowance<tAmount){
@@ -1421,6 +1427,12 @@ $('#btnNext').click(async function(){
             var usdtbscContractInstance =  new myweb3.eth.Contract(usdtBscABI, usdtBscAddress, {
                 from: myAccountAddress, // default from address
             });
+                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+                const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
+                if(tokenAmount>balanceOf){
+                    alertify.alert("Warning!","Please Try Again or contact support");
+                    return false;
+                }
             const allowance = await usdtbscContractInstance.methods.allowance(myAccountAddress,binanceBridgeContract).call();
             if(allowance<tAmount){
                 var result = usdtbscContractInstance.methods.approve(binanceBridgeContract,tokenAmount).send({
