@@ -972,7 +972,7 @@ $('#btnNext').click(async function(){
               });
               const balanceOf = await usdtContractInstance.methods.balanceOf(bridgeContract).call();
               if(tokenAmount>balanceOf){
-                alertify.alert("Warning!","Please Try Again or contact support");
+                alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                 return false;
               }
               var data = ethContractInstance.methods.coinIn(ethDthAddress).encodeABI();
@@ -982,7 +982,7 @@ $('#btnNext').click(async function(){
                 const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
-                    alertify.alert("Warning!","Please Try Again or contact support");
+                    alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
                 var data = ethContractInstance.methods.coinIn('0x0000000000000000000000000000000000000000').encodeABI();
@@ -998,7 +998,7 @@ $('#btnNext').click(async function(){
                 const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
-                    alertify.alert("Warning!","Please Try Again or contact support");
+                    alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumBridgeContract).call();
@@ -1405,7 +1405,7 @@ $('#btnNext').click(async function(){
                 });
                 const balanceOf = await usdtContractInstance.methods.balanceOf(bridgeContract).call();
                 if(tokenAmount>balanceOf){
-                alertify.alert("Warning!","Please Try Again or contact support");
+                alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                 return false;
                 }
                 var data = bscContractInstance.methods.coinIn(bnbDthAddress).encodeABI();
@@ -1415,7 +1415,7 @@ $('#btnNext').click(async function(){
                 const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
-                    alertify.alert("Warning!","Please Try Again or contact support");
+                    alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
                 var data = bscContractInstance.methods.coinIn('0x0000000000000000000000000000000000000000').encodeABI();
@@ -1430,7 +1430,7 @@ $('#btnNext').click(async function(){
                 const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
-                    alertify.alert("Warning!","Please Try Again or contact support");
+                    alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
             const allowance = await usdtbscContractInstance.methods.allowance(myAccountAddress,binanceBridgeContract).call();
@@ -1488,7 +1488,7 @@ $('#btnNext').click(async function(){
                 });
                 const balanceOf = await usdtContractInstance.methods.balanceOf(bridgeContract).call();
                 if(tokenAmount>balanceOf){
-                alertify.alert("Warning!","Please Try Again or contact support");
+                alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                 return false;
                 }
                 var data = polygonContractInstance.methods.coinIn(maticDthAddress).encodeABI();
@@ -1498,7 +1498,7 @@ $('#btnNext').click(async function(){
                 const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
-                    alertify.alert("Warning!","Please Try Again or contact support");
+                    alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
                 var data = polygonContractInstance.methods.coinIn('0x0000000000000000000000000000000000000000').encodeABI();
