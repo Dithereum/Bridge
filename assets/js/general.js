@@ -68,8 +68,10 @@ const TRONSCAN_URL = 'https://shasta.tronscan.io/#/transaction/';
 const NETWORK_NAME = 'Dithereum';
 //network name to use in js code
 const CUSTOM_NETWORK = 'dith';
+const CUSTOM_TOKEN_SYMBOL='DTH';
 //site environment to use development or production
 const SITE_MODE = 'DEV'; //values can be DEV or PROD : DEV = testnet , PROD = mainnet
+const CUSTOM_NODE_URL = 'https://node-testnet.dithereum.io/';
 const BRIDGE_NO_COIN_MSG ='The Bridge does not have enough fund. Please try after sometime, or contact the bridge support!';
 const CUSTOM_ICON = 'assets/img/dth-logo.png';
 const ETH_ICON = 'assets/img/eth-icon.svg';
