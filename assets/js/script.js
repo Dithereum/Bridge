@@ -154,7 +154,7 @@ $('#assetFrom li').click(function(){
         $('#assetFromUL').html('<img class="icons" src="'+BNB_ICON+'"> BNB (Binance Network)');
         $('#assetToUl').html('<img class="icons" src="'+BNB_ICON+'"> BNB ('+NETWORK_NAME+' Network)');
         asset_Name = 'bnb';
-        asset_To = 'dith';
+        asset_To = 'dbnb';
         network_From = 'bsc';
         network_To = CUSTOM_NETWORK;
         $('.tokenCheck').hide();
@@ -830,7 +830,7 @@ $('#btnNext').click(async function(){
                 alertify.alert("Warning","Minimum Amount is 10");
                 return false;
             } 
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' DUSD ('+NETWORK_NAME+' Network)';
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='usdc'){
             if(tokenAmount<10){
@@ -914,7 +914,7 @@ $('#btnNext').click(async function(){
                 alertify.alert("Warning","Minimum Amount is 10");
                 return false;
             }
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' DUSD ('+NETWORK_NAME+' Network)';
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='busd'){
             if(tokenAmount<10){
