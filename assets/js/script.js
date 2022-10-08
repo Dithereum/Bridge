@@ -222,31 +222,31 @@ $('#assetFrom li').click(function(){
     }
     if(name=="usdt"){
         $('#assetFromUL').html('<img class="icons" src="'+USDT_ICON+'"> USDT (Ethereum Network)');
-        $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> DTH ('+NETWORK_NAME+' Network)');
+        $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)');
         asset_Name = 'usdt';
-        asset_To = 'dth';
+        asset_To = CUSTOM_TOKEN_SYMBOL; //DTH here
         network_From = 'eth';
         network_To = CUSTOM_NETWORK;
         $('.tokenCheck').hide();
         $('#usdtTokencheck').show();
         addNetowrk('ETH');
         $('#receiveTokenImg').attr('src',CUSTOM_ICON);
-        $('#reciveName').html('DTH');
+        $('#reciveName').html(CUSTOM_TOKEN_SYMBOL);
         $('#feeText').hide();
         $('#assetToUl').attr('disabled','disabled');
     }
     if(name=="usdtbsc"){
         $('#assetFromUL').html('<img class="icons" src="'+USDT_ICON+'"> USDT (Binance Network)');
-        $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> DTH ('+NETWORK_NAME+' Network)');
+        $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)');
         asset_Name = 'usdtbsc';
         network_From = 'bsc';
         network_To = CUSTOM_NETWORK;
-        asset_To = 'dth';
+        asset_To = CUSTOM_TOKEN_SYMBOL; //DTH here
         $('.tokenCheck').hide();
         $('#usdtbscTokencheck').show();
         addNetowrk('BNB');
         $('#receiveTokenImg').attr('src',CUSTOM_ICON);
-        $('#reciveName').html('DTH');
+        $('#reciveName').html(CUSTOM_TOKEN_SYMBOL);
         $('#feeText').hide();
         $('#assetToUl').attr('disabled','disabled');
     }
@@ -394,14 +394,14 @@ $('#assetFrom li').click(function(){
 $('#assetTo li').click(async function(){
     var name = $(this).data('name');
     console.log(">>>@@@@>>> name >>>",name);
-    if(name=="dth"){
-        $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> DTH ('+NETWORK_NAME+' Network)');
+    if(name==CUSTOM_TOKEN_SYMBOL){ //DTH here
+        $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)');
         $('.tokenCheckTo').hide();
         $('#dthTokenTocheck').show();
-        asset_To = 'dth';
+        asset_To = CUSTOM_TOKEN_SYMBOL; //DTH here
         network_To = CUSTOM_NETWORK;
         $('#receiveTokenImg').attr('src',CUSTOM_ICON);
-        $('#reciveName').html('DTH');
+        $('#reciveName').html(CUSTOM_TOKEN_SYMBOL);
         $('#reciveToken').html('');
     }
     if(name=="dith"){
@@ -466,7 +466,7 @@ async function addNetowrk(network){
                         await ethereum.request({
                         method: 'wallet_addEthereumChain',
                         //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
-                        params: [{ chainId: '0x18', rpcUrl: 'https://node-testnet.dithereum.io/' /* ... */ }], // mainnet 
+                        params: [{ chainId: '0x18', rpcUrl: CUSTOM_NODE_URL /* ... */ }], // mainnet 
                         });
                         chainID = 34; // testnet = 34 mainnet = 24
                     } catch (addError) {
@@ -491,7 +491,7 @@ async function addNetowrk(network){
                         await ethereum.request({
                         method: 'wallet_addEthereumChain',
                         //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
-                        params: [{ chainId: '0x18', rpcUrl: 'https://node-testnet.dithereum.io/' /* ... */ }], // mainnet 
+                        params: [{ chainId: '0x18', rpcUrl: CUSTOM_NODE_URL /* ... */ }], // mainnet 
                         });
                         chainID = 34; // testnet = 34 mainnet = 24
                     } catch (addError) {
@@ -822,15 +822,21 @@ $('#btnNext').click(async function(){
             if(tokenAmount<0.0025){
                 alertify.alert("Warning","Minimum Amount is 0.0025");
                 return false;
-            }   
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' ETH ('+NETWORK_NAME+' Network)';
+            }
+            if(asset_To=='dith') {
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' ETH ('+NETWORK_NAME+' Network)';
+            } 
+            if(asset_To==CUSTOM_TOKEN_SYMBOL){
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
+            }
+            
         }
         if(asset_Name=='usdt'){
             if(tokenAmount<0.02){
                 alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             } 
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='usdc'){
             if(tokenAmount<10){
@@ -907,14 +913,19 @@ $('#btnNext').click(async function(){
                 alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             }
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' BNB ('+NETWORK_NAME+' Network)';
+            if(asset_To=='dbnb'){
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' BNB ('+NETWORK_NAME+' Network)';
+            }
+            if(asset_To==CUSTOM_TOKEN_SYMBOL){
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
+            }
         }
         if(asset_Name=='usdtbsc'){
             if(tokenAmount<0.02){
                 alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             }
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='busd'){
             if(tokenAmount<10){
@@ -930,7 +941,12 @@ $('#btnNext').click(async function(){
                 alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             }
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' MATIC ('+NETWORK_NAME+' Network)';
+            if(asset_To=='dmatic'){
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' MATIC ('+NETWORK_NAME+' Network)';
+            }
+            if(asset_To==CUSTOM_TOKEN_SYMBOL){
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL +' ('+NETWORK_NAME+' Network)';
+            }
         }
     }
     if(network_From=='heco'){
@@ -966,7 +982,7 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
             if(asset_To=='dith'){
-              const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+              const nWeb3 = new Web3(CUSTOM_NODE_URL);
               usdtContractInstance =  new nWeb3.eth.Contract(ethDthABI, ethDthAddress, {
                  from: myAccountAddress, // default from address
               });
@@ -978,8 +994,8 @@ $('#btnNext').click(async function(){
               var data = ethContractInstance.methods.coinIn(ethDthAddress).encodeABI();
               processTx(data,ethereumBridgeContract,web3GasPrice,gasLimit,tokenAmount,ETHERSCAN_URL);
             }
-            if(asset_To=='dth'){
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+            if(asset_To==CUSTOM_TOKEN_SYMBOL){ //DTH here
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
@@ -995,7 +1011,7 @@ $('#btnNext').click(async function(){
                 usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
                     from: myAccountAddress, // default from address
                 });
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
@@ -1398,7 +1414,7 @@ $('#btnNext').click(async function(){
 
         if(asset_Name=='bnb'){
             if(asset_To=='dbnb'){
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 usdtContractInstance =  new nWeb3.eth.Contract(bnbDthABI, bnbDthAddress, {
                 from: myAccountAddress, // default from address
                 });
@@ -1410,8 +1426,8 @@ $('#btnNext').click(async function(){
                 var data = bscContractInstance.methods.coinIn(bnbDthAddress).encodeABI();
                 processTx(data,binanceBridgeContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
             }
-            if(asset_To=='dth'){
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+            if(asset_To==CUSTOM_TOKEN_SYMBOL){ //DTH here
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
@@ -1426,7 +1442,7 @@ $('#btnNext').click(async function(){
             var usdtbscContractInstance =  new myweb3.eth.Contract(usdtBscABI, usdtBscAddress, {
                 from: myAccountAddress, // default from address
             });
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
@@ -1481,7 +1497,7 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='matic'){
             if(asset_To=='dmatic'){
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 usdtContractInstance =  new nWeb3.eth.Contract(maticdDthABI, maticDthAddress, {
                 from: myAccountAddress, // default from address
                 });
@@ -1493,8 +1509,8 @@ $('#btnNext').click(async function(){
                 var data = polygonContractInstance.methods.coinIn(maticDthAddress).encodeABI();
                 processTx(data,polygonBridgeContract,web3GasPrice,gasLimit,tokenAmount,POLYSCAN_URL);   
             }
-            if(asset_To=='dth'){
-                const nWeb3 = new Web3('https://node-testnet.dithereum.io/');
+            if(asset_To==CUSTOM_TOKEN_SYMBOL){ // DTH here
+                const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 const balanceOf = await nWeb3.eth.getBalance(bridgeContract);
                 if(tokenAmount>balanceOf){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
