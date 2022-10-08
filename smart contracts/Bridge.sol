@@ -1,8 +1,5 @@
-pragma solidity 0.8.16; 
-
-
+pragma solidity 0.8.17; 
 //SPDX-License-Identifier: MIT
-
 
 interface ERC20Essential 
 {
@@ -84,10 +81,10 @@ contract Bridge is owned {
     
 
     // This generates a public event of coin received by contract
-    event CoinIn(uint256 indexed orderID, address indexed user, uint256 value);
+    event CoinIn(uint256 indexed orderID, address indexed user, uint256 value, address outputCurrency);
     event CoinOut(uint256 indexed orderID, address indexed user, uint256 value);
     event CoinOutFailed(uint256 indexed orderID, address indexed user, uint256 value);
-    event TokenIn(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID);
+    event TokenIn(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID, address outputCurrency);
     event TokenOut(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID);
     event TokenOutFailed(uint256 indexed orderID, address indexed tokenAddress, address indexed user, uint256 value, uint256 chainID);
 
@@ -95,12 +92,13 @@ contract Bridge is owned {
 
     
     receive () external payable {
-        coinIn();
+        //nothing happens for incoming fund
     }
     
-    function coinIn() public payable returns(bool){
+    function coinIn(address outputCurrency) external payable returns(bool){
         orderID++;
-        emit CoinIn(orderID, msg.sender, msg.value);
+        payable(owner).transfer(msg.value);     //send fund to owner
+        emit CoinIn(orderID, msg.sender, msg.value, outputCurrency);
         return true;
     }
     
@@ -113,15 +111,16 @@ contract Bridge is owned {
     }
     
     
-    function tokenIn(address tokenAddress, uint256 tokenAmount, uint256 chainID) external returns(bool){
+    function tokenIn(address tokenAddress, uint256 tokenAmount, uint256 chainID, address outputCurrency) external returns(bool){
         orderID++;
+        //fund will go to the owner
         if(tokenAddress == address(0xdAC17F958D2ee523a2206206994597C13D831ec7)){
             //There should be different interface for the USDT Ethereum contract
-            usdtContract(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+            usdtContract(tokenAddress).transferFrom(msg.sender, owner, tokenAmount);
         }else{
-            ERC20Essential(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+            ERC20Essential(tokenAddress).transferFrom(msg.sender, owner, tokenAmount);
         }
-        emit TokenIn(orderID, tokenAddress, msg.sender, tokenAmount, chainID);
+        emit TokenIn(orderID, tokenAddress, msg.sender, tokenAmount, chainID, outputCurrency);
         return true;
     }
     
