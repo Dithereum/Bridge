@@ -826,8 +826,8 @@ $('#btnNext').click(async function(){
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' ETH ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='usdt'){
-            if(tokenAmount<10){
-                alertify.alert("Warning","Minimum Amount is 10");
+            if(tokenAmount<0.02){
+                alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             } 
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
@@ -910,8 +910,8 @@ $('#btnNext').click(async function(){
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' BNB ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='usdtbsc'){
-            if(tokenAmount<10){
-                alertify.alert("Warning","Minimum Amount is 10");
+            if(tokenAmount<0.02){
+                alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
@@ -926,8 +926,8 @@ $('#btnNext').click(async function(){
     }
     if(network_From=='polygon'){
         if(asset_Name=='matic'){
-            if(tokenAmount<10){
-                alertify.alert("Warning","Minimum Amount is 10");
+            if(tokenAmount<0.02){
+                alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             }
             confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' MATIC ('+NETWORK_NAME+' Network)';
@@ -1001,8 +1001,7 @@ $('#btnNext').click(async function(){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
-                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumBridgeContract).call();
-               
+                const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumBridgeContract).call();               
                 if(allowance<tAmount){
                     var result = usdtContractInstance.methods.approve(ethereumBridgeContract,approveAmount).send({
                         from: myAccountAddress,
@@ -1262,7 +1261,7 @@ $('#btnNext').click(async function(){
                     from: myAccountAddress, // default from address
                 });
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,bridgeContract).call();
-               
+              
                 if(allowance<tAmount){
                     var result = usdtContractInstance.methods.approve(bridgeContract,approveAmount).send({
                         from: myAccountAddress,
@@ -1403,7 +1402,7 @@ $('#btnNext').click(async function(){
                 usdtContractInstance =  new nWeb3.eth.Contract(bnbDthABI, bnbDthAddress, {
                 from: myAccountAddress, // default from address
                 });
-                const balanceOf = await usdtContractInstance.methods.balanceOf(bridgeContract).call();
+                const balanceOf = await usdtContractInstance.methods.balanceOf(bridgeContract).call();               
                 if(tokenAmount>balanceOf){
                 alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                 return false;
@@ -1435,7 +1434,7 @@ $('#btnNext').click(async function(){
                 }
             const allowance = await usdtbscContractInstance.methods.allowance(myAccountAddress,binanceBridgeContract).call();
             if(allowance<tAmount){
-                var result = usdtbscContractInstance.methods.approve(binanceBridgeContract,tokenAmount).send({
+                var result = usdtbscContractInstance.methods.approve(binanceBridgeContract,approveAmount).send({
                     from: myAccountAddress,
                     to: usdtBscAddress,
                     gasPrice: web3GasPrice,
