@@ -70,7 +70,7 @@ const NETWORK_NAME = 'Dithereum';
 const CUSTOM_NETWORK = 'dith';
 //site environment to use development or production
 const SITE_MODE = 'DEV'; //values can be DEV or PROD : DEV = testnet , PROD = mainnet
-
+const BRIDGE_NO_COIN_MSG ='The Bridge does not have enough fund. Please try after sometime, or contact the bridge support!';
 const CUSTOM_ICON = 'assets/img/dth-logo.png';
 const ETH_ICON = 'assets/img/eth-icon.svg';
 const BNB_ICON = 'assets/img/bnb-logo.png';
