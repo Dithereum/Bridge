@@ -9,6 +9,10 @@ var global = {
 	tronUserAddressHex : '',
 	loggedIn : false
 }
+var ethPrice = 0.00;
+var bnbPrice = 0.00;
+var maticPrice = 0.00;
+
 if(window.ethereum){
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile && window.ethereum.isMetaMask==true){
@@ -112,8 +116,14 @@ $("#connectWallet,#connectWallet1").click(async function(e){
 });
 
 //token select 
-$('#assetFrom li').click(function(){
+$('#assetFrom li').click(async function(){
     var name = $(this).data('name');
+    const fetchResponse =  await fetch(extPriceAPI);
+    const edata = await fetchResponse.json(); 
+    ethPrice = edata.ethereum.usd;
+    bnbPrice = edata.binancecoin.usd;
+    maticPrice = edata['matic-network'].usd;
+
     if(name=="dith"){
         $('#assetFromUL').html('<img class="icons" src="'+ETH_ICON+'"> ETH ('+NETWORK_NAME+' Network)');
         $('#assetToUl').html('<img class="icons" src="'+ETH_ICON+'"> ETH (Ethereum Network)');
@@ -389,11 +399,19 @@ $('#assetFrom li').click(function(){
         $('#feeText').hide();
         addNetowrk('ETH');
     }
+    $('#tokenAmount').change();
 });
 //asset to token select
 $('#assetTo li').click(async function(){
     var name = $(this).data('name');
     console.log(">>>@@@@>>> name >>>",name);
+    
+    const fetchResponse =  await fetch(extPriceAPI);
+    const edata = await fetchResponse.json(); 
+    ethPrice = edata.ethereum.usd;
+    bnbPrice = edata.binancecoin.usd;
+    maticPrice = edata['matic-network'].usd;
+
     if(name==CUSTOM_TOKEN_SYMBOL){ //DTH here
         $('#assetToUl').html('<img class="icons" src="'+CUSTOM_ICON+'"> '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)');
         $('.tokenCheckTo').hide();
@@ -689,7 +707,28 @@ $('#tokenAmount').on('keyup keydown change', function(e){
     if($(this).val() < 0 ){
         $(this).val(1);
     }else{
-        $('#reciveToken').html($(this).val());
+        if(network_From=='eth' & network_To==CUSTOM_NETWORK & asset_Name=='eth' & asset_To==CUSTOM_TOKEN_SYMBOL){
+            var amount = $(this).val();
+            amount = amount * ethPrice;
+            $('#reciveToken').html(amount.toFixed(4));
+
+        }else if(network_From=='bsc' & network_To==CUSTOM_NETWORK & asset_Name=='bnb' & asset_To==CUSTOM_TOKEN_SYMBOL){
+                var amount = $(this).val();
+                amount = amount * bnbPrice;
+                $('#reciveToken').html(amount.toFixed(4));
+        }else if(network_From=='polygon' & network_To==CUSTOM_NETWORK & asset_Name=='matic' & asset_To==CUSTOM_TOKEN_SYMBOL){
+                var amount = $(this).val();
+                amount = amount * maticPrice;
+                $('#reciveToken').html(amount.toFixed(4));
+        }else if(network_From=='eth' & network_To==CUSTOM_NETWORK & asset_Name=='usdt' & asset_To==CUSTOM_TOKEN_SYMBOL){
+                var amount = $(this).val();
+                $('#reciveToken').html(amount);
+        }else if(network_From=='bsc' & network_To==CUSTOM_NETWORK & asset_Name=='usdtbsc' & asset_To==CUSTOM_TOKEN_SYMBOL){
+                var amount = $(this).val();
+                $('#reciveToken').html(amount);
+        }else{
+            $('#reciveToken').html($(this).val());
+        }
     } 
 });
 
@@ -827,7 +866,8 @@ $('#btnNext').click(async function(){
                 confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' ETH ('+NETWORK_NAME+' Network)';
             } 
             if(asset_To==CUSTOM_TOKEN_SYMBOL){
-                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
+                var reciveToken = $('#reciveToken').text();
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' ETH (Ethereum Network) to ' +  reciveToken +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
             }
             
         }
@@ -836,7 +876,8 @@ $('#btnNext').click(async function(){
                 alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             } 
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
+            var reciveToken = $('#reciveToken').text();
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Ethereum Network) to ' +  reciveToken +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='usdc'){
             if(tokenAmount<10){
@@ -917,7 +958,8 @@ $('#btnNext').click(async function(){
                 confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' BNB ('+NETWORK_NAME+' Network)';
             }
             if(asset_To==CUSTOM_TOKEN_SYMBOL){
-                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  tokenAmount +' DTH ('+NETWORK_NAME+' Network)';
+                var reciveToken = $('#reciveToken').text();
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' BNB (Binance Network) to ' +  reciveToken +' DTH ('+NETWORK_NAME+' Network)';
             }
         }
         if(asset_Name=='usdtbsc'){
@@ -925,7 +967,8 @@ $('#btnNext').click(async function(){
                 alertify.alert("Warning","Minimum Amount is 0.02");
                 return false;
             }
-            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
+            var reciveToken = $('#reciveToken').text();
+            confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' USDT (Binance Network) to ' +  reciveToken +' '+CUSTOM_TOKEN_SYMBOL+' ('+NETWORK_NAME+' Network)';
         }
         if(asset_Name=='busd'){
             if(tokenAmount<10){
@@ -945,7 +988,8 @@ $('#btnNext').click(async function(){
                 confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' MATIC ('+NETWORK_NAME+' Network)';
             }
             if(asset_To==CUSTOM_TOKEN_SYMBOL){
-                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  tokenAmount +' '+CUSTOM_TOKEN_SYMBOL +' ('+NETWORK_NAME+' Network)';
+                var reciveToken = $('#reciveToken').text();
+                confirmMessage = 'Are you sure you want to swap ? <br>' +  tokenAmount +' MATIC (Polygon Network) to ' +  reciveToken +' '+CUSTOM_TOKEN_SYMBOL +' ('+NETWORK_NAME+' Network)';
             }
         }
     }
