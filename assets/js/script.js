@@ -1001,7 +1001,7 @@ $('#btnNext').click(async function(){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
-                var data = ethContractInstance.methods.coinIn('0x0000000000000000000000000000000000000000').encodeABI();
+                var data = ethContractInstance.methods.coinIn(DEFAULT_OUTPUT_CURRENCY).encodeABI();
                 processTx(data,ethereumBridgeContract,web3GasPrice,gasLimit,tokenAmount,ETHERSCAN_URL);
             }
         }
@@ -1027,11 +1027,11 @@ $('#btnNext').click(async function(){
                         value : 0,       
                     });
 
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                     processTx(data,ethereumBridgeContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                    
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                     processTx(data,ethereumBridgeContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
@@ -1433,7 +1433,7 @@ $('#btnNext').click(async function(){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
-                var data = bscContractInstance.methods.coinIn('0x0000000000000000000000000000000000000000').encodeABI();
+                var data = bscContractInstance.methods.coinIn(DEFAULT_OUTPUT_CURRENCY).encodeABI();
                 processTx(data,binanceBridgeContract,web3GasPrice,gasLimit,tokenAmount,BSCSCAN_URL);
             }
         }
@@ -1457,10 +1457,10 @@ $('#btnNext').click(async function(){
                     gasLimit: gasLimit,
                     value : 0,       
                 });
-                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                 processTx(data,binanceBridgeContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
             }else{
-                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID).encodeABI();
+                var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                 processTx(data,binanceBridgeContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
             }            
         }
@@ -1516,7 +1516,7 @@ $('#btnNext').click(async function(){
                     alertify.alert("Warning!",BRIDGE_NO_COIN_MSG);
                     return false;
                 }
-                var data = polygonContractInstance.methods.coinIn('0x0000000000000000000000000000000000000000').encodeABI();
+                var data = polygonContractInstance.methods.coinIn(DEFAULT_OUTPUT_CURRENCY).encodeABI();
                 processTx(data,polygonBridgeContract,web3GasPrice,gasLimit,tokenAmount,POLYSCAN_URL);
             }
         }
