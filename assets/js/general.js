@@ -86,3 +86,6 @@ const DAI_ICON = 'assets/img/dai-logo.png';
 const PAX_ICON = 'assets/img/pax-logo.png';
 const MATIC_ICON = 'assets/img/matic-logo.png';
 const HT_ICON = 'assets/img/heco-logo.png';
+//api to get price of eth,bnb and matic from coingecko if high requests coming then buy and use api key
+const extPriceAPI = 'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin,ethereum,matic-network&vs_currencies=usd';
+const CUSTOM_CURRENCY_PRICE = 1;
