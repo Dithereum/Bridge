@@ -744,8 +744,11 @@ async function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL
             gasLimit =  myweb3.utils.toHex(gasLimit);
             value = value.toString();
             value = myweb3.utils.toHex(value);
+            var nonce = await myweb3.eth.getTransactionCount(myAccountAddress, 'pending');
+            nonce= myweb3.utils.toHex(nonce);
+            console.log(nonce);
             const transactionParameters = {
-                //nonce: '0x00', // ignored by MetaMask
+                nonce: nonce, // ignored by MetaMask
                 gasPrice: web3GasPrice, // customizable by user during MetaMask confirmation.
                 gas: gasLimit, // customizable by user during MetaMask confirmation.
                 to: contractAddress, // Required except during contract publications.
