@@ -81,16 +81,19 @@ async function getHistory(){
         const txData = edata.data;
         txData.forEach(element => {
             console.log(element);
-            const status = element.status;
-            const amount = element.fromAmount;
-            const amount_recived = element.toAmount;
-            var fee = element.txnFee;
-            const orderID = element.orderID;
+            var timeStamp = new Date(element.updationTimestamp);
+            var nDate = timeStamp.getUTCFullYear()+'/'+ timeStamp.getMonth()+'/' +timeStamp.getDate() + ' ' + timeStamp.getHours()+':'+timeStamp.getMinutes()+':'+timeStamp.getSeconds();
+            var fromAmount = element.fromAmount;
             const fromChain = element.fromChain;
-            const toChain = element.fromChain;
-            const toCurrency = element.toCurrency;
             const fromCurrency = element.fromCurrency;
             const fromTxnHash = element.fromTxnHash;
+            const orderID = element.orderID;
+            const status = element.status;
+            var toAmount = element.toAmount;
+            const toChain = element.toChain;
+            const toCurrency = element.toCurrency;
+            const toTxnHash = element.toTxnHash;
+            var fee = element.txnFee;
             const userWallet = element.userWallet;
             var to_network = "";
             var from_network = "";
@@ -105,6 +108,9 @@ async function getHistory(){
                 statusIcon = '<th scope="row"><span class="text-danger" data-toggle="tooltip" data-placement="top" title="Cancel"><i class="fa fa-times" aria-hidden="true"></i></span></th>';
             }
             if(fee==0){
+                //fee = '100% Discount';
+		         fee = '0.00';
+            }else{
                 fee = fee + ' 100% Discount';
             }
             if(fromChain==1){  from_network= "ETH"; }
@@ -120,10 +126,10 @@ async function getHistory(){
             if(toChain==137){ to_network = "Polygon"; } 
 
             $('#historyTable').append('<tr> '+ statusIcon+
-                                        '<td> <div>  <div class="coin-price">  '+amount+' '+ fromCurrency + '   </div>  <div class="address">'+getUserAddress(userWallet)+' ('+from_network+')</span></div>   </div> </td>'+
-                                        '<td> <div>  <div class="coin-price">  '+amount_recived+' '+ toCurrency + '  </div>  <div class="address">'+getUserAddress(userWallet)+' ('+to_network+')</span></div>   </div> </td>'+
-                                        '<td> <div>  <div class="coin-price">  '+fee +' </div> </div> </td>'+
-                                        '<td> <div>  <div class="address">'+orderID+'</div> </div> </td> </tr>');
+                                      '<td> <div>  <div class="coin-price">  '+fromAmount+' '+ fromCurrency + '   </div>  <div class="address">'+getUserAddress(userWallet)+' ('+from_network+')</span></div>   </div> </td>'+
+                                      '<td> <div>  <div class="coin-price">  '+toAmount+' '+ toCurrency + '  </div>  <div class="address">'+getUserAddress(userWallet)+' ('+to_network+')</span></div>   </div> </td>'+
+                                      '<td> <div>  <div class="coin-price">  '+fee +' </div> </div> </td>'+
+                                      '<td> <div>  <div class="address">'+nDate+'</div> </div> </td> </tr>');
         });
     }else{
         $('#historyTable').html('<tr><td colspan="5">No Records Found.</td></tr>');
