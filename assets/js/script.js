@@ -90,9 +90,7 @@ function number_to_2decimals(str)
     return (str+"00").substr(0, decimalPointIndex+3);
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 //connect to metamask wallet 
 $("#connectWallet,#connectWallet1").click(async function(e){
@@ -1024,7 +1022,6 @@ $('#btnNext').click(async function(){
             from: myAccountAddress, // default from address
         });
         
-        
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
@@ -1066,19 +1063,19 @@ $('#btnNext').click(async function(){
                 }
                 const allowance = await usdtContractInstance.methods.allowance(myAccountAddress,ethereumBridgeContract).call();               
                 if(allowance<tAmount){
-                    var result =await usdtContractInstance.methods.approve(ethereumBridgeContract,approveAmount).send({
+                    var result = usdtContractInstance.methods.approve(ethereumBridgeContract,approveAmount).send({
                         from: myAccountAddress,
                         to: usdtEthAddress,
                         gasPrice: web3GasPrice,
                         gasLimit: gasLimit,
                         value : 0,       
                     });
-
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
+                    await delay(5000);
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,logEtoLongNumber(tokenAmount),chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                     processTx(data,ethereumBridgeContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                    
                 }else{
-                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
+                    var data = ethContractInstance.methods.tokenIn(usdtEthAddress,logEtoLongNumber(tokenAmount),chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                     processTx(data,ethereumBridgeContract,web3GasPrice,gasLimit,0,ETHERSCAN_URL);
                 }
             }
@@ -1497,13 +1494,14 @@ $('#btnNext').click(async function(){
                 }
             const allowance = await usdtbscContractInstance.methods.allowance(myAccountAddress,binanceBridgeContract).call();
             if(allowance<tAmount){
-                var result =await usdtbscContractInstance.methods.approve(binanceBridgeContract,approveAmount).send({
+                var result = usdtbscContractInstance.methods.approve(binanceBridgeContract,approveAmount).send({
                     from: myAccountAddress,
                     to: usdtBscAddress,
                     gasPrice: web3GasPrice,
                     gasLimit: gasLimit,
                     value : 0,       
                 });
+                await delay(5000);
                 var data = bscContractInstance.methods.tokenIn(usdtBscAddress,tokenAmount,chainID,DEFAULT_OUTPUT_CURRENCY).encodeABI();
                 processTx(data,binanceBridgeContract,web3GasPrice,gasLimit,0,BSCSCAN_URL);     
             }else{
