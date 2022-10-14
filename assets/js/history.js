@@ -74,14 +74,13 @@ $('document').ready(async function(){
     setTimeout(getHistory, 500);
 });
 async function getHistory(){
-    myAccountAddress='0x8a04dc718b1e836cdc7f2d2dc4f0a784ac8f7c7e';
     const fetchResponse =  await fetch('https://api.dithereum.io/history?user='+myAccountAddress);
     const edata = await fetchResponse.json();  
     if(edata.result == 'success'){
         $('#historyTable').html('');
         const txData = edata.data;
         txData.forEach(element => {
-            console.log(element);
+            //console.log(element);
             var timeStamp = new Date(element.updationTimestamp);
             var nDate = timeStamp.getUTCFullYear()+'/'+ timeStamp.getMonth()+'/' +timeStamp.getDate() + ' ' + timeStamp.getHours()+':'+timeStamp.getMinutes()+':'+timeStamp.getSeconds();
             var fromAmount = element.fromAmount;
