@@ -74,17 +74,18 @@ $('document').ready(async function(){
     setTimeout(getHistory, 500);
 });
 async function getHistory(){
+    myAccountAddress='0x8a04dc718b1e836cdc7f2d2dc4f0a784ac8f7c7e';
     const fetchResponse =  await fetch('https://api.dithereum.io/history?user='+myAccountAddress);
     const edata = await fetchResponse.json();  
-    console.log(edata); 
     if(edata.result == 'success'){
+        $('#historyTable').html('');
         const txData = edata.data;
         txData.forEach(element => {
             console.log(element);
             var timeStamp = new Date(element.updationTimestamp);
             var nDate = timeStamp.getUTCFullYear()+'/'+ timeStamp.getMonth()+'/' +timeStamp.getDate() + ' ' + timeStamp.getHours()+':'+timeStamp.getMinutes()+':'+timeStamp.getSeconds();
             var fromAmount = element.fromAmount;
-            const fromChain = element.fromChain;
+            var fromChain = element.fromChain;
             const fromCurrency = element.fromCurrency;
             const fromTxnHash = element.fromTxnHash;
             const orderID = element.orderID;
@@ -113,17 +114,21 @@ async function getHistory(){
             }else{
                 fee = fee + ' 100% Discount';
             }
-            if(fromChain==1){  from_network= "ETH"; }
-            if(fromChain==24){ from_network="DTH";  }
-            if(fromChain==56){ from_network = "BSC";} 
-            if(fromChain==128){ from_network = "Huobi"; }  
-            if(fromChain==137){ from_network = "Polygon"; } 
+            if(fromChain==ETH_TESTNET_CHAINID){
+                from_network= "ETH";
+                if(fromCurrency=='ETH'){ fromAmount = fromAmount/decimalArr['ETH'];}  
+                if(fromCurrency=='USDT'){ fromAmount = fromAmount/decimalArr[usdtEthAddress];}  
+            }
+            if(fromChain==CUSTOM_TESTNET_CHAINID){ from_network="DTH"; fromAmount = fromAmount/decimalArr[CUSTOM_TOKEN_SYMBOL]; }
+            if(fromChain==BSC_TESTNET_CHAINID){ from_network = "BSC"; fromAmount = fromAmount/decimalArr['BSC'];} 
+            if(fromChain==HECO_TESTNET_CHAINID){ from_network = "Huobi"; fromAmount = fromAmount/decimalArr['HT'];}  
+            if(fromChain==POLYGON_MAINNET_CHAINID){ from_network = "Polygon"; fromAmount = fromAmount/decimalArr['MATIC'];} 
 
-            if(toChain==1){  to_network= "ETH"; }
-            if(toChain==24){ to_network="DTH";  }
-            if(toChain==56){ to_network = "BSC";} 
-            if(toChain==128){ to_network = "Huobi"; }  
-            if(toChain==137){ to_network = "Polygon"; } 
+            if(toChain==ETH_TESTNET_CHAINID){  to_network= "ETH"; toAmount= toAmount/decimalArr['ETH'];}
+            if(toChain==CUSTOM_TESTNET_CHAINID){ to_network=CUSTOM_TOKEN_SYMBOL; toAmount= toAmount/decimalArr[CUSTOM_TOKEN_SYMBOL]; }
+            if(toChain==BSC_TESTNET_CHAINID){ to_network = "BSC"; toAmount= toAmount/decimalArr['BSC'];} 
+            if(toChain==HECO_TESTNET_CHAINID){ to_network = "Huobi"; toAmount= toAmount/decimalArr['HT'];}  
+            if(toChain==POLYGON_MAINNET_CHAINID){ to_network = "Polygon";toAmount= toAmount/decimalArr['MATIC']; } 
 
             $('#historyTable').append('<tr> '+ statusIcon+
                                       '<td> <div>  <div class="coin-price">  '+fromAmount+' '+ fromCurrency + '   </div>  <div class="address">'+getUserAddress(userWallet)+' ('+from_network+')</span></div>   </div> </td>'+
