@@ -3,7 +3,7 @@ var network_From = 'eth';
 var network_To = 'dith';
 var asset_Name = 'eth';
 var asset_To = 'dith';
-var chainID = 5;
+var chainID = ETH_TESTNET_CHAINID;
 var global = {
 	tronUserAddress : '',
 	tronUserAddressHex : '',
@@ -472,9 +472,9 @@ async function addNetowrk(network){
                     await ethereum.request({
                     method: 'wallet_switchEthereumChain',
                     //params: [{ chainId: '0x1' }],
-                    params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
+                    params: [{ chainId: CUSTOM_MAINNET_CHAINID_HEX }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
                     });
-                    chainID = 34; // testnet = 34 mainnet = 24
+                    chainID = CUSTOM_MAINNET_CHAINID; // testnet = 34 mainnet = 24
                 } catch (switchError) {
                     // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
@@ -482,9 +482,9 @@ async function addNetowrk(network){
                         await ethereum.request({
                         method: 'wallet_addEthereumChain',
                         //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
-                        params: [{ chainId: '0x18', rpcUrl: CUSTOM_NODE_URL /* ... */ }], // mainnet 
+                        params: [{ chainId: CUSTOM_MAINNET_CHAINID_HEX, rpcUrl: CUSTOM_NODE_URL /* ... */ }], // mainnet 
                         });
-                        chainID = 34; // testnet = 34 mainnet = 24
+                        chainID = CUSTOM_MAINNET_CHAINID; // testnet = 34 mainnet = 24
                     } catch (addError) {
                         // handle "add" error
                     }
@@ -497,9 +497,9 @@ async function addNetowrk(network){
                     await ethereum.request({
                     method: 'wallet_switchEthereumChain',
                     //params: [{ chainId: '0x1' }],
-                    params: [{ chainId: '0x22' }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
+                    params: [{ chainId: CUSTOM_TESTNET_CHAINID_HEX }], // mainnet =  params: [{ chainId: '0x18' }], // mainnet 0x18 , testnet = 0x22
                     });
-                    chainID = 34; // testnet = 34 mainnet = 24
+                    chainID = CUSTOM_TESTNET_CHAINID; // testnet = 34 mainnet = 24
                 } catch (switchError) {
                     // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
@@ -507,9 +507,9 @@ async function addNetowrk(network){
                         await ethereum.request({
                         method: 'wallet_addEthereumChain',
                         //params: [{ chainId: '0x18', rpcUrl: 'https://node-mainnet.dithereum.io/' /* ... */ }], // mainnet 
-                        params: [{ chainId: '0x18', rpcUrl: CUSTOM_NODE_URL /* ... */ }], // mainnet 
+                        params: [{ chainId: CUSTOM_TESTNET_CHAINID_HEX, rpcUrl: CUSTOM_NODE_URL /* ... */ }], // mainnet 
                         });
-                        chainID = 34; // testnet = 34 mainnet = 24
+                        chainID = CUSTOM_TESTNET_CHAINID; // testnet = 34 mainnet = 24
                     } catch (addError) {
                         // handle "add" error
                     }
@@ -527,18 +527,18 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x1' }],
+                    params: [{ chainId: ETH_MAINNET_CHAINID_HEX }],
                     });
-                chainID = 1;
+                chainID = ETH_MAINNET_CHAINID;
                 } catch (switchError) {
                     // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
                     try {
                         await ethereum.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{ chainId: '0x1', rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],                       
+                        params: [{ chainId: ETH_MAINNET_CHAINID_HEX, rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161' /* ... */ }],                       
                         });
-                        chainID = 1;
+                        chainID = ETH_MAINNET_CHAINID;
                     } catch (addError) {
                         // handle "add" error
                     }
@@ -550,18 +550,18 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x5' }],
+                    params: [{ chainId: ETH_TESTNET_CHAINID_HEX }],
                     });
-                chainID = 5;
+                chainID = ETH_TESTNET_CHAINID;
                 } catch (switchError) {
                     // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
                     try {
                         await ethereum.request({
                         method: 'wallet_addEthereumChain',
-                        params: [{ chainId: '0x5', rpcUrl: 'https://goerli.infura.io/v3/' /* ... */ }],blockExplorerUrls: ['https://goerli.etherscan.io'],
+                        params: [{ chainId: ETH_TESTNET_CHAINID_HEX, rpcUrl: 'https://goerli.infura.io/v3/' /* ... */ }],blockExplorerUrls: ['https://goerli.etherscan.io'],
                         });
-                        chainID = 5;
+                        chainID =ETH_TESTNET_CHAINID;
                     } catch (addError) {
                         // handle "add" error
                     }
@@ -582,25 +582,6 @@ async function addNetowrk(network){
             alertify.alert('Warning !','Please Login to Tronlink');
         }
     }
-    //SOL Network
-    if(network=='SOL'){
-        if(window.ethereum) {
-            window.web3 = new  Web3(window.ethereum)
-            window.ethereum.request({method: 'eth_requestAccounts'})
-            window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{chainId: '0xa869',
-                    chainName: "SOLANA Network",
-                    nativeCurrency: {
-                    name: "Solana",
-                    symbol: "SOL",
-                    decimals: 18
-                    },
-                    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],     blockExplorerUrls: ['https://cchain.explorer.avax-test.network/']
-                }]
-            })
-        }
-    }
    //BNB Network
    if(network=='BNB'){
         if(SITE_MODE=="PROD"){
@@ -608,18 +589,18 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                         method: 'wallet_switchEthereumChain',                
-                        params: [{ chainId: '0x38' }], //testnet '0x61',mainnet 0x38
+                        params: [{ chainId: BSC_MAINNET_CHAINID_HEX }], //testnet '0x61',mainnet 0x38
                     });
-                    chainID = 56;
+                    chainID = BSC_MAINNET_CHAINID;
                 } catch (switchError) {
                     // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
                     try {
                         await ethereum.request({
                             method: 'wallet_addEthereumChain',
-                            params: [{ chainId: '0x38', rpcUrl: 'https://bsc-dataseed1.defibit.io/' /* ... */ }],   blockExplorerUrls: ['https://bscscan.com/']                  
+                            params: [{ chainId: BSC_MAINNET_CHAINID_HEX, rpcUrl: 'https://bsc-dataseed1.defibit.io/' /* ... */ }],   blockExplorerUrls: ['https://bscscan.com/']                  
                         });
-                        chainID = 56;
+                        chainID = BSC_MAINNET_CHAINID;
                         checkAccount();
                     } catch (addError) {
                         // handle "add" error
@@ -634,18 +615,18 @@ async function addNetowrk(network){
                 try {
                     await ethereum.request({
                         method: 'wallet_switchEthereumChain',                
-                        params: [{ chainId: '0x61' }], //testnet '0x61',mainnet 0x38
+                        params: [{ chainId: BSC_TESTNET_CHAINID_HEX }], //testnet '0x61',mainnet 0x38
                     });
-                    chainID = 97;
+                    chainID = BSC_TESTNET_CHAINID;
                 } catch (switchError) {
                     // This error code indicates that the chain has not been added to MetaMask.
                     if (switchError.code === 4902) {
                     try {
                         await ethereum.request({
                             method: 'wallet_addEthereumChain',
-                            params: [{ chainId: '0x61', rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545' /* ... */ }],   blockExplorerUrls: ['https://testnet.bscscan.com']                  
+                            params: [{ chainId: BSC_TESTNET_CHAINID_HEX, rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545' /* ... */ }],   blockExplorerUrls: ['https://testnet.bscscan.com']                  
                         });
-                        chainID = 97;
+                        chainID = BSC_TESTNET_CHAINID;
                         checkAccount();
                     } catch (addError) {
                         // handle "add" error
@@ -658,45 +639,90 @@ async function addNetowrk(network){
     }
     //Polygon Network
     if(network=='POLYGON'){
-        if(window.ethereum) {
-            window.web3 = new  Web3(window.ethereum)
-            window.ethereum.request({method: 'eth_requestAccounts'})
-            window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{chainId: '0x89',
-                    chainName: "Polygon Network",
-                    nativeCurrency: {
-                    name: "Polygon",
-                    symbol: "MATIC",
-                    decimals: 18
-                    },
-                    rpcUrls: ['https://polygon-rpc.com'],     blockExplorerUrls: ['https://polygonscan.com/']
-                }]
-            })
-            chainID = 137;
-            checkAccount();
+        if(SITE_MODE=="PROD"){
+            if(window.ethereum) {
+                window.web3 = new  Web3(window.ethereum)
+                window.ethereum.request({method: 'eth_requestAccounts'})
+                window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{chainId: POLYGON_MAINNET_CHAINID_HEX,
+                        chainName: "Polygon Network",
+                        nativeCurrency: {
+                        name: "Polygon",
+                        symbol: "MATIC",
+                        decimals: decimalArr['MATIC']
+                        },
+                        rpcUrls: ['https://polygon-rpc.com'],     blockExplorerUrls: ['https://polygonscan.com/']
+                    }]
+                })
+                chainID = POLYGON_MAINNET_CHAINID;
+                checkAccount();
+            }
+        }
+        if(SITE_MODE=="DEV"){
+            if(window.ethereum) {
+                window.web3 = new  Web3(window.ethereum)
+                window.ethereum.request({method: 'eth_requestAccounts'})
+                window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{chainId: POLYGON_MAINNET_CHAINID_HEX,
+                        chainName: "Polygon Network",
+                        nativeCurrency: {
+                        name: "Polygon",
+                        symbol: "MATIC",
+                        decimals: decimalArr['MATIC']
+                        },
+                        rpcUrls: ['https://polygon-rpc.com'],     blockExplorerUrls: ['https://polygonscan.com/']
+                    }]
+                })
+                chainID = POLYGON_MAINNET_CHAINID;
+                checkAccount();
+            }
         }
     }
     //Heco Network
     if(network=='HECO'){
-        if(window.ethereum) {
-            window.web3 = new  Web3(window.ethereum)
-            window.ethereum.request({method: 'eth_requestAccounts'})
-            window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{chainId: '0x80', //testnet '0x100', 
-                    chainName: "Heco-Mainnet",
-                    nativeCurrency: {
-                    name: "Heco",
-                    symbol: "HT",
-                    decimals: 18
-                    },
-                    rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
-                    //rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
-                }]
-            })
-            chainID = 128;
-            checkAccount();
+        if(SITE_MODE=="PROD"){
+            if(window.ethereum) {
+                window.web3 = new  Web3(window.ethereum)
+                window.ethereum.request({method: 'eth_requestAccounts'})
+                window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{chainId: HECO_MAINNET_CHAINID_HEX, //testnet '0x100', 
+                        chainName: "Heco-Mainnet",
+                        nativeCurrency: {
+                        name: "Heco",
+                        symbol: "HT",
+                        decimals: decimalArr['HT']
+                        },
+                        rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
+                        //rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
+                    }]
+                })
+                chainID = HECO_MAINNET_CHAINID;
+                checkAccount();
+            }
+        }
+        if(SITE_MODE=="DEV"){
+            if(window.ethereum) {
+                window.web3 = new  Web3(window.ethereum)
+                window.ethereum.request({method: 'eth_requestAccounts'})
+                window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{chainId: HECO_TESTNET_CHAINID_HEX, //testnet '0x100', 
+                        chainName: "Heco-Mainnet",
+                        nativeCurrency: {
+                        name: "Heco",
+                        symbol: "HT",
+                        decimals: decimalArr['HT']
+                        },
+                        rpcUrls: ['https://http-mainnet-node.huobichain.com'],     blockExplorerUrls: ['https://hecoinfo.com']
+                        //rpcUrls: ['https://http-testnet.hecochain.com'],     blockExplorerUrls: ['https://testnet.hecoinfo.com/']
+                    }]
+                })
+                chainID = HECO_TESTNET_CHAINID;
+                checkAccount();
+            }
         }
     }
 }
@@ -735,7 +761,6 @@ async function processTx(data,contractAddress,web3GasPrice,gasLimit,value,TX_URL
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
     if (isMobile && window.ethereum.isMetaMask==true) {
-            //value = value/1e9;
             web3GasPrice = web3GasPrice.toString();
             gasLimit = gasLimit.toString();
             web3GasPrice =  myweb3.utils.toHex(web3GasPrice);
@@ -1014,7 +1039,7 @@ $('#btnNext').click(async function(){
     }
 
     alertify.confirm('Confirm Transaction', confirmMessage, async function(){
-        tokenAmount = tokenAmount*1e18;
+        //tokenAmount = tokenAmount*1e18;
        //tokenAmount = ""+tokenAmount;
     //eth network
     if(network_From=='eth'){
@@ -1025,6 +1050,7 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='eth'){
+            tokenAmount = tokenAmount*decimalArr['ETH'];
             if(asset_To=='dith'){
               const nWeb3 = new Web3(CUSTOM_NODE_URL);
               usdtContractInstance =  new nWeb3.eth.Contract(ethDthABI, ethDthAddress, {
@@ -1051,7 +1077,8 @@ $('#btnNext').click(async function(){
         }
         if(asset_Name=='usdt' || asset_Name=='usdc' || asset_Name=='dai' || asset_Name=='pax'){          
             
-            if(asset_Name=='usdt'){    
+            if(asset_Name=='usdt'){
+                tokenAmount = tokenAmount*decimalArr[usdtEthAddress];    
                 usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
                     from: myAccountAddress, // default from address
                 });
@@ -1080,6 +1107,7 @@ $('#btnNext').click(async function(){
                 }
             }
             if(asset_Name=='usdc'){
+                tokenAmount = tokenAmount*decimalArr[usdcAddress];    
                 assetContract = usdcAddress;
                 usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
                     from: myAccountAddress, // default from address
@@ -1102,6 +1130,7 @@ $('#btnNext').click(async function(){
                 }
             }
             if(asset_Name=='dai'){
+                tokenAmount = tokenAmount*decimalArr[daiAddress];  
                 assetContract = daiAddress;
                 daiContractInstance =  new myweb3.eth.Contract(daiABI, daiAddress, {
                     from: myAccountAddress, // default from address
@@ -1124,6 +1153,7 @@ $('#btnNext').click(async function(){
                 }
             }
             if(asset_Name=='pax'){
+                tokenAmount = tokenAmount*decimalArr[paxAddress]; 
                 assetContract = paxAddress;
                 paxContractInstance =  new myweb3.eth.Contract(usdcABI, paxAddress, {
                     from: myAccountAddress, // default from address
@@ -1157,6 +1187,7 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_To=='eth'){
+            tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];
             usdtContractInstance =  new myweb3.eth.Contract(ethDthABI, ethDthAddress, {
                 from: myAccountAddress, // default from address
             });
@@ -1181,7 +1212,8 @@ $('#btnNext').click(async function(){
         }
         if(asset_To=='usdt' || asset_To=='usdc' || asset_To=='dai' || asset_To=='pax'){          
             
-            if(asset_To=='usdt'){ 
+            if(asset_To=='usdt'){
+                tokenAmount = tokenAmount*decimalArr[usdtEthAddress]; 
                 usdtContractInstance =  new myweb3.eth.Contract(usdtEthABI, usdtEthAddress, {
                     from: myAccountAddress, // default from address
                 });
@@ -1206,6 +1238,7 @@ $('#btnNext').click(async function(){
 
             }
             if(asset_To=='usdc'){
+                tokenAmount = tokenAmount*decimalArr[usdcAddress];
                 usdcContractInstance =  new myweb3.eth.Contract(usdcABI, usdcAddress, {
                     from: myAccountAddress, // default from address
                 });
@@ -1231,6 +1264,7 @@ $('#btnNext').click(async function(){
             }
             
             if(asset_To=='dai'){
+                tokenAmount = tokenAmount*decimalArr[daiAddress];
                 daiContractInstance =  new myweb3.eth.Contract(daiABI, daiAddress, {
                     from: myAccountAddress, // default from address
                 });
@@ -1255,6 +1289,7 @@ $('#btnNext').click(async function(){
 
             }
             if(asset_To=='pax'){
+                tokenAmount = tokenAmount*decimalArr[paxAddress];
                 paxContractInstance =  new myweb3.eth.Contract(paxABI, paxAddress, {
                     from: myAccountAddress, // default from address
                 });
@@ -1281,6 +1316,7 @@ $('#btnNext').click(async function(){
         }
 
             if(asset_To=='bnb'){
+                tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];
                 bscContractInstance = new myweb3.eth.Contract(binanceBridgeABI, binanceBridgeContract, {
                     from: myAccountAddress, // default from address
                 });
@@ -1311,6 +1347,7 @@ $('#btnNext').click(async function(){
             }
     
             if(asset_To=='usdtbsc'){
+                tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];
                 bscContractInstance = new myweb3.eth.Contract(binanceBridgeABI, binanceBridgeContract, {
                     from: myAccountAddress, // default from address
                 });
@@ -1341,7 +1378,7 @@ $('#btnNext').click(async function(){
                     
             }
             if(asset_To=='busd'){
-                                 
+                tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];                
                 var gasLimit = 200000;
                 const web3GasPrice = await myweb3.eth.getGasPrice();
                 usdtContractInstance =  new myweb3.eth.Contract(dusddDthABI, dusdDthAddress, {
@@ -1368,6 +1405,7 @@ $('#btnNext').click(async function(){
             }  
 
             if(network_To=='polygon'){
+                tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];
                 polygonContractInstance = new myweb3.eth.Contract(polygonABI, polygonContract, {
                     from: myAccountAddress, // default from address
                 });
@@ -1402,6 +1440,7 @@ $('#btnNext').click(async function(){
             }
 
             if(network_To=='heco'){
+                tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];
                 hecoContractInstance = new myweb3.eth.Contract(hecoABI, hecoContract, {
                     from: myAccountAddress, // default from address
                 });
@@ -1434,6 +1473,7 @@ $('#btnNext').click(async function(){
             }
             }
             if(network_To=='trx'){
+                tokenAmount = tokenAmount*decimalArr[CUSTOM_TOKEN_SYMBOL];
                 if(asset_To=='trx'){
                     let result = await tronContractInstance.coinIn().send({
                         feeLimit: 50000000,
@@ -1457,6 +1497,7 @@ $('#btnNext').click(async function(){
         const web3GasPrice = await myweb3.eth.getGasPrice();
 
         if(asset_Name=='bnb'){
+            tokenAmount = tokenAmount*decimalArr['BSC'];
             if(asset_To=='dbnb'){
                 const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 usdtContractInstance =  new nWeb3.eth.Contract(bnbDthABI, bnbDthAddress, {
@@ -1483,6 +1524,7 @@ $('#btnNext').click(async function(){
         }
 
         if(asset_Name=='usdtbsc'){
+            tokenAmount = tokenAmount*decimalArr[usdtBscAddress];
             var usdtbscContractInstance =  new myweb3.eth.Contract(usdtBscABI, usdtBscAddress, {
                 from: myAccountAddress, // default from address
             });
@@ -1510,6 +1552,7 @@ $('#btnNext').click(async function(){
             }            
         }
         if(asset_Name=='busd'){
+            tokenAmount = tokenAmount*decimalArr[busdBscAddress];
             var busdbscContractInstance =  new myweb3.eth.Contract(busdBscABI, busdBscAddress, {
                 from: myAccountAddress, // default from address
             });
@@ -1541,6 +1584,7 @@ $('#btnNext').click(async function(){
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         if(asset_Name=='matic'){
+            tokenAmount = tokenAmount*decimalArr['MATIC'];
             if(asset_To=='dmatic'){
                 const nWeb3 = new Web3(CUSTOM_NODE_URL);
                 usdtContractInstance =  new nWeb3.eth.Contract(maticdDthABI, maticDthAddress, {
@@ -1573,7 +1617,7 @@ $('#btnNext').click(async function(){
             from: myAccountAddress, // default from address
         });
        
-       
+        tokenAmount = tokenAmount*decimalArr['HT'];
         var gasLimit = 200000;
         const web3GasPrice = await myweb3.eth.getGasPrice();
         var data = hecoContractInstance.methods.coinIn().encodeABI();
@@ -1585,7 +1629,7 @@ $('#btnNext').click(async function(){
         tronContractInstance = await tronWeb.contract(contractInfo.abi.entrys,tronContract);
         //tronContractInstance = await tronWeb.contract(JSON.parse('{"entrys":[{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinIn","type":"Event"},{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinOut","type":"Event"},{"inputs":[{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"CoinOutFailed","type":"Event"},{"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenIn","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenOut","type":"Event"},{"inputs":[{"indexed":true,"name":"tokenAddress","type":"address"},{"indexed":true,"name":"user","type":"address"},{"name":"value","type":"uint256"}],"name":"TokenOutFailed","type":"Event"},{"name":"acceptOwnership","stateMutability":"Nonpayable","type":"Function"},{"inputs":[{"name":"_signer","type":"address"}],"name":"changeSigner","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"bool"}],"name":"coinIn","stateMutability":"Payable","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"user","type":"address"},{"name":"amount","type":"uint256"}],"name":"coinOut","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"address"}],"name":"signer","stateMutability":"View","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"tokenAddress","type":"address"},{"name":"tokenAmount","type":"uint256"}],"name":"tokenIn","stateMutability":"Nonpayable","type":"Function"},{"outputs":[{"type":"bool"}],"inputs":[{"name":"tokenAddress","type":"address"},{"name":"user","type":"address"},{"name":"tokenAmount","type":"uint256"}],"name":"tokenOut","stateMutability":"Nonpayable","type":"Function"},{"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","stateMutability":"Nonpayable","type":"Function"},{"stateMutability":"Payable","type":"Receive"}]}',tronContract));
         tokenAmount = $('#tokenAmount').val();
-        tokenAmount = tokenAmount*1000000;
+        tokenAmount = tokenAmount*decimalArr['TRX'];
         if(asset_Name=='trx'){
             let result = await tronContractInstance.coinIn().send({
                 feeLimit: 50000000,
