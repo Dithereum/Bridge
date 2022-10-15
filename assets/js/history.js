@@ -82,7 +82,8 @@ async function getHistory(){
         txData.forEach(element => {
             //console.log(element);
             var timeStamp = new Date(element.updationTimestamp);
-            var nDate = timeStamp.getUTCFullYear()+'/'+ timeStamp.getMonth()+'/' +timeStamp.getDate() + ' ' + timeStamp.getHours()+':'+timeStamp.getMinutes()+':'+timeStamp.getSeconds();
+            var month = parseInt(timeStamp.getMonth())+1;
+            var nDate = timeStamp.getUTCFullYear()+'/'+ month+'/' +timeStamp.getDate() + ' ' + timeStamp.getHours()+':'+timeStamp.getMinutes()+':'+timeStamp.getSeconds();
             var fromAmount = element.fromAmount;
             var fromChain = element.fromChain;
             const fromCurrency = element.fromCurrency;
