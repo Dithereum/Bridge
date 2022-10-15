@@ -114,25 +114,28 @@ async function getHistory(){
             }else{
                 fee = fee + ' 100% Discount';
             }
+            var fromLink = '';
+            var toLink = '';
             if(fromChain==ETH_TESTNET_CHAINID){
                 from_network= "ETH";
+                fromLink = ETHERSCAN_URL;
                 if(fromCurrency=='ETH'){ fromAmount = fromAmount/decimalArr['ETH'];}  
                 if(fromCurrency=='USDT'){ fromAmount = fromAmount/decimalArr[usdtEthAddress];}  
             }
-            if(fromChain==CUSTOM_TESTNET_CHAINID){ from_network="DTH"; fromAmount = fromAmount/decimalArr[CUSTOM_TOKEN_SYMBOL]; }
-            if(fromChain==BSC_TESTNET_CHAINID){ from_network = "BSC"; fromAmount = fromAmount/decimalArr['BSC'];} 
-            if(fromChain==HECO_TESTNET_CHAINID){ from_network = "Huobi"; fromAmount = fromAmount/decimalArr['HT'];}  
-            if(fromChain==POLYGON_MAINNET_CHAINID){ from_network = "Polygon"; fromAmount = fromAmount/decimalArr['MATIC'];} 
+            if(fromChain==CUSTOM_TESTNET_CHAINID){ from_network="DTH"; fromAmount = fromAmount/decimalArr[CUSTOM_TOKEN_SYMBOL]; fromLink = CUSTOM_SCAN_URL; }
+            if(fromChain==BSC_TESTNET_CHAINID){ from_network = "BSC"; fromAmount = fromAmount/decimalArr['BSC']; fromLink = BSCSCAN_URL;} 
+            if(fromChain==HECO_TESTNET_CHAINID){ from_network = "Huobi"; fromAmount = fromAmount/decimalArr['HT']; fromLink = HECOSCAN_URL;}  
+            if(fromChain==POLYGON_MAINNET_CHAINID){ from_network = "Polygon"; fromAmount = fromAmount/decimalArr['MATIC']; fromLink = POLYSCAN_URL;} 
 
-            if(toChain==ETH_TESTNET_CHAINID){  to_network= "ETH"; toAmount= toAmount/decimalArr['ETH'];}
-            if(toChain==CUSTOM_TESTNET_CHAINID){ to_network=CUSTOM_TOKEN_SYMBOL; toAmount= toAmount/decimalArr[CUSTOM_TOKEN_SYMBOL]; }
-            if(toChain==BSC_TESTNET_CHAINID){ to_network = "BSC"; toAmount= toAmount/decimalArr['BSC'];} 
-            if(toChain==HECO_TESTNET_CHAINID){ to_network = "Huobi"; toAmount= toAmount/decimalArr['HT'];}  
-            if(toChain==POLYGON_MAINNET_CHAINID){ to_network = "Polygon";toAmount= toAmount/decimalArr['MATIC']; } 
+            if(toChain==ETH_TESTNET_CHAINID){  to_network= "ETH"; toAmount= toAmount/decimalArr['ETH']; toLink=ETHERSCAN_URL;}
+            if(toChain==CUSTOM_TESTNET_CHAINID){ to_network=CUSTOM_TOKEN_SYMBOL; toAmount= toAmount/decimalArr[CUSTOM_TOKEN_SYMBOL]; toLink=CUSTOM_SCAN_URL; }
+            if(toChain==BSC_TESTNET_CHAINID){ to_network = "BSC"; toAmount= toAmount/decimalArr['BSC']; toLink=BSCSCAN_URL;} 
+            if(toChain==HECO_TESTNET_CHAINID){ to_network = "Huobi"; toAmount= toAmount/decimalArr['HT']; toLink=HECOSCAN_URL;}  
+            if(toChain==POLYGON_MAINNET_CHAINID){ to_network = "Polygon";toAmount= toAmount/decimalArr['MATIC']; toLink=POLYSCAN_URL;} 
 
             $('#historyTable').append('<tr> '+ statusIcon+
-                                      '<td> <div>  <div class="coin-price">  '+fromAmount+' '+ fromCurrency + '   </div>  <div class="address">'+getUserAddress(userWallet)+' ('+from_network+')</span></div>   </div> </td>'+
-                                      '<td> <div>  <div class="coin-price">  '+toAmount+' '+ toCurrency + '  </div>  <div class="address">'+getUserAddress(userWallet)+' ('+to_network+')</span></div>   </div> </td>'+
+                                      '<td> <div>  <div class="coin-price">  '+fromAmount+' '+ fromCurrency + '   </div>  <div class="address"><a href="'+fromLink+fromTxnHash+'" target="_blank">'+getUserAddress(fromTxnHash)+'</a> ('+from_network+')</span></div>   </div> </td>'+
+                                      '<td> <div>  <div class="coin-price">  '+toAmount+' '+ toCurrency + '  </div>  <div class="address"><a href="'+toLink+toTxnHash+'" target="_blank">'+getUserAddress(toTxnHash)+'</a> ('+to_network+')</span></div>   </div> </td>'+
                                       '<td> <div>  <div class="coin-price">  '+fee +' </div> </div> </td>'+
                                       '<td> <div>  <div class="address">'+nDate+'</div> </div> </td> </tr>');
         });
@@ -146,7 +149,6 @@ function getUserAddress(userAddress){
     lastFive    = userAddress.substr(userAddress.length - 5);
     return firstFive+'...'+lastFive;
 }
-
 function number_to_2decimals(str)
 {
     str = str.toString();
