@@ -145,6 +145,7 @@ async function getHistory(){
 }
 //get short user address
 function getUserAddress(userAddress){
+    if(userAddress==""){ return '';}
     firstFive   = userAddress.substring(0 , 5); 
     lastFive    = userAddress.substr(userAddress.length - 5);
     return firstFive+'...'+lastFive;
