@@ -69,7 +69,7 @@ async function checkAccount() {
         } 
     }
 }
-setTimeout(checkAccount, 500);
+setTimeout(checkAccount, 1000);
 $('document').ready(async function(){
     setTimeout(getHistory, 3000);
 });
