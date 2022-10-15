@@ -71,7 +71,7 @@ async function checkAccount() {
 }
 setTimeout(checkAccount, 500);
 $('document').ready(async function(){
-    setTimeout(getHistory, 500);
+    setTimeout(getHistory, 3000);
 });
 async function getHistory(){
     const fetchResponse =  await fetch('https://api.dithereum.io/history?user='+myAccountAddress);
