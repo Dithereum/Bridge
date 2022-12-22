@@ -34,7 +34,7 @@ contract owned
 
     constructor() {
         owner = msg.sender;
-        signer[msg.sender] = true;
+        //owner does not become signer automatically.
     }
 
     modifier onlyOwner {
