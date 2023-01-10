@@ -26,7 +26,6 @@ interface usdtContract
 contract owned
 {
     address public owner;
-    address internal newOwner;
     mapping(address => bool) public signer;
 
     event OwnershipTransferred(address indexed _from, address indexed _to);
@@ -55,16 +54,11 @@ contract owned
     }
 
     function transferOwnership(address _newOwner) public onlyOwner {
-        newOwner = _newOwner;
+        emit OwnershipTransferred(owner, _newOwner);
+        owner = _newOwner;
     }
 
-    //the reason for this flow is to protect owners from sending ownership to unintended address due to human error
-    function acceptOwnership() public {
-        require(msg.sender == newOwner);
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-        newOwner = address(0);
-    }
+
 }
 
 
@@ -78,7 +72,7 @@ contract Bridge is owned {
     
     uint256 public orderID;
     uint256 public exraCoinRewards;   // if we give users extra coins to cover gas cost of some initial transactions.
-    
+    bool public bridgeStatus = true;
     
 
     // This generates a public event of coin received by contract
@@ -97,6 +91,7 @@ contract Bridge is owned {
     }
     
     function coinIn(address outputCurrency) external payable returns(bool){
+        require(bridgeStatus, "Bridge is inactive");
         orderID++;
         payable(owner).transfer(msg.value);     //send fund to owner
         emit CoinIn(orderID, msg.sender, msg.value, outputCurrency);
@@ -104,15 +99,16 @@ contract Bridge is owned {
     }
     
     function coinOut(address user, uint256 amount, uint256 _orderID) external onlySigner returns(bool){
-        
-            payable(user).transfer(amount);
-            emit CoinOut(_orderID, user, amount);
+        require(bridgeStatus, "Bridge is inactive");
+        payable(user).transfer(amount);
+        emit CoinOut(_orderID, user, amount);
         
         return true;
     }
     
     
     function tokenIn(address tokenAddress, uint256 tokenAmount, uint256 chainID, address outputCurrency) external returns(bool){
+        require(bridgeStatus, "Bridge is inactive");
         orderID++;
         //fund will go to the owner
         if(tokenAddress == address(0xdAC17F958D2ee523a2206206994597C13D831ec7)){
@@ -127,7 +123,7 @@ contract Bridge is owned {
     
     
     function tokenOut(address tokenAddress, address user, uint256 tokenAmount, uint256 _orderID, uint256 chainID) external onlySigner returns(bool){
-       
+            require(bridgeStatus, "Bridge is inactive");
             ERC20Essential(tokenAddress).transfer(user, tokenAmount);
 
             if(exraCoinRewards > 0 && address(this).balance >= exraCoinRewards){
