@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.17; 
+pragma solidity 0.8.23; 
 
 interface ERC20Essential 
 {
@@ -93,7 +93,6 @@ contract Bridge is owned {
     function coinIn(address outputCurrency) external payable returns(bool){
         require(bridgeStatus, "Bridge is inactive");
         orderID++;
-        payable(owner).transfer(msg.value);     //send fund to owner
         emit CoinIn(orderID, msg.sender, msg.value, outputCurrency);
         return true;
     }
@@ -113,9 +112,9 @@ contract Bridge is owned {
         //fund will go to the owner
         if(tokenAddress == address(0xdAC17F958D2ee523a2206206994597C13D831ec7)){
             //There should be different interface for the USDT Ethereum contract
-            usdtContract(tokenAddress).transferFrom(msg.sender, owner, tokenAmount);
+            usdtContract(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
         }else{
-            ERC20Essential(tokenAddress).transferFrom(msg.sender, owner, tokenAmount);
+            ERC20Essential(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
         }
         emit TokenIn(orderID, tokenAddress, msg.sender, tokenAmount, chainID, outputCurrency);
         return true;
